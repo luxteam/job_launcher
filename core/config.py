@@ -13,7 +13,7 @@ RENDER_REPORT_BASE = {
     "render_color_path": "",
     "test_case": "",
     "render_version": "",
-    "test_status": "stub",
+    "test_status": "undefined",
     "tool": "",
     "render_time": -0.0,
     "baseline_render_time": -0.0,
@@ -21,6 +21,7 @@ RENDER_REPORT_BASE = {
     "scene_name": "",
     "test_group": "",
     "difference_color": "not compared yet",
+    "difference_time": "not compared yet",
     "core_version": "",
     "render_device": ""
 }
@@ -37,6 +38,7 @@ TIME_DIFF_MAX = 5
 TEST_CRASH_STATUS = 'failed'
 TEST_DIFF_STATUS = 'error'
 
+CASE_REPORT_SUFFIX = '_RPR.json'
 TEST_REPORT_NAME = 'report.json'
 TEST_REPORT_NAME_COMPARED = 'report_compare.json'
 TEST_REPORT_EXPECTED_NAME = 'expected.json'
