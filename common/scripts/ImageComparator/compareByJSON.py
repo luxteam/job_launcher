@@ -98,7 +98,7 @@ def main():
                 baseline_item = json.loads(file.read())
 
         get_pixel_difference(args.work_dir, args.base_dir, img, baseline_item[0], args.pix_diff_tolerance, args.pix_diff_max)
-        get_rendertime_difference(img, baseline_item, args.time_diff_max)
+        get_rendertime_difference(img, baseline_item[0], args.time_diff_max)
         try:
             img.update({"baseline_render_device": baseline_item[0]['render_device']})
         except KeyError:
