@@ -11,6 +11,7 @@ def create_args_parser():
     args = argparse.ArgumentParser()
     args.add_argument('--results_root')
     args.add_argument('--baseline_root')
+    args.add_argument('--case_suffix', required=False, default=core.config.CASE_REPORT_SUFFIX)
     return args
 
 
@@ -29,7 +30,7 @@ def main():
         for file in files:
             # if file == core.config.TEST_REPORT_NAME_COMPARED:
 
-            if file.endswith(core.config.CASE_REPORT_SUFFIX):
+            if file.endswith(args.case_suffix):
                 # create destination folder in baseline location
                 if not os.path.exists(os.path.join(args.baseline_root, os.path.relpath(path, args.results_root))):
                     os.makedirs(os.path.join(args.baseline_root, os.path.relpath(path, args.results_root)))

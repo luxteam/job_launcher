@@ -89,6 +89,18 @@ def main():
         render_json = json.loads(file.read())
 
     for img in render_json:
+        # add original render key
+        if args.case_suffix:
+            or_baseline_json_path = os.path.join(args.base_dir, img['test_case'] + args.case_suffix)
+            if not os.path.exists(or_baseline_json_path):
+                core.config.main_logger.error("Test case {} original render report not found".format(img['test_case']))
+            else:
+                with open(or_baseline_json_path, 'r') as file:
+                    original_json = json.loads(file.read())
+                original_img_path = original_json[0]['original_color_path']
+                img.update({'original_color_path': os.path.relpath(os.path.join(args.base_dir, original_img_path),
+                                                                   args.work_dir)})
+
         baseline_json_path = os.path.join(args.base_dir, img['test_case'] + core.config.CASE_REPORT_SUFFIX)
         if not os.path.exists(baseline_json_path):
             core.config.main_logger.error("Test case {} report not found".format(img['test_case']))
