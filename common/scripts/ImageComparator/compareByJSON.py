@@ -12,6 +12,7 @@ def createArgParser():
     argparser = argparse.ArgumentParser()
     argparser.add_argument('--work_dir')
     argparser.add_argument('--base_dir')
+    argparser.add_argument('--case_suffix')
     argparser.add_argument('--pix_diff_tolerance', required=False, default=core.config.PIX_DIFF_TOLERANCE)
     argparser.add_argument('--pix_diff_max', required=False, default=core.config.PIX_DIFF_MAX)
     argparser.add_argument('--time_diff_max', required=False, default=core.config.TIME_DIFF_MAX)
