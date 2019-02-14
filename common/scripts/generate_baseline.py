@@ -44,7 +44,7 @@ def main():
                 # copy files which described in json
                 for test in report:
                     # copy rendered images and thumbnails
-                    for img in core.config.POSSIBLE_JSON_IMG_RENDERED_KEYS_THUMBNAIL + core.config.POSSIBLE_JSON_IMG_RENDERED_KEYS:
+                    for img in core.config.REPORT_FILES:
                         if img in test.keys():
                             rendered_img_path = os.path.join(path, test[img])
                             baseline_img_path = os.path.relpath(rendered_img_path, args.results_root)
