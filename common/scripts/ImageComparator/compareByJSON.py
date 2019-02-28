@@ -100,6 +100,8 @@ def main():
                 original_img_path = original_json[0]['original_color_path']
                 img.update({'original_color_path': os.path.relpath(os.path.join(args.base_dir, original_img_path),
                                                                    args.work_dir)})
+                img.update({'original_render_log': os.path.relpath(os.path.join(args.base_dir, original_json[0]['original_render_log']),
+                                                                   args.work_dir)})
 
         baseline_json_path = os.path.join(args.base_dir, img['test_case'] + core.config.CASE_REPORT_SUFFIX)
         if not os.path.exists(baseline_json_path):
