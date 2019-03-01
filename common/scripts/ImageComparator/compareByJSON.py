@@ -30,7 +30,7 @@ def get_diff(current, previous):
 
 def get_pixel_difference(work_dir, base_dir, img, baseline_json, tolerance, pix_diff_max):
 
-    for key in core.config.POSSIBLE_JSON_IMG_RENDERED_KEYS:
+    for key in core.config.IMG_KEYS_FOR_COMPARE:
         if key in img.keys():
             render_img_path = os.path.join(work_dir, img[key])
 
@@ -54,8 +54,7 @@ def get_pixel_difference(work_dir, base_dir, img, baseline_json, tolerance, pix_
             pix_difference = metrics.getDiffPixeles(tolerance=tolerance)
             img.update({'difference_color': pix_difference})
             if type(pix_difference) is str or pix_difference > pix_diff_max:
-                # TODO: swap status
-                img['test_status'] = 'error'
+                img['test_status'] = core.config.TEST_DIFF_STATUS
             img.update({'baseline_color_path': os.path.relpath(
                 os.path.join(base_dir, baseline_json[key]), work_dir)})
 
@@ -63,7 +62,10 @@ def get_pixel_difference(work_dir, base_dir, img, baseline_json, tolerance, pix_
 
 
 def get_rendertime_difference(img, baseline_item, time_diff_max):
-    render_time = img['render_time']
+    if 'render_time' not in baseline_item.keys():
+        render_time = img['render_time']
+    else:
+        render_time = img['render_time']
     baseline_time = baseline_item['render_time']
 
     img.update({'difference_time': get_diff(render_time, baseline_time)})
@@ -90,6 +92,7 @@ def main():
         render_json = json.loads(file.read())
 
     for img in render_json:
+        # NOTE: for conversion scripts testing only
         # add original render key
         if args.case_suffix:
             or_baseline_json_path = os.path.join(args.base_dir, img['test_case'] + args.case_suffix)
@@ -98,11 +101,18 @@ def main():
             else:
                 with open(or_baseline_json_path, 'r') as file:
                     original_json = json.loads(file.read())
-                original_img_path = original_json[0]['original_color_path']
-                img.update({'original_color_path': os.path.relpath(os.path.join(args.base_dir, original_img_path),
+                try:
+                    original_img_path = original_json[0]['original_color_path']
+                    original_log_path = original_json[0]['original_render_log']
+                    img.update({'original_color_path': os.path.relpath(os.path.join(args.base_dir, original_img_path),
                                                                    args.work_dir)})
-                img.update({'original_render_log': os.path.relpath(os.path.join(args.base_dir, original_json[0]['original_render_log']),
-                                                                   args.work_dir)})
+                    img.update({'original_render_log': os.path.relpath(os.path.join(args.base_dir, original_log_path),
+                                                                       args.work_dir)})
+                except IndexError:
+                    core.config.main_logger.error("{} case OR json is empty".format(img['test_name']))
+                except KeyError as err:
+                    core.config.main_logger.error("{} case OR json is incomplete".format(img['test_name']))
+                    core.config.main_logger.error(str(err))
 
         baseline_json_path = os.path.join(args.base_dir, img['test_case'] + core.config.CASE_REPORT_SUFFIX)
         if not os.path.exists(baseline_json_path):
