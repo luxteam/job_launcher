@@ -8,6 +8,28 @@ import psutil
 import cpuinfo
 
 
+def get_gpu():
+    try:
+        operation_sys = platform.system()
+        if operation_sys == "Windows":
+            s = subprocess.Popen("wmic path win32_VideoController get name", stdout=subprocess.PIPE)
+            stdout = s.communicate()
+            render_device = stdout[0].decode("utf-8").split('\n')[1].replace('\r', '').strip(' ')
+        elif operation_sys == "Linux":
+            s = subprocess.Popen("""clinfo --raw | grep CL_DEVICE_BOARD_NAME | awk '{for(i=3;i<=NF;++i) printf "%s ", $i; print ""}'""", stdout=subprocess.PIPE, shell=True)
+            stdout = s.communicate()
+            render_device = stdout[0].decode("utf-8").split('\n')[0].replace('\r', '').strip(' ')
+        elif operation_sys == "Darwin":
+            s = subprocess.Popen("""system_profiler SPDisplaysDataType | grep Chipset\ Model | awk '{for(i=3;i<=NF;++i) printf "%s ", $i; print ""}' """, stdout=subprocess.PIPE, shell=True)
+            stdout = s.communicate()
+            render_device = stdout[0].decode("utf-8").split('\n')[0].replace('\r', '').strip(' ')
+    except Exception as err:
+        print("ERROR during GPU detecting: {}".format(str(err)))
+        return False
+
+    return render_device
+    
+
 def get_machine_info():
 
     def get_os():
