@@ -20,23 +20,23 @@ RENDER_REPORT_BASE = {
     "render_mode": "",
     "scene_name": "",
     "test_group": "",
-    "difference_color": "not compared yet",
-    "difference_time": "not compared yet",
+    "difference_color": -0.0,
+    "difference_time": -0.0,
     "core_version": "",
     "render_device": "",
-    "difference_time_or": "not compared yet",
+    "difference_time_or": -0.0,
 
-  # core block
-  "minor_version": "",
-  "iterations": -0,
-  "width": -0,
-  "height": -0,
-  "system_memory_usage": -0.0,
-  "gpu_memory_usage": -0.0,
-  "gpu_memory_total": -0.0,
-  "gpu_memory_max": -0.0,
-  "baseline_gpu_memory_usage": -0.0,
-  "difference_vram": -0.0
+    # core block
+    "minor_version": "",
+    "iterations": -0,
+    "width": -0,
+    "height": -0,
+    "system_memory_usage": -0.0,
+    "gpu_memory_usage": -0.0,
+    "gpu_memory_total": -0.0,
+    "gpu_memory_max": -0.0,
+    "baseline_gpu_memory_usage": -0.0,
+    "difference_vram": -0.0
 }
 
 RENDER_REPORT_BASE_USEFULL_KEYS = ['tool', 'minor_version', 'test_group', 'core_version', 'render_device']
