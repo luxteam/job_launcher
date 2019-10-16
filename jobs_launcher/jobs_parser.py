@@ -98,7 +98,7 @@ def parse_job_manifest(level, job_root_dir, job_rel_path, session_dir, found_job
         core.config.main_logger.warning(delim + 'Package parse error "{}": root node "package-manifest" not found'.format(job_file_path))
         return
 
-    job_name = os.path.split(os.path.dirname(job_rel_path))[1]
+    job_name = os.path.split(os.path.dirname(job_rel_path))[1] + "_" + package_options['variables']['engine']
     # job_name = os.path.normpath(os.path.dirname(job_rel_path)).replace('\\', '_')
 
     print(delim + 'processing job ... "{}"'.format(job_name))
@@ -198,7 +198,7 @@ def parse_job_manifest(level, job_root_dir, job_rel_path, session_dir, found_job
         if config_dirs:
             config_output_dir = os.path.join(os.path.join("{SessionDir}", job_rel_dir), os.path.sep.join(config_dirs))
         else:
-            config_output_dir = os.path.join(os.path.join("{SessionDir}", job_rel_dir))
+            config_output_dir = os.path.join(os.path.join("{SessionDir}", job_rel_dir + "_" + package_options['variables']['engine']))
 
         #try:
         #    os.makedirs(config_output_dir)
