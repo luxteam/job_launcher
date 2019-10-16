@@ -215,8 +215,6 @@ def parse_job_manifest(level, job_root_dir, job_rel_path, session_dir, found_job
 
         for engine_value in package_options['variables']['engine'].split(','):
             package_options['variables'].update({"current_engine": engine_value})
-            print(engine_value)
-            print(package_options['variables']['engine'].split(','))
             execute_command = []
             engine_config_output_dir = config_output_dir + "_" + engine_value
             try:
