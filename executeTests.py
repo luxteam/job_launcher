@@ -5,6 +5,7 @@ import shutil
 import json
 import uuid
 
+import core.separate_session_report
 import core.reportExporter
 import core.system_info
 from core.auto_dict import AutoDict
@@ -141,6 +142,8 @@ def main():
     print("Saving session report")
     core.reportExporter.build_session_report(report, session_dir)
     main_logger.info('Saved session report\n\n')
+    main_logger.info('Saving separated session reports')
+    core.separate_session_report.separate_report(session_dir, args.cmd_variables['engine_list'].split(' '))
     shutil.copyfile('launcher.engine.log', os.path.join(session_dir, 'launcher.engine.log'))
 
 

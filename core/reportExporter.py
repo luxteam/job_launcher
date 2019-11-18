@@ -181,7 +181,7 @@ def build_summary_report(work_dir):
     for path, dirs, files in os.walk(os.path.abspath(work_dir)):
         for file in files:
             # build summary report
-            if file.endswith(SESSION_REPORT):
+            if file.endswith(SESSION_REPORT) and file not in SESSION_REPORT:
                 basepath = os.path.relpath(path, work_dir)
                 with open(os.path.join(path, file), 'r') as report_file:
                     temp_report = json.loads(report_file.read())
