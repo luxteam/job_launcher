@@ -24,8 +24,7 @@ RENDER_REPORT_BASE = {
     "difference_time": -0.0,
     "core_version": "",
     "render_device": "",
-    "difference_time_or": -0.0,
-
+    
     # core block
     "minor_version": "",
     "iterations": -0,
@@ -36,7 +35,10 @@ RENDER_REPORT_BASE = {
     "gpu_memory_total": -0.0,
     "gpu_memory_max": -0.0,
     "baseline_gpu_memory_usage": -0.0,
-    "difference_vram": -0.0
+    "baseline_system_memory_usage": -0.0,
+    "difference_vram": -0.0,
+    "difference_ram": -0.0,
+    "difference_time_or": -0.0
 }
 
 RENDER_REPORT_BASE_USEFULL_KEYS = ['tool', 'minor_version', 'test_group', 'core_version', 'render_device']

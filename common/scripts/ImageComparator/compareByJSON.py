@@ -81,6 +81,18 @@ def check_vram_difference(img, baseline_item, vram_diff_max):
     return img
 
 
+def check_ram_difference(img, baseline_item, ram_diff_max):
+
+    try:
+        img.update({'baseline_system_memory_usage': baseline_item['system_memory_usage']})
+    except KeyError:
+        core.config.main_logger.error()
+    else:
+        img.update({'difference_ram': get_diff(img['system_memory_usage'], baseline_item['system_memory_usage'])})
+        # TODO: compare diff with ram_diff_max
+    return img
+
+
 def main():
     args = createArgParser().parse_args()
 
@@ -108,6 +120,7 @@ def main():
             check_pixel_difference(args.work_dir, args.base_dir, img, baseline_item[0], args.pix_diff_tolerance, args.pix_diff_max)
             check_rendertime_difference(img, baseline_item[0], args.time_diff_max)
             check_vram_difference(img, baseline_item[0], args.vram_diff_max)
+            check_ram_difference(img, baseline_item[0], args.vram_diff_max)
             try:
                 img.update({"baseline_render_device": baseline_item[0]['render_device']})
             except KeyError:
