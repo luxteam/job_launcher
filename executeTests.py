@@ -84,7 +84,7 @@ def main():
         try:
             with open(os.path.join(args.tests_root, args.file_filter), 'r') as file:
                 if args.file_filter.endswith('json'):
-                    args.cmd_variables['TestCases'] = os.path.abspath(os.path.join(args.tests_root, args.file_filter))
+                    args.cmd_variables['TestCases'] = args.file_filter
                     args.test_filter.extend([x for x in json.loads(file.read()).keys()])
                 else:
                     args.test_filter.extend(file.read().splitlines())
