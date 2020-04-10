@@ -30,6 +30,19 @@ def main(lost_tests_results, tests_dir, output_dir, is_regression):
 	if len(lost_tests_results) == 0:
 		return 0
 
+	# check that session_reports in stashed results is completed and nothing was lost
+	results_directories = next(os.walk(os.path.abspath(output_dir)))[1]
+	for results_directory in results_directories:
+		for path, dirs, files in os.walk(os.path.abspath(os.path.join(output_dir, results_directory))):
+			session_report_exist = False
+			for file in files:
+				if file.endswith(SESSION_REPORT):
+					session_report_exist = True
+					break
+			if not session_report_exist:
+				lost_tests_results.append(results_directory)
+
+
 	if is_regression == 'true':
 		with open(os.path.join(tests_dir, "jobs", "regression.json"), "r") as file:
 			test_packages = json.load(file)
@@ -57,6 +70,7 @@ def main(lost_tests_results, tests_dir, output_dir, is_regression):
 			if joined_gpu_os_names not in lost_tests_data:
 				lost_tests_data[joined_gpu_os_names] = {}
 			lost_tests_data[joined_gpu_os_names][test_package_name] = lost_tests_count
+
 	os.makedirs(output_dir, exist_ok=True)
 	with open(os.path.join(output_dir, LOST_TESTS_JSON_NAME), "w") as file:
 		json.dump(lost_tests_data, file, indent=4, sort_keys=True)
