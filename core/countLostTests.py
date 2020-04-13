@@ -7,7 +7,7 @@ from core.config import *
 # match gpu and OS labels in Jenkins and platform name which session_report.json contains
 PLATFORM_CONVERTATIONS = {
 	"Windows": {
-		"os_name": "Windows",
+		"os_name": "Windows 10(64bit)",
 		"cards": {
 			"AMD_RXVEGA": "Radeon RX Vega",
 			"AMD_RX5700XT": "AMD Radeon RX 5700 XT",
@@ -18,15 +18,15 @@ PLATFORM_CONVERTATIONS = {
 			"NVIDIA_RTX2080TI": "GeForce RTX 2080 Ti"
 		}
 	},
-	"Ubuntu": {
-		"os_name": "Ubuntu",
+	"Ubuntu18": {
+		"os_name": "Ubuntu 18.04(64bit)",
 		"cards": {
 			"AMD_RadeonVII": "AMD Radeon VII",
 			"NVIDIA_GTX980": "GeForce GTX 980"
 		}
 	},
 	"OSX": {
-		"os_name": "Darwin",
+		"os_name": "Darwin 10.14.6(64bit)",
 		"cards": {
 			"AMD_RXVEGA": "AMD Radeon RX Vega 56 (Metal)"
 		}

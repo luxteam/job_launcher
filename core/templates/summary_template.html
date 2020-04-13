@@ -61,8 +61,8 @@
                 <td>{{ report[i].summary.duration }}</td>
                 <td>{{ report[i].summary.duration - report[i].summary.render_duration }}</td>
                 {% else %}
-                <td>Unknown</td>
-                <td>Unknown</td>
+                <td>0</td>
+                <td>0</td>
                 {% endif %}
 
                 {% if report[i].summary.render_duration %}
@@ -72,7 +72,7 @@
                 {% endif -%}
                 >{{ report[i].summary.render_duration }}</td>
                 {% else %}
-                <td>Unknown</td>
+                <td>0</td>
                 {% endif %}
             </tr>
     {% endfor %}
@@ -128,9 +128,14 @@
             {% for test_conf, value in report[i].results[test_package] | dictsort %}
 <!--                <td>{{ test_conf }}</td>-->
 
-                {% if report[i].results[test_package][test_conf].machine_info %}
                 <td>
-                    <button class="commonButton popupButton" type="button" onclick="openModalWindow('machineInfo{{ loop.index }}_{{ resultsloop.index }}_{{ i }}');return false;">{{ report[i].results[test_package][test_conf].machine_info.host }}</button>
+                    <button class="commonButton popupButton" type="button" onclick="openModalWindow('machineInfo{{ loop.index }}_{{ resultsloop.index }}_{{ i }}');return false;">
+                    {% if report[i].results[test_package][test_conf].machine_info %}
+                    {{ report[i].results[test_package][test_conf].machine_info.host }}
+                    {% else %}
+                    Unknown
+                    {% endif %}
+                    </button>
                     <div class="popup" id="machineInfo{{ loop.index }}_{{ resultsloop.index }}_{{ i }}">
                         <div class="popupContent popupHalfWidth">
                             <form class="popupForm">
@@ -146,18 +151,31 @@
                                 </tr>
                                 <tr>
                                     <td>{{ report[i].results[test_package][test_conf].machine_info.os }}</td>
+
+                                    {% if report[i].results[test_package][test_conf].machine_info.ram %}
                                     <td>{{ report[i].results[test_package][test_conf].machine_info.ram | round }}</td>
+                                    {% else %}
+                                    <td>0</td>
+                                    {% endif %}
+
+                                    {% if report[i].results[test_package][test_conf].machine_info.cpu %}
                                     <td>{{ report[i].results[test_package][test_conf].machine_info.cpu }}</td>
+                                    {% else %}
+                                    <td>Unknown</td>
+                                    {% endif %}
+
+                                    {% if report[i].results[test_package][test_conf].machine_info.cpu_count %}
                                     <td>{{ report[i].results[test_package][test_conf].machine_info.cpu_count }}</td>
+                                    {% else %}
+                                    <td>0</td>
+                                    {% endif %}
+
                                     <td>{{ report[i].results[test_package][test_conf].machine_info.render_device }}</td>
                                 </tr>
                             </table>
                         </div>
                     </div>
                 </td>
-                {% else %}
-                <td>Unknown</td>
-                {% endif %}
 
                 {% if report[i].results[test_package][test_conf].result_path %}
                 <td><a href="{{ report[i].results[test_package][test_conf].result_path }}/report.html">Report</a></td>

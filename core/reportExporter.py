@@ -179,7 +179,7 @@ def build_session_report(report, session_dir):
     return report
 
 
-def generate_empty_render_result(summary_report, lost_test_package, gpu_os_case, lost_tests_count):
+def generate_empty_render_result(summary_report, lost_test_package, gpu_os_case, gpu_name, os_name, lost_tests_count):
     summary_report[gpu_os_case]['results'][lost_test_package] = {}
     # add empty conf
     summary_report[gpu_os_case]['results'][lost_test_package][""] = {}
@@ -187,7 +187,9 @@ def generate_empty_render_result(summary_report, lost_test_package, gpu_os_case,
     summary_report[gpu_os_case]['results'][lost_test_package][""]['duration'] = ""
     summary_report[gpu_os_case]['results'][lost_test_package][""]['error'] = lost_tests_count
     summary_report[gpu_os_case]['results'][lost_test_package][""]['failed'] = 0
-    summary_report[gpu_os_case]['results'][lost_test_package][""]['machine_info'] = ""
+    summary_report[gpu_os_case]['results'][lost_test_package][""]['machine_info'] = {}
+    summary_report[gpu_os_case]['results'][lost_test_package][""]['machine_info']['os'] = os_name
+    summary_report[gpu_os_case]['results'][lost_test_package][""]['machine_info']['render_device'] = gpu_name
     summary_report[gpu_os_case]['results'][lost_test_package][""]['passed'] = 0
     summary_report[gpu_os_case]['results'][lost_test_package][""]['render_duration'] = ""
     summary_report[gpu_os_case]['results'][lost_test_package][""]['render_results'] = []
@@ -253,6 +255,12 @@ def build_summary_report(work_dir):
                         summary_report[basename].update({'results': temp_report['results']})
                         summary_report[basename].update({'summary': temp_report['summary']})
 
+    # if all tests packages were lost
+    if len(common_info['render_version']) == 0:
+        common_info['render_version'].append('Unknown')
+    if len(common_info['core_version']) == 0:
+        common_info['core_version'].append('Unknown')
+
     for key in common_info:
         common_info[key] = ' '.join(common_info[key])
 
@@ -266,7 +274,7 @@ def build_summary_report(work_dir):
             for gpu_os_case in summary_report:
                 if gpu_name in gpu_os_case.lower() and os_name in gpu_os_case.lower():
                     for lost_test_package in lost_tests_count[lost_test_result]:
-                        generate_empty_render_result(summary_report, lost_test_package, gpu_os_case, lost_tests_count[lost_test_result][lost_test_package])
+                        generate_empty_render_result(summary_report, lost_test_package, gpu_os_case, gpu_name, os_name, lost_tests_count[lost_test_result][lost_test_package])
                     test_case_found = True
                     break
             # if all data for GPU + OS was lost (it can be regression.json execution)
@@ -283,7 +291,7 @@ def build_summary_report(work_dir):
                 summary_report[gpu_os_case]['summary']['skipped'] = 0
                 summary_report[gpu_os_case]['summary']['total'] = 0
                 for lost_test_package in lost_tests_count[lost_test_result]:
-                    generate_empty_render_result(summary_report, lost_test_package, gpu_os_case, lost_tests_count[lost_test_result][lost_test_package])
+                    generate_empty_render_result(summary_report, lost_test_package, gpu_os_case, gpu_name, os_name, lost_tests_count[lost_test_result][lost_test_package])
 
     return summary_report, common_info
 
