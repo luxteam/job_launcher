@@ -187,15 +187,17 @@ def generate_empty_render_result(summary_report, lost_test_package, gpu_os_case,
     summary_report[gpu_os_case]['results'][lost_test_package][""]['duration'] = ""
     summary_report[gpu_os_case]['results'][lost_test_package][""]['error'] = lost_tests_count
     summary_report[gpu_os_case]['results'][lost_test_package][""]['failed'] = 0
-    summary_report[gpu_os_case]['results'][lost_test_package][""]['machine_info'] = {}
-    summary_report[gpu_os_case]['results'][lost_test_package][""]['machine_info']['os'] = os_name
-    summary_report[gpu_os_case]['results'][lost_test_package][""]['machine_info']['render_device'] = gpu_name
+    summary_report[gpu_os_case]['results'][lost_test_package][""]['machine_info'] = ""
     summary_report[gpu_os_case]['results'][lost_test_package][""]['passed'] = 0
     summary_report[gpu_os_case]['results'][lost_test_package][""]['render_duration'] = ""
     summary_report[gpu_os_case]['results'][lost_test_package][""]['render_results'] = []
     summary_report[gpu_os_case]['results'][lost_test_package][""]['result_path'] = ""
     summary_report[gpu_os_case]['results'][lost_test_package][""]['skipped'] = 0
     summary_report[gpu_os_case]['results'][lost_test_package][""]['total'] = lost_tests_count
+
+    summary_report[gpu_os_case]['results'][lost_test_package][""]['recovered_info'] = {}
+    summary_report[gpu_os_case]['results'][lost_test_package][""]['recovered_info']['os'] = os_name
+    summary_report[gpu_os_case]['results'][lost_test_package][""]['recovered_info']['render_device'] = gpu_name
 
     summary_report[gpu_os_case]['summary']['error'] += lost_tests_count
     summary_report[gpu_os_case]['summary']['total'] += lost_tests_count

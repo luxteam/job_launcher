@@ -150,27 +150,19 @@
                                     <th>GPU</th>
                                 </tr>
                                 <tr>
+                                    {% if report[i].results[test_package][test_conf].machine_info %}
                                     <td>{{ report[i].results[test_package][test_conf].machine_info.os }}</td>
-
-                                    {% if report[i].results[test_package][test_conf].machine_info.ram %}
                                     <td>{{ report[i].results[test_package][test_conf].machine_info.ram | round }}</td>
-                                    {% else %}
-                                    <td>0</td>
-                                    {% endif %}
-
-                                    {% if report[i].results[test_package][test_conf].machine_info.cpu %}
                                     <td>{{ report[i].results[test_package][test_conf].machine_info.cpu }}</td>
-                                    {% else %}
-                                    <td>Unknown</td>
-                                    {% endif %}
-
-                                    {% if report[i].results[test_package][test_conf].machine_info.cpu_count %}
                                     <td>{{ report[i].results[test_package][test_conf].machine_info.cpu_count }}</td>
+                                    <td>{{ report[i].results[test_package][test_conf].machine_info }}</td>
                                     {% else %}
+                                    <td>{{ report[i].results[test_package][test_conf].recovered_info.os }}</td>
                                     <td>0</td>
-                                    {% endif %}
-
-                                    <td>{{ report[i].results[test_package][test_conf].machine_info.render_device }}</td>
+                                    <td>Unknown</td>
+                                    <td>0</td>
+                                    <td>{{ report[i].results[test_package][test_conf].recovered_info.render_device }}</td>
+                                    {% endif %}                                    
                                 </tr>
                             </table>
                         </div>
