@@ -450,7 +450,8 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env):
         main_logger.error(str(err))
 
 
-def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_name='undefined', commit_message='undefined', node_retry_info=''):
+# commit_message should be last arg because of eof in the end of commit message
+def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_name='undefined', node_retry_info='', commit_message='undefined'):
     if os.path.exists(os.path.join(work_dir, 'report_resources')):
         rmtree(os.path.join(work_dir, 'report_resources'), True)
 
