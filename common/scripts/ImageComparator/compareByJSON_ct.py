@@ -60,7 +60,7 @@ def get_rendertime_difference(img, baseline_item, time_diff_max):
         render_time = img['render_time']
     baseline_time = baseline_item['render_time']
 
-    img.update({'difference_time': get_diff(render_time, baseline_time)})
+    img.update({'difference_time': render_time - baseline_time})
     img.update({'baseline_render_time': baseline_time})
 
     return img
@@ -105,7 +105,7 @@ def main(args):
                         try:
                             original_render_time = original_json[0]['render_time']
                             img.update({'or_render_time': original_render_time})
-                            img.update({'difference_time_or': get_diff(img['render_time'], original_render_time)})
+                            img.update({'difference_time_or': img['render_time'] - original_render_time})
                         except KeyError:
                             core.config.main_logger.error("{} case OR json is incomplete".format(img['test_case']))
 

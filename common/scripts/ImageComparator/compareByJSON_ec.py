@@ -73,7 +73,7 @@ def check_rendertime_difference(img, baseline_item, time_diff_max):
     except KeyError:
         core.config.main_logger.error("Baseline render time not defined")
     else:
-        img.update({'difference_time': get_diff(img['render_time'], baseline_item['render_time'])})
+        img.update({'difference_time': img['render_time'] - baseline_item['render_time']})
         # TODO: compare diff with time_diff_max
     return img
 
