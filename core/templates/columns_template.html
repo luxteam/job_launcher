@@ -170,18 +170,13 @@
     {%- if is_head -%}
         <th data-field="time_diff" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}">Render time diff, sec</th>
     {%- else -%}
-        {%- if report_type == 'default' -%}
-            <td>
-            {{ item.difference_time | round (3) }}</td>
-        {%- elif report_type == 'ec' or report_type == 'ct' -%}
-            <td
-                {% if item.time_diff_status is defined and item.time_diff_status == config.TEST_DIFF_STATUS -%}
-                    class="{{ config.TEST_DIFF_STATUS }}Status"
-                {% else -%}
-                    class="{{ config.TEST_SUCCESS_STATUS }}Status"
-                {% endif -%}
-            >{{ item.difference_time | round (3) }}</td>
-        {%- endif -%}
+        <td
+            {% if item.time_diff_status is defined and item.time_diff_status == config.TEST_DIFF_STATUS -%}
+                class="{{ config.TEST_DIFF_STATUS }}Status"
+            {% else -%}
+                class="{{ config.TEST_SUCCESS_STATUS }}Status"
+            {% endif -%}
+        >{{ item.difference_time | round (3) }}</td>
 
     {%- endif -%}
 {%- endif -%}
