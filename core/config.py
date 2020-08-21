@@ -60,7 +60,7 @@ TIMEOUT_PAR = 3
 PIX_DIFF_MAX = 15
 PIX_DIFF_MAX_EC = 0
 PIX_DIFF_TOLERANCE = 9
-TIME_DIFF_TOLERANCE = {'10': float('inf'), '30': float('inf'), '60': float('inf'), '120': float('inf'), 'inf': float('inf')} # due to core instability
+TIME_DIFF_TOLERANCE = {'10': 6, '30': 9, '60': 12, '120': 18, 'inf': 30}
 TIME_DIFF_MAX = 5
 VRAM_DIFF_MAX = 5
 

@@ -171,12 +171,7 @@
         <th data-field="time_diff" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}">Render time diff, sec</th>
     {%- else -%}
         {%- if report_type == 'default' -%}
-            <td {% if config.TIME_DIFF_MAX < item.difference_time -%}
-                class="timeWorseStatus"
-            {% elif item.difference_time < -config.TIME_DIFF_MAX -%}
-                class="timeBetterStatus"
-            {% endif -%}
-            >
+            <td>
             {{ item.difference_time | round (3) }}</td>
         {%- elif report_type == 'ec' or report_type == 'ct' -%}
             <td
