@@ -837,55 +837,56 @@ def generate_reports_for_perf_comparison(rpr_dir, northstar_dir, work_dir):
     # go through Northstar baselines and replace lost and error rendered cases by them
     northstar_baselines_dir = northstar_dir + "_Baselines"
 
-    for root_dir in os.listdir(northstar_baselines_dir):
-        if os.path.isdir(os.path.join(northstar_baselines_dir, root_dir)):
-            session_gpu, session_os = os.path.basename(root_dir).split('-')
+    if os.path.exists(northstar_baselines_dir):
+        for root_dir in os.listdir(northstar_baselines_dir):
+            if os.path.isdir(os.path.join(northstar_baselines_dir, root_dir)):
+                session_gpu, session_os = os.path.basename(root_dir).split('-')
 
-            main_logger.debug("Replace error Northstar cases by baselines: {}".format(session_gpu + session_os))
-            for group_dir in os.listdir(os.path.join(northstar_baselines_dir, root_dir)):
-                group_baseline_dir_path = os.path.join(northstar_baselines_dir, root_dir, group_dir)
-                if os.path.isdir(group_baseline_dir_path):
-                    group_dir_path = os.path.join(northstar_dir, root_dir, group_dir)
-                    sr = []
-                    # if report exists - read it
-                    if os.path.exists(os.path.join(group_dir_path, BASELINE_REPORT_NAME)):
-                        with open(os.path.join(group_dir_path, BASELINE_REPORT_NAME), "r") as read_sum_report:
-                            sr = json.load(read_sum_report)
-                    for x in os.listdir(group_baseline_dir_path):
-                        if os.path.isfile(os.path.join(group_baseline_dir_path, x)) and x.endswith(CASE_REPORT_SUFFIX):
-                            replace = False
+                main_logger.debug("Replace error Northstar cases by baselines: {}".format(session_gpu + session_os))
+                for group_dir in os.listdir(os.path.join(northstar_baselines_dir, root_dir)):
+                    group_baseline_dir_path = os.path.join(northstar_baselines_dir, root_dir, group_dir)
+                    if os.path.isdir(group_baseline_dir_path):
+                        group_dir_path = os.path.join(northstar_dir, root_dir, group_dir)
+                        sr = []
+                        # if report exists - read it
+                        if os.path.exists(os.path.join(group_dir_path, BASELINE_REPORT_NAME)):
+                            with open(os.path.join(group_dir_path, BASELINE_REPORT_NAME), "r") as read_sum_report:
+                                sr = json.load(read_sum_report)
+                        for x in os.listdir(group_baseline_dir_path):
+                            if os.path.isfile(os.path.join(group_baseline_dir_path, x)) and x.endswith(CASE_REPORT_SUFFIX):
+                                replace = False
 
-                            # check that rendered case exists and it's error or it doesn't exist
-                            if os.path.exists(os.path.join(group_dir_path, x)):
-                                current_item = json.loads(open(os.path.join(group_dir_path, x), 'r').read())
-                                current_item_content = current_item[0] if type(current_item) is list else current_item
-                                if current_item_content["test_status"] == "error":
+                                # check that rendered case exists and it's error or it doesn't exist
+                                if os.path.exists(os.path.join(group_dir_path, x)):
+                                    current_item = json.loads(open(os.path.join(group_dir_path, x), 'r').read())
+                                    current_item_content = current_item[0] if type(current_item) is list else current_item
+                                    if current_item_content["test_status"] == "error":
+                                        replace = True
+                                else:
                                     replace = True
-                            else:
-                                replace = True
 
-                            # set baseline as rendered case
-                            if replace:
-                                baseline_item = json.loads(open(os.path.join(group_baseline_dir_path, x), 'r').read())
-                                baseline_item_content = baseline_item[0] if type(baseline_item) is list else baseline_item
+                                # set baseline as rendered case
+                                if replace:
+                                    baseline_item = json.loads(open(os.path.join(group_baseline_dir_path, x), 'r').read())
+                                    baseline_item_content = baseline_item[0] if type(baseline_item) is list else baseline_item
 
-                                if not os.path.exists(group_dir_path):
-                                    os.makedirs(os.path.join(group_dir_path, "Color"))
+                                    if not os.path.exists(group_dir_path):
+                                        os.makedirs(os.path.join(group_dir_path, "Color"))
 
-                                if "render_color_path" in baseline_item_content and os.path.exists(os.path.join(group_baseline_dir_path, baseline_item_content["render_color_path"])):
-                                    move(os.path.join(group_baseline_dir_path, baseline_item_content["render_color_path"]), 
-                                        os.path.join(group_dir_path, baseline_item_content["render_color_path"]))
-                                if "thumb64_render_color_path" in baseline_item_content and os.path.exists(os.path.join(group_baseline_dir_path, baseline_item_content["thumb64_render_color_path"])):
-                                    move(os.path.join(group_baseline_dir_path, baseline_item_content["thumb64_render_color_path"]), 
-                                    os.path.join(group_dir_path, baseline_item_content["thumb64_render_color_path"]))
-                                if "thumb256_render_color_path" in baseline_item_content and os.path.exists(os.path.join(group_baseline_dir_path, baseline_item_content["thumb256_render_color_path"])):
-                                    move(os.path.join(group_baseline_dir_path, baseline_item_content["thumb256_render_color_path"]), 
-                                    os.path.join(group_dir_path, baseline_item_content["thumb256_render_color_path"]))                             
+                                    if "render_color_path" in baseline_item_content and os.path.exists(os.path.join(group_baseline_dir_path, baseline_item_content["render_color_path"])):
+                                        move(os.path.join(group_baseline_dir_path, baseline_item_content["render_color_path"]), 
+                                            os.path.join(group_dir_path, baseline_item_content["render_color_path"]))
+                                    if "thumb64_render_color_path" in baseline_item_content and os.path.exists(os.path.join(group_baseline_dir_path, baseline_item_content["thumb64_render_color_path"])):
+                                        move(os.path.join(group_baseline_dir_path, baseline_item_content["thumb64_render_color_path"]), 
+                                        os.path.join(group_dir_path, baseline_item_content["thumb64_render_color_path"]))
+                                    if "thumb256_render_color_path" in baseline_item_content and os.path.exists(os.path.join(group_baseline_dir_path, baseline_item_content["thumb256_render_color_path"])):
+                                        move(os.path.join(group_baseline_dir_path, baseline_item_content["thumb256_render_color_path"]), 
+                                        os.path.join(group_dir_path, baseline_item_content["thumb256_render_color_path"]))                             
 
-                                sr.append(baseline_item_content)
+                                    sr.append(baseline_item_content)
 
-                    with open(os.path.join(group_dir_path, BASELINE_REPORT_NAME), 'w') as write_sum_report:
-                        json.dump(sr, write_sum_report, indent=4)
+                        with open(os.path.join(group_dir_path, BASELINE_REPORT_NAME), 'w') as write_sum_report:
+                            json.dump(sr, write_sum_report, indent=4)
 
     #######################
 
