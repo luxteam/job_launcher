@@ -39,6 +39,14 @@ PLATFORM_CONVERTATIONS = {
 			"NVIDIA_RTX2070": "GeForce RTX 2070"
 		}
 	},
+	"Ubuntu20": {
+		"os_name": "Ubuntu 20.04(64bit)",
+		"cards": {
+			"AMD_RadeonVII": "AMD Radeon VII",
+			"NVIDIA_GTX980": "GeForce GTX 980",
+			"NVIDIA_RTX2070": "GeForce RTX 2070"
+		}
+	},
 	"OSX": {
 		"os_name": "Darwin 10.15.7(64bit)",
 		"cards": {
@@ -67,6 +75,14 @@ LABELS_CONVERTATIONS = {
 	},
 	"Ubuntu 18.04(64bit)": {
 		"os_name": "Ubuntu18",
+		"cards": {
+			"AMD Radeon VII": "AMD_RadeonVII",
+			"GeForce GTX 980": "NVIDIA_GTX980",
+			"GeForce RTX 2070": "NVIDIA_RTX2070"
+		}
+	},
+	"Ubuntu 20.04(64bit)": {
+		"os_name": "Ubuntu20",
 		"cards": {
 			"AMD Radeon VII": "AMD_RadeonVII",
 			"GeForce GTX 980": "NVIDIA_GTX980",
