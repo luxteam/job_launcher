@@ -108,10 +108,10 @@ def send_finished_cases(session_dir, suite_name):
         print('Got hashes info from image service:\n{}'.format(json.dumps(new_cases_existence_hashes_info, indent=2)))
 
     if not test_cases_sent:
-        if ums_client_prod:
+        if ums_client_prod and minio_client_prod:
             ums_client_prod.get_suite_id_by_name(suite_name)
             minio_client_prod.upload_file(test_cases_path, "PROD", ums_client_prod.build_id, ums_client_prod.suite_id or "", ums_client_prod.env_label)
-        if ums_client_dev:
+        if ums_client_dev and minio_client_dev:
             ums_client_dev.get_suite_id_by_name(suite_name)
             minio_client_dev.upload_file(test_cases_path, "DEV", ums_client_dev.build_id, ums_client_dev.suite_id or "", ums_client_dev.env_label)
 
