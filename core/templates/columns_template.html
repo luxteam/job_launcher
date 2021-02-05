@@ -17,7 +17,7 @@
         </th>
     {%- else -%}
         <td class="
-            {%- if item.number_of_tries > 0 -%}
+            {%- if item.number_of_tries > 1 -%}
                 retries_detected
             {%- endif %}
         "><button class="commonButton" type="button" name="copyDirectLinkButton">{{ item.test_case }}</button></td>
