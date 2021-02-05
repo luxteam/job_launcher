@@ -305,7 +305,7 @@ def main(args):
 
         # check number of tries and add message if it's necessary
         if img['number_of_tries'] > 1:
-            img['message'].append('Case was retried {} times'.format(img['number_of_tries']))
+            img['message'].append('Case was retried {} times'.format(img['number_of_tries'] - 1))
 
         img.update(get_rendertime_difference(
             args.base_dir, img, args.time_diff_max))
