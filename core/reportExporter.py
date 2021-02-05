@@ -930,7 +930,7 @@ def setup_time_count(work_dir):
                 if os.path.exists(render_json):
                     with open(render_json) as rpr_json_file:
                         rpr_json = json.load(rpr_json_file)
-                        pcConfig = rpr_json['machine_info']['render_device'] + ' ' + rpr_json['machine_info']['os'].split()[0]
+                        pcConfig = rpr_json['machine_info']['render_device'] + ' ' + rpr_json['machine_info']['os']
                 if pcConfig not in performance_list.keys():
                     performance_list[pcConfig] = {}
                 performance_list[pcConfig][group] = summ_perf
