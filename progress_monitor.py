@@ -93,7 +93,7 @@ def send_finished_cases(session_dir, suite_name):
         name_key = 'name'
     new_test_cases = {}
     for test_case in test_cases:
-        if test_case['status'] in ('skipped', 'error', 'done', 'passed') and not test_case[name_key] in transferred_test_cases:
+        if test_case['status'] in ('skipped', 'error', 'failed', 'done', 'passed') and not test_case[name_key] in transferred_test_cases:
             # check that file with case info already exists
             if os.path.exists(os.path.join(session_dir, suite_name, test_case[name_key] + '_RPR.json')):
                 new_test_cases[test_case[name_key]] = test_case['status']
