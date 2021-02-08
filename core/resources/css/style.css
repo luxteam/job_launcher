@@ -418,6 +418,6 @@ a.highlightedLink {
   content: "\25B8";
 }
 
-.perf_leak, .skippedStatus.perf_leak{
+.perf_leak, .skippedStatus.perf_leak, .retries_detected{
   background: #f79232 !important;
 }

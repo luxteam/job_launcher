@@ -16,7 +16,11 @@
             <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top" title="Button click copy direct test case link to clipboard"></span>
         </th>
     {%- else -%}
-        <td><button class="commonButton" type="button" name="copyDirectLinkButton">{{ item.test_case }}</button></td>
+        <td class="
+            {%- if item.number_of_tries > 1 -%}
+                retries_detected
+            {%- endif %}
+        "><button class="commonButton" type="button" name="copyDirectLinkButton">{{ item.test_case }}</button></td>
     {%- endif -%}
 {%- endif -%}
 
