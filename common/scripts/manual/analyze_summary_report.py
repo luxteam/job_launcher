@@ -79,9 +79,17 @@ if __name__ == "__main__":
 
     if args.results_path:
         results = {}
-        results["weights"] = {}
-        for test_suite, value in test_suites_info.items():
-            results["weights"][test_suite] = round(value["max"])
+        results["weights"] = []
+        test_suites_info_copy = test_suites_info.copy()
+        for i in range (len(test_suites_info_copy)):
+            max_test_suite = None
+            max_value = -1
+            for test_suite, value in test_suites_info_copy.items():
+                if value["max"] > max_value:
+                    max_test_suite = test_suite
+                    max_value = value["max"]
+            results["weights"].append({"suite_name": max_test_suite, "value": round(max_value)})
+            test_suites_info_copy.pop(max_test_suite)
 
         with open(args.results_path, "w") as file:
             summary_report = json.dump(results, file, indent=4)   
