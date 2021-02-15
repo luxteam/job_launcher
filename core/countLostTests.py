@@ -202,23 +202,24 @@ def main(lost_tests_results, tests_dir, output_dir, split_tests_execution, tests
 			try:
 				gpu_name = lost_test_result.split('-')[0]
 				os_name = lost_test_result.split('-')[1]
-				test_package_name = lost_test_result.split('-')[2]
+				test_packages_names = lost_test_result.split('-')[2]
 
-				with open(os.path.join(tests_dir, "jobs", "Tests", test_package_name, TEST_CASES_JSON_NAME[tool_name]), "r") as file:
-					data = json.load(file)
-				lost_tests_count = get_lost_tests(data, tool_name, test_package_name)
-				# join converted gpu name and os name
-				joined_gpu_os_names = PLATFORM_CONVERTATIONS[os_name]["cards"][gpu_name] + "-" + PLATFORM_CONVERTATIONS[os_name]["os_name"]
-				# if test group is skipped
-				if (engine and (test_package_name + "-" + engine) in skipped_groups and (gpu_name + "-" + os_name) in skipped_groups[test_package_name + "-" + engine]) \
-						or (test_package_name in skipped_groups and (gpu_name + "-" + os_name) in skipped_groups[test_package_name]):
-					if joined_gpu_os_names not in skipped_tests_data:
-						skipped_tests_data[joined_gpu_os_names] = {}
-					skipped_tests_data[joined_gpu_os_names][test_package_name] = lost_tests_count
-				else:
-					if joined_gpu_os_names not in lost_tests_data:
-						lost_tests_data[joined_gpu_os_names] = {}
-					lost_tests_data[joined_gpu_os_names][test_package_name] = lost_tests_count
+				for test_package_name in test_packages_names:
+					with open(os.path.join(tests_dir, "jobs", "Tests", test_package_name, TEST_CASES_JSON_NAME[tool_name]), "r") as file:
+						data = json.load(file)
+					lost_tests_count = get_lost_tests(data, tool_name, test_package_name)
+					# join converted gpu name and os name
+					joined_gpu_os_names = PLATFORM_CONVERTATIONS[os_name]["cards"][gpu_name] + "-" + PLATFORM_CONVERTATIONS[os_name]["os_name"]
+					# if test group is skipped
+					if (engine and (test_package_name + "-" + engine) in skipped_groups and (gpu_name + "-" + os_name) in skipped_groups[test_package_name + "-" + engine]) \
+							or (test_package_name in skipped_groups and (gpu_name + "-" + os_name) in skipped_groups[test_package_name]):
+						if joined_gpu_os_names not in skipped_tests_data:
+							skipped_tests_data[joined_gpu_os_names] = {}
+						skipped_tests_data[joined_gpu_os_names][test_package_name] = lost_tests_count
+					else:
+						if joined_gpu_os_names not in lost_tests_data:
+							lost_tests_data[joined_gpu_os_names] = {}
+						lost_tests_data[joined_gpu_os_names][test_package_name] = lost_tests_count
 			except Exception as e:
 				print("Failed to count lost tests for test group {}. Reason: {}".format(test_package_name, str(e)))
 	else:
