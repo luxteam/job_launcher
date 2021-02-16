@@ -28,7 +28,8 @@ PLATFORM_CONVERTATIONS = {
 			"AMD_WX9100": "Radeon (TM) Pro WX 9100",
 			"NVIDIA_RTX2080TI": "GeForce RTX 2080 Ti",
 			"NVIDIA_RTX2080": "NVIDIA GeForce RTX 2080",
-			"NVIDIA_RTX2070S": "NVIDIA GeForce RTX 2070 Super"
+			"NVIDIA_RTX2070S": "NVIDIA GeForce RTX 2070 Super",
+			"AMD_RX6800": "AMD Radeon RX 6800"
 		}
 	},
 	"Ubuntu18": {
@@ -70,7 +71,8 @@ LABELS_CONVERTATIONS = {
 			"Radeon (TM) Pro WX 9100": "AMD_WX9100",
 			"GeForce RTX 2080 Ti": "NVIDIA_RTX2080TI",
 			"NVIDIA GeForce RTX 2080": "NVIDIA_RTX2080",
-			"NVIDIA GeForce RTX 2070 Super": "NVIDIA_RTX2070S"
+			"NVIDIA GeForce RTX 2070 Super": "NVIDIA_RTX2070S",
+			"AMD Radeon RX 6800": "AMD_RX6800"
 		}
 	},
 	"Ubuntu 18.04(64bit)": {
