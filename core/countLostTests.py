@@ -204,7 +204,7 @@ def main(lost_tests_results, tests_dir, output_dir, split_tests_execution, tests
 				os_name = lost_test_result.split('-')[1]
 				test_packages_names = lost_test_result.split('-')[2]
 
-				for test_package_name in test_packages_names:
+				for test_package_name in test_packages_names.split():
 					with open(os.path.join(tests_dir, "jobs", "Tests", test_package_name, TEST_CASES_JSON_NAME[tool_name]), "r") as file:
 						data = json.load(file)
 					lost_tests_count = get_lost_tests(data, tool_name, test_package_name)
