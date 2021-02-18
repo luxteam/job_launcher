@@ -22,7 +22,7 @@ def get_error_case(cases_path):
         with open(cases_path) as file:
             cases = json.load(file)
 
-        for case in cases:
+        for case in reversed(cases):
             if case["status"] == "inprogress":
                 return case["case"]
         else:
