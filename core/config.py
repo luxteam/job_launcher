@@ -10,7 +10,9 @@ RENDER_REPORT_BASE = {
     "date_time": "",
     "script_info": [],
     "render_color_path": "",
+    "error_screen_path": "",
     "test_case": "",
+    "case_functions": "",
     "render_version": "",
     "test_status": "undefined",
     "tool": "",
@@ -29,7 +31,8 @@ RENDER_REPORT_BASE = {
     "message": [],
     "testcase_timeout_exceeded": False,
     "group_timeout_exceeded": True,
-    "has_time_diff": False
+    "has_time_diff": False,
+    "number_of_tries": 0
 }
 
 RENDER_REPORT_DEFAULT_PACK = {
@@ -88,6 +91,7 @@ TEST_DIFF_STATUS = 'failed'
 GROUP_TIMEOUT = 'timeout'
 
 CASE_REPORT_SUFFIX = '_RPR.json'
+ERROR_SCREEN_SUFFIX = '_ERROR'
 TEST_REPORT_NAME = 'report.json'
 TEST_REPORT_NAME_COMPARED = 'report_compare.json'
 TEST_REPORT_EXPECTED_NAME = 'expected.json'
@@ -100,7 +104,7 @@ NOT_RENDERED_REPORT = "not_rendered.json"
 
 THUMBNAIL_PREFIXES = ['thumb64_', 'thumb256_']
 
-POSSIBLE_JSON_IMG_KEYS = ['baseline_color_path', 'render_color_path', 'original_color_path']
+POSSIBLE_JSON_IMG_KEYS = ['baseline_color_path', 'render_color_path', 'original_color_path', 'error_screen_path']
 POSSIBLE_JSON_IMG_KEYS_THUMBNAIL = ['thumb64_' + x for x in POSSIBLE_JSON_IMG_KEYS]
 POSSIBLE_JSON_IMG_KEYS_THUMBNAIL = POSSIBLE_JSON_IMG_KEYS_THUMBNAIL + ['thumb256_' + x for x in POSSIBLE_JSON_IMG_KEYS]
 POSSIBLE_JSON_IMG_RENDERED_KEYS = ['render_color_path', 'original_color_path']
@@ -143,7 +147,8 @@ TEST_CASES_JSON_NAME = {
         'core': 'test_cases.json',
         'rprviewer': 'test_cases.json',
         'USD': 'test_cases.json',
-        'usdviewer': 'test_cases.json'
+        'usdviewer': 'test_cases.json',
+        'blender_usd_hydra': 'test_cases.json'
     }
 
 LOST_TESTS_JSON_NAME = 'lost_tests.json'
@@ -161,6 +166,7 @@ SETUP_STEPS_RPR_PLUGIN = ["Prepare tests", "Open tool", "Load rpr", "Open scene"
 ODD_FOR_BASELINES = [
     'baseline_render_time',
     'baseline_color_path',
+    'error_screen_path',
     'difference_color_2',
     'difference_color',
     'difference_time',

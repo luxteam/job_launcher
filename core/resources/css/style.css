@@ -279,7 +279,7 @@ a {
   width: 15vw;
 }
 
-#imgsModalContent output {
+.imgModalContent output {
     color: #c1c1c1;
     text-shadow: 2px 2px 1px black;
     font-size: 16px;
@@ -354,6 +354,12 @@ a.highlightedLink {
     height: auto;
 }
 
+#errorScreenTable img {
+    max-width: 75vw;
+    width: 50vw;
+    height: auto;
+}
+
 #imgsDifferenceCanvas {
     display: block;
     margin: auto;
@@ -412,6 +418,6 @@ a.highlightedLink {
   content: "\25B8";
 }
 
-.perf_leak, .skippedStatus.perf_leak{
+.perf_leak, .skippedStatus.perf_leak, .retries_detected{
   background: #f79232 !important;
 }

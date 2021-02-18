@@ -7,16 +7,24 @@
                 {# Core #}
                 <th>Major version</th>
                 <th>Minor version</th>
-            {% elif report_type != 'perf' %}
+            {% else %}
                 {# Default and converters #}
-                <th>Plugin version</th>
-                <th>Core version</th>
+                {% if common_info.render_version %}
+                    <th>Plugin version</th>
+                {% endif %}
+                {% if common_info.core_version %}
+                    <th>Core version</th>
+                {% endif %}
             {% endif %}
             <th>Branch name</th>
             <th>Commit SHA</th>
             <th>Commit message</th>
             {% if common_info.engine %}
-                <th>Engine</th>
+                {% if tool_name == 'blender_usd_hydra' %}
+                    <th>Delegate</th>
+                {% else %}
+                    <th>Engine</th>
+                {% endif %}
             {% endif %}
         </tr>
         <tr>
@@ -26,14 +34,18 @@
                 {# Core #}
                 <td>{{ common_info.core_version }}</td>
                 <td>{{ common_info.minor_version }}</td>
-            {% elif report_type != 'perf' %}
+            {% else %}
                 {# Default and converters #}
-                <td
-                    {% if common_info.render_version|length > 10 %}
-                        class="failedStatus"
-                    {% endif %}
-                >{{ common_info.render_version }}</td>
-                <td>{{ common_info.core_version }}</td>
+                {% if common_info.render_version %}
+                    <td
+                        {% if common_info.render_version|length > 10 %}
+                            class="failedStatus"
+                        {% endif %}
+                    >{{ common_info.render_version }}</td>
+                {% endif %}
+                {% if common_info.core_version %}
+                    <td>{{ common_info.core_version }}</td>
+                {% endif %}
             {% endif %}
             <td>{{ common_info.branch_name }}</td>
             <td>{{ common_info.commit_sha }}</td>
@@ -53,17 +65,25 @@
                 {# Core #}
                 <th>Major version</th>
                 <th>Minor version</th>
-            {% elif report_type != 'perf' %}
+            {% else %}
                 {# Default and converters #}
-                <th>Plugin version</th>
-                <th>Core version</th>
+                {% if common_info.render_version %}
+                    <th>Plugin version</th>
+                {% endif %}
+                {% if common_info.core_version %}
+                    <th>Core version</th>
+                {% endif %}
             {% endif %}
             <th>Testing start</th>
             <th>Branch name</th>
             <th>Commit SHA</th>
             <th>Commit message</th>
             {% if common_info.engine %}
-                <th>Engine</th>
+                {% if tool_name == 'blender_usd_hydra' %}
+                    <th>Delegate</th>
+                {% else %}
+                    <th>Engine</th>
+                {% endif %}
             {% endif %}
         </tr>
         <tr>
@@ -74,12 +94,16 @@
                 {# Core #}
                 <td>{{ common_info.core_version }}</td>
                 <td>{{ common_info.minor_version }}</td>
-            {% elif report_type != 'perf' %}
+            {% else %}
                 {# Default and converters #}
-                <td>{{ common_info.render_version }}</td>
-                <td>{{ common_info.core_version }}</td>
+                {% if common_info.render_version %}
+                    <td>{{ common_info.render_version }}</td>
+                {% endif %}
+                {% if common_info.core_version %}
+                    <td>{{ common_info.core_version }}</td>
+                {% endif %}
             {% endif %}
-            <td>{{ common_info.testing_start }}</td>
+            <td>{{ common_info.date_time }}</td>
             <td>{{ common_info.branch_name }}</td>
             <td>{{ common_info.commit_sha }}</td>
             <td>{{ common_info.commit_message }}</td>
