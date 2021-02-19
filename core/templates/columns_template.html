@@ -153,7 +153,13 @@
             <td class="infoColumn">
                 <b>Scene:</b> {{ item.scene_name }}<br/>
                 <b>Render time:</b> {{ item.render_time | round(3) }}<br/>
-                <b>Baseline render time:</b> {{ item.baseline_render_time | round(3) }}<br/>
+                <b>Baseline render time:</b> 
+                {%- if item.baseline_info is defined -%}
+                    {{ item.baseline_info.render_time | round(3) }}
+                {%- else -%}
+                    No data
+                {%- endif -%}
+                <br/>
                 <b>Test info:</b><br/>
                 {%- for param in item.script_info -%}
                     {{ param }}<br/>
@@ -181,7 +187,13 @@
                     <b>Scene conf.:</b> <a class="highlightedLink" href="{{ item.core_scene_configuration }}">OPEN</a> <a class="highlightedLink" href="{{ item.core_scene_configuration }}" download>DOWNLOAD</a><br/>
                 {%- endif -%}
                 <b>Render time:</b> {{ item.render_time | round(3) }}<br/>
-                <b>Baseline render time:</b> {{ item.baseline_render_time | round(3) }}<br/>
+                <b>Baseline render time:</b> 
+                {%- if item.baseline_info is defined -%}
+                    {{ item.baseline_info.render_time | round(3) }}
+                {%- else -%}
+                    No data
+                {%- endif -%}
+                <br/>
                 <b>GPU memory usage:</b> {{ item.gpu_memory_usage | round(3) }}<br/>
                 <b>Baseline GPU memory usage:</b> {{ item.baseline_gpu_memory_usage | round(3) }}<br/>
                 <b>GPU memory total:</b> {{ item.gpu_memory_total }}<br/>
@@ -191,6 +203,35 @@
                 <b>Height:</b> {{ item.height }}<br/>
                 <b>Iterations:</b> {{ item.iterations }}
             </td>
+        {%- endif -%}
+    {%- endif -%}
+{%- endif -%}
+
+{#- ------------------------------ BASELINE INFO ------------------------------ -#}
+{%- if column.name == 'baseline_info' -%}
+    {%- if is_head -%}
+        <th data-filed="baseline_info" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}">Baseline info</th>
+    {%- else -%}
+        {%- if item.baseline_info is defined -%}
+            {%- if report_type == 'default' -%}
+                <td class="infoColumn">
+                    <b>Tool version:</b> {{ item.baseline_info.tool }}<br/>
+                    <b>Plugin version:</b> {{ item.baseline_info.render_version }}<br/>
+                    <b>Core version:</b> {{ item.baseline_info.core_version }}<br/>
+                    <b>Render time:</b> {{ item.baseline_info.render_time | round(3) }}<br/>
+                    <b>Synchronization time:</b> {{ item.baseline_info.sync_time | round(3) }}<br/>
+                </td>
+            {%- elif report_type == 'ec' -%}
+                <td class="infoColumn">
+                    <b>Tool version:</b> {{ item.baseline_info.tool }}<br/>
+                    <b>Minor version:</b> {{ item.baseline_info.minor_version }}<br/>
+                    <b>Core version:</b> {{ item.baseline_info.core_version }}<br/>
+                    <b>Render time:</b> {{ item.baseline_info.render_time | round(3) }}<br/>
+                    <b>Synchronization time:</b> {{ item.baseline_info.sync_time | round(3) }}<br/>
+                </td>
+            {%- endif -%}
+        {%- else -%}
+            <td>No info</td>
         {%- endif -%}
     {%- endif -%}
 {%- endif -%}
@@ -404,10 +445,10 @@
         <th data-field="baseline_render_time" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-formatter="timeFormatterFull">Baseline render time
         </th>
     {%- else -%}
-        {%- if report_type == 'default' or report_type == 'ec' -%}
-            <td>{{ item.baseline_render_time | round(3) }}</td>
-        {%- elif report_type == 'ct' -%}
-            <td>{{ item.baseline_render_time }}</td>
+        {%- if item.baseline_info is defined -%}
+            <td>{{ item.baseline_info.render_time | round(3) }}</td>
+        {%- else -%}
+            <td>No data</td>
         {%- endif -%}
     {%- endif -%}
 {%- endif -%}

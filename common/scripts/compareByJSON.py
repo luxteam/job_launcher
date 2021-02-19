@@ -170,12 +170,10 @@ def get_rendertime_difference(base_dir, img, time_diff_max):
                     break
 
         img.update({'difference_time': get_diff(render_time, baseline_time)})
-        img.update({'baseline_render_time': baseline_time})
     else:
         core.config.main_logger.error(
             '{} not exist'.format(path_to_baseline_json))
         img.update({'difference_time': -0.0})
-        img.update({'baseline_render_time': -0.0})
 
     return img
 
@@ -262,9 +260,9 @@ def main(args):
         with open(render_json_path, 'r') as file:
             render_json = json.loads(file.read())
             for img in render_json:
-                img.update({'baseline_render_time': -0.0,
-                            'difference_time': -0.0,
-                            'baseline_color_path': os.path.relpath(os.path.join(args.base_dir, 'baseline.png'), args.work_dir)})
+                img.update({'difference_time': -0.0,
+                            'baseline_color_path': os.path.relpath(os.path.join(args.base_dir, 'baseline.png'), args.work_dir),
+                            'baseline_json_path': os.path.relpath(os.path.join(args.base_dir, img['test_group'], img['test_case'] + core.config.CASE_REPORT_SUFFIX), args.work_dir)})
     except (FileNotFoundError, OSError) as err:
         core.config.main_logger.error(
             "Can't read report.json: {}".format(str(err)))

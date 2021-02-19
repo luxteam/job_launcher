@@ -18,7 +18,7 @@ RENDER_REPORT_BASE = {
     "tool": "",
     "render_time": -0.0,
     "sync_time": -0.0,
-    "baseline_render_time": -0.0,
+    "baseline_json_path": "",
     "render_mode": "",
     "scene_name": "",
     "test_group": "",
@@ -166,6 +166,7 @@ SETUP_STEPS_RPR_PLUGIN = ["Prepare tests", "Open tool", "Load rpr", "Open scene"
 ODD_FOR_BASELINES = [
     'baseline_render_time',
     'baseline_color_path',
+    'baseline_json_path',
     'error_screen_path',
     'difference_color_2',
     'difference_color',

@@ -561,24 +561,24 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
                             for key_upd in keys_for_upd:
                                 if key_upd in render_report[0].keys():
                                     common_info.update({key_upd: render_report[0][key_upd]})
+
+                            for case in render_report:
+                                # FIXME: added for rebuild old builds. Remove it later
+                                baseline_color_parts = os.path.split(case['baseline_color_path'].replace('\\', '/'))
+                                possible_json_name = baseline_color_parts[1].rsplit('.', 1)[0] + CASE_REPORT_SUFFIX
+                                possible_baseline_json_path = os.path.join(work_dir, report_dir, baseline_color_parts[0].rsplit(os.path.sep, 1)[0], possible_json_name)
+
+                                # add info about baselines
+                                if 'baseline_json_path' in case:
+                                    if os.path.exists(case['baseline_json_path']):
+                                        with open(case['baseline_json_path'], "r") as file:
+                                            case['baseline_info'] = json.load(file)
+                                elif os.path.exists(possible_baseline_json_path):
+                                    with open(possible_baseline_json_path, "r") as file:
+                                        case['baseline_info'] = json.load(file)
                     else:
                         # test case was lost
                         continue
-
-                    # for core baseline_render_time initialize via compareByJson script
-                    if report_type != 'ec':
-                        baseline_report_path = os.path.abspath(os.path.join(work_dir, execution, 'Baseline', test, BASELINE_REPORT_NAME))
-                        baseline_report = []
-
-                        if os.path.exists(baseline_report_path):
-                            with open(baseline_report_path, 'r') as file:
-                                baseline_report = json.loads(file.read())
-                                for render_item in render_report:
-                                    try:
-                                        baseline_item = list(filter(lambda item: item['test_case'] == render_item['test_case'], baseline_report))[0]
-                                        render_item.update({'baseline_render_time': baseline_item['render_time']})
-                                    except IndexError:
-                                        pass
 
                     # choose right plugin version based on building report type
                     if report_type != 'perf':
