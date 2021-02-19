@@ -7,6 +7,7 @@
 {% endif %}
 
 {% include "images_compare_block.html" %}
+{% include "error_screen_block.html" %}
 
 {% if tracked_metrics_history %}
     {% set show_tracked_metrics_column = 'true' %}
@@ -25,9 +26,11 @@
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'false', 'name': 'time_diff'},
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'false', 'name': 'pix_diff_2'},
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'false', 'name': 'test_status'},
+        {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'false', 'name': 'case_functions'},
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'false', 'data_visible': 'true',  'name': 'test_status_new'},
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'false', 'name': 'render_time'},
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'false', 'name': 'baseline_render_time'},
+        {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'false', 'data_visible': 'false', 'name': 'error_screen'},
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'false', 'data_visible': 'true',  'name': 'render_log'}
     ] 
     %}
@@ -45,6 +48,7 @@
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'false', 'name': 'vram_diff'},
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'false', 'name': 'pix_diff'},
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'false', 'name': 'test_status'},
+        {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'false',  'name': 'case_functions'},
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'false', 'data_visible': 'true',  'name': 'test_status_new'},
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'false', 'name': 'render_time'},
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'false', 'name': 'baseline_render_time'},
@@ -63,6 +67,7 @@
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'true',  'name': 'time_diff'},
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'true',  'name': 'pix_diff'},
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'true',  'name': 'test_status'},
+        {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'false',  'name': 'case_functions'},
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'true',  'name': 'original_time'},
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'true',  'name': 'baseline_render_time'},
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'true',  'name': 'render_time'},

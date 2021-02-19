@@ -455,7 +455,7 @@ def build_performance_report(summary_report, major_title):
             temp_report = platform['results'][group][conf]
             tool = temp_report['machine_info'].get('tool', major_title)
 
-            hw = platform['results'][group][conf]['machine_info']['render_device'] + ' ' + platform['results'][group][conf]['machine_info']['os'].split()[0]
+            hw = platform['results'][group][conf]['machine_info']['render_device'] + ' ' + platform['results'][group][conf]['machine_info']['os']
             render_info.append([tool, hw, platform['summary']['render_duration'], platform['summary'].get('synchronization_duration', -0.0)])
             if hw not in hardware:
                 hardware[hw] = platform['summary']['render_duration']
@@ -513,8 +513,8 @@ def build_compare_report(summary_report):
                     continue
 
                 # force add gpu from baseline
-                hw = temp_report['machine_info']['render_device'] + ' ' + temp_report['machine_info']['os'].split()[0]
-                hw_bsln = temp_report['machine_info']['render_device'] + " [Baseline]"
+                hw = temp_report['machine_info']['render_device'] + ' ' + temp_report['machine_info']['os']
+                hw_bsln = temp_report['machine_info']['render_device'] + ' ' + temp_report['machine_info']['os'] + " [Baseline]"
 
                 if hw not in hardware:
                     hardware.append(hw)
@@ -557,7 +557,7 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
                     if os.path.exists(os.path.join(work_dir, report_dir, TEST_REPORT_NAME_COMPARED)):
                         with open(os.path.join(work_dir, report_dir, TEST_REPORT_NAME_COMPARED), 'r') as file:
                             render_report = json.loads(file.read())
-                            keys_for_upd = ['tool', 'render_device', 'testing_start', 'test_group']
+                            keys_for_upd = ['tool', 'render_device', 'date_time', 'test_group']
                             for key_upd in keys_for_upd:
                                 if key_upd in render_report[0].keys():
                                     common_info.update({key_upd: render_report[0][key_upd]})
@@ -930,7 +930,7 @@ def setup_time_count(work_dir):
                 if os.path.exists(render_json):
                     with open(render_json) as rpr_json_file:
                         rpr_json = json.load(rpr_json_file)
-                        pcConfig = rpr_json['machine_info']['render_device'] + ' ' + rpr_json['machine_info']['os'].split()[0]
+                        pcConfig = rpr_json['machine_info']['render_device'] + ' ' + rpr_json['machine_info']['os']
                 if pcConfig not in performance_list.keys():
                     performance_list[pcConfig] = {}
                 performance_list[pcConfig][group] = summ_perf

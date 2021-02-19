@@ -28,11 +28,20 @@ PLATFORM_CONVERTATIONS = {
 			"AMD_WX9100": "Radeon (TM) Pro WX 9100",
 			"NVIDIA_RTX2080TI": "GeForce RTX 2080 Ti",
 			"NVIDIA_RTX2080": "NVIDIA GeForce RTX 2080",
-			"NVIDIA_RTX2070S": "NVIDIA GeForce RTX 2070 Super"
+			"NVIDIA_RTX2070S": "NVIDIA GeForce RTX 2070 Super",
+			"AMD_RX6800": "AMD Radeon RX 6800"
 		}
 	},
 	"Ubuntu18": {
 		"os_name": "Ubuntu 18.04(64bit)",
+		"cards": {
+			"AMD_RadeonVII": "AMD Radeon VII",
+			"NVIDIA_GTX980": "GeForce GTX 980",
+			"NVIDIA_RTX2070": "GeForce RTX 2070"
+		}
+	},
+	"Ubuntu20": {
+		"os_name": "Ubuntu 20.04(64bit)",
 		"cards": {
 			"AMD_RadeonVII": "AMD Radeon VII",
 			"NVIDIA_GTX980": "GeForce GTX 980",
@@ -62,11 +71,20 @@ LABELS_CONVERTATIONS = {
 			"Radeon (TM) Pro WX 9100": "AMD_WX9100",
 			"GeForce RTX 2080 Ti": "NVIDIA_RTX2080TI",
 			"NVIDIA GeForce RTX 2080": "NVIDIA_RTX2080",
-			"NVIDIA GeForce RTX 2070 Super": "NVIDIA_RTX2070S"
+			"NVIDIA GeForce RTX 2070 Super": "NVIDIA_RTX2070S",
+			"AMD Radeon RX 6800": "AMD_RX6800"
 		}
 	},
 	"Ubuntu 18.04(64bit)": {
 		"os_name": "Ubuntu18",
+		"cards": {
+			"AMD Radeon VII": "AMD_RadeonVII",
+			"GeForce GTX 980": "NVIDIA_GTX980",
+			"GeForce RTX 2070": "NVIDIA_RTX2070"
+		}
+	},
+	"Ubuntu 20.04(64bit)": {
+		"os_name": "Ubuntu20",
 		"cards": {
 			"AMD Radeon VII": "AMD_RadeonVII",
 			"GeForce GTX 980": "NVIDIA_GTX980",
@@ -85,7 +103,7 @@ LABELS_CONVERTATIONS = {
 def get_lost_tests(data, tool_name, test_package_name):
 	# list of lost tests = tests in test suite taken from configuration
 	lost_tests = []
-	if tool_name in ['blender', 'maya', 'rprviewer', 'USD', 'usdviewer', 'ml']:
+	if tool_name in ['blender', 'maya', 'rprviewer', 'USD', 'usdviewer', 'ml', 'blender_usd_hydra']:
 		for test in data:
 			lost_tests.append(test['case'])
 	elif tool_name == 'max':

@@ -15,6 +15,7 @@ transferred_test_cases = []
 
 main_logger.info("UMS progress monitor is running")
 
+test_cases_sent = False
 is_client = None
 ums_client_prod = create_ums_client("PROD")
 ums_client_dev = create_ums_client("DEV")
@@ -32,7 +33,7 @@ try:
     )
     main_logger.info("UMS progress monitor Image Service client created for url: {}".format(is_client.url))
 except Exception as e:
-    main_logger.error("UMS progress monitor can't create Image Service client for url: {}. Error: {}".format(is_client.url, str(e)))
+    main_logger.error("UMS progress monitor can't create Image Service client for url: {}. Error: {}".format(os.getenv("IS_URL"), str(e)))
 
 
 def render_color_full_path(session_dir, suite_name, render_color_path):
@@ -70,6 +71,7 @@ def get_cases_existence_info_by_hashes(session_dir, suite_name, test_cases):
 
 
 def send_finished_cases(session_dir, suite_name):
+    global test_cases_sent
     if os.path.exists(os.path.join(session_dir, suite_name, 'test_cases.json')):
         test_cases_path = os.path.join(session_dir, suite_name, 'test_cases.json')
         with open(test_cases_path) as test_cases_file:
@@ -91,7 +93,7 @@ def send_finished_cases(session_dir, suite_name):
         name_key = 'name'
     new_test_cases = {}
     for test_case in test_cases:
-        if test_case['status'] in ('skipped', 'error', 'done', 'passed') and not test_case[name_key] in transferred_test_cases:
+        if test_case['status'] in ('skipped', 'error', 'failed', 'done', 'passed') and not test_case[name_key] in transferred_test_cases:
             # check that file with case info already exists
             if os.path.exists(os.path.join(session_dir, suite_name, test_case[name_key] + '_RPR.json')):
                 new_test_cases[test_case[name_key]] = test_case['status']
@@ -101,15 +103,19 @@ def send_finished_cases(session_dir, suite_name):
             else:
                 main_logger.warning("File with case info for case {} doesn't exist. Make sure that it is expected".format(test_case[name_key]))
 
-    new_cases_existence_hashes_info = get_cases_existence_info_by_hashes(session_dir, suite_name, new_test_cases) if is_client else {}
-    print('Got hashes info from image service:\n{}'.format(json.dumps(new_cases_existence_hashes_info, indent=2)))
+    if new_test_cases:
+        new_cases_existence_hashes_info = get_cases_existence_info_by_hashes(session_dir, suite_name, new_test_cases) if is_client else {}
+        print('Got hashes info from image service:\n{}'.format(json.dumps(new_cases_existence_hashes_info, indent=2)))
 
-    if ums_client_prod:
-        ums_client_prod.get_suite_id_by_name(suite_name)
-        minio_client_prod.upload_file(test_cases_path, "PROD", ums_client_prod.build_id, ums_client_prod.suite_id or "", ums_client_prod.env_label)
-    if ums_client_dev:
-        ums_client_dev.get_suite_id_by_name(suite_name)
-        minio_client_dev.upload_file(test_cases_path, "DEV", ums_client_dev.build_id, ums_client_dev.suite_id or "", ums_client_dev.env_label)
+    if not test_cases_sent:
+        if ums_client_prod and minio_client_prod:
+            ums_client_prod.get_suite_id_by_name(suite_name)
+            minio_client_prod.upload_file(test_cases_path, "PROD", ums_client_prod.build_id, ums_client_prod.suite_id or "", ums_client_prod.env_label)
+        if ums_client_dev and minio_client_dev:
+            ums_client_dev.get_suite_id_by_name(suite_name)
+            minio_client_dev.upload_file(test_cases_path, "DEV", ums_client_dev.build_id, ums_client_dev.suite_id or "", ums_client_dev.env_label)
+
+        test_cases_sent = True
 
     for test_case in new_test_cases:
         try:
@@ -122,12 +128,20 @@ def send_finished_cases(session_dir, suite_name):
                         new_cases_existence_hashes_info[test_case] and \
                         'id' in new_cases_existence_hashes_info[test_case]:
                     image_id = new_cases_existence_hashes_info[test_case]['id']
-                    print("Use id found by hash for case: {} id: {}".format(test_case, image_id))
+                    print('Use id found by hash for case: {} id: {}'.format(test_case, image_id))
                 else:
                     image_id = is_client.send_image(render_color_full_path(session_dir, suite_name, case_file_data[
                         'render_color_path'])) if is_client else -1
-                    print("Upload new image for case: {} and get image id: {}".format(test_case, image_id))
-                case_file_data['image_service_id'] = image_id
+                    print('Upload new image for case: {} and get image id: {}'.format(test_case, image_id))
+
+                # upload error screen if it exists
+                if 'error_screen_path' in case_file_data and case_file_data['error_screen_path']:
+                    error_screen_id = is_client.send_image(render_color_full_path(session_dir, suite_name, case_file_data[
+                        'error_screen_path'])) if is_client else -1
+                    print('Upload error screen for case: {} and get image id: {}'.format(test_case, error_screen_id))
+                    case_file_data['error_screen_is_id'] = error_screen_id
+
+                case_file_data['rendered_image_is_id'] = image_id
 
             with open(case_file_path, 'w') as case_file:
                 json.dump([case_file_data], case_file, indent=4, sort_keys=True)

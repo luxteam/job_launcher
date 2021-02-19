@@ -78,6 +78,24 @@ window.openFullImgSize = {
     }
 }
 
+window.openFullErrorScreen = {
+    'click img': function(e, value, row, index) {
+        var errorScreen = document.getElementById('errorScreenPopup');
+
+        errorScreen.src = "";
+
+        var src_prefixes = ["thumb64_", "thumb256_"];
+        errorScreen.src = row.error_screen.split('"')[1];
+        for (var i in src_prefixes) {
+            errorScreen.src = errorScreen.src.replace(src_prefixes[i], "");
+        }
+
+        document.getElementById("errorScreenTable").style.display = "";
+
+        openModalWindow('errorScreenModal');
+    }
+}
+
 function metaAJAX(value, row, index, field) {
     return value.replace('data-src', 'src');
 }

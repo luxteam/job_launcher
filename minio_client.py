@@ -88,6 +88,10 @@ class UMS_Minio:
                     )
                 main_logger.info("Artifact '{}' sent to MINIO".format(artifact_name))
                 file_sent = True
+            except TypeError as e:
+                main_logger.error("Could not build artifact name")
+                main_logger.error("Traceback: {}".format(traceback.format_exc()))
+                break
             except Exception as e:
                 main_logger.error("MINIO file sending error")
                 main_logger.error("Traceback: {}".format(traceback.format_exc()))

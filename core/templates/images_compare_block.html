@@ -1,5 +1,5 @@
 <div class="popup" id="imgsModal">
-    <div class="popupContent" id="imgsModalContent">
+    <div class="popupContent imgsModalContent" class="imgModalContent">
         <form class="popupForm" oninput="thresholdView.value=parseFloat(thresholdRange.value)">
             <button class="commonButton closePopup" type="button" name="closePopupButton" onclick="closeModalWindow('imgsModal');return false;"><img src="{{ pre_path }}/report_resources/img/close-button.png"/></button>
             <button class="commonButton" type="button" name="increaseImgSizeButton" onclick="increaseImgSize();">Image Size +</button>
@@ -12,7 +12,7 @@
         </form>
 
         <div id="pairComparisonDiv">
-            <table class="baseTable" id="imgsCompareTable">
+            <table class="baseTable imgCompareTable" id="imgsCompareTable">
                 <thead>
                     <tr>
                         <th>Baseline Image</th>

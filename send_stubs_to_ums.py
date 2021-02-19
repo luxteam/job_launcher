@@ -65,17 +65,20 @@ def send_stubs(gpu_os_name, suite_name, cases_names, status, node_retry_info):
             ums_client_prod.get_suite_id_by_name(suite_name)
             ums_client_prod.define_environment(env)
             send_try = 0
-            while send_try < MAX_UMS_SEND_RETRIES:
-                response_prod = ums_client_prod.send_test_suite(res=cases, env=env)
-                main_logger.info('Test suite results sent to UMS PROD with code {} (try #{})'.format(response_prod.status_code, send_try))
-                main_logger.info('Response from UMS PROD: \n{}'.format(response_prod.content))
-                if response_prod and response_prod.status_code < 300:
-                    response_data = json.loads(response_prod.content.decode("utf-8"))
-                    if 'data' in response_data and 'test_suite_result_id' in response_data['data']:
-                        test_suite_result_id_prod = response_data['data']['test_suite_result_id']
-                    break
-                send_try += 1
-                time.sleep(UMS_SEND_RETRY_INTERVAL)
+            if ums_client_prod.suite_id:
+                while send_try < MAX_UMS_SEND_RETRIES:
+                    response_prod = ums_client_prod.send_test_suite(res=cases, env=env)
+                    main_logger.info('Test suite results sent to UMS PROD with code {} (try #{})'.format(response_prod.status_code, send_try))
+                    main_logger.info('Response from UMS PROD: \n{}'.format(response_prod.content))
+                    if response_prod and response_prod.status_code < 300:
+                        response_data = json.loads(response_prod.content.decode("utf-8"))
+                        if 'data' in response_data and 'test_suite_result_id' in response_data['data']:
+                            test_suite_result_id_prod = response_data['data']['test_suite_result_id']
+                        break
+                    send_try += 1
+                    time.sleep(UMS_SEND_RETRY_INTERVAL)
+            else:
+                main_logger.info('Result for test suite {} won\'t be send on UMS PROD due to empty suite_id'.format(suite_name))
     except Exception as e:
         main_logger.error("Failed to send stubs to UMS PROD. Exception: {}".format(str(e)))
         main_logger.error("Traceback: {}".format(traceback.format_exc()))
@@ -85,17 +88,20 @@ def send_stubs(gpu_os_name, suite_name, cases_names, status, node_retry_info):
             ums_client_dev.get_suite_id_by_name(suite_name)
             ums_client_dev.define_environment(env)
             send_try = 0
-            while send_try < MAX_UMS_SEND_RETRIES:
-                response_dev = ums_client_dev.send_test_suite(res=cases, env=env)
-                main_logger.info('Test suite results sent to UMS DEV with code {} (try #{})'.format(response_dev.status_code, send_try))
-                main_logger.info('Response from UMS DEV: \n{}'.format(response_dev.content))
-                if response_dev and response_dev.status_code < 300:
-                    response_data = json.loads(response_dev.content.decode("utf-8"))
-                    if 'data' in response_data and 'test_suite_result_id' in response_data['data']:
-                        test_suite_result_id_dev = response_data['data']['test_suite_result_id']
-                    break
-                send_try += 1
-                time.sleep(UMS_SEND_RETRY_INTERVAL)
+            if ums_client_dev.suite_id:
+                while send_try < MAX_UMS_SEND_RETRIES:
+                    response_dev = ums_client_dev.send_test_suite(res=cases, env=env)
+                    main_logger.info('Test suite results sent to UMS DEV with code {} (try #{})'.format(response_dev.status_code, send_try))
+                    main_logger.info('Response from UMS DEV: \n{}'.format(response_dev.content))
+                    if response_dev and response_dev.status_code < 300:
+                        response_data = json.loads(response_dev.content.decode("utf-8"))
+                        if 'data' in response_data and 'test_suite_result_id' in response_data['data']:
+                            test_suite_result_id_dev = response_data['data']['test_suite_result_id']
+                        break
+                    send_try += 1
+                    time.sleep(UMS_SEND_RETRY_INTERVAL)
+            else:
+                main_logger.info('Result for test suite {} won\'t be send on UMS DEV due to empty suite_id'.format(suite_name))
     except Exception as e:
         main_logger.error("Failed to send stubs to UMS DEV. Exception: {}".format(str(e)))
         main_logger.error("Traceback: {}".format(traceback.format_exc()))

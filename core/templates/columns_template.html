@@ -16,7 +16,11 @@
             <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top" title="Button click copy direct test case link to clipboard"></span>
         </th>
     {%- else -%}
-        <td><button class="commonButton" type="button" name="copyDirectLinkButton">{{ item.test_case }}</button></td>
+        <td class="
+            {%- if item.number_of_tries > 1 -%}
+                retries_detected
+            {%- endif %}
+        "><button class="commonButton" type="button" name="copyDirectLinkButton">{{ item.test_case }}</button></td>
     {%- endif -%}
 {%- endif -%}
 
@@ -106,6 +110,36 @@
                 {%- endif -%}
             {%- endif -%}
 
+        </td>
+    {%- endif -%}
+{%- endif -%}
+
+{#- ------------------------------ ERROR SCREEN ------------------------------ -#}
+{%- if column.name == 'error_screen' -%}
+    {%- if is_head -%}
+        <th data-field="error_screen" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-events="openFullErrorScreen" data-formatter="metaAJAX">Error screen
+        </th>
+    {%- else -%}
+        <td class="hatching">
+        {%- if item.error_screen_path -%}
+
+            {%- if template_name == 'local' -%}
+                {%- if 'thumb256_error_screen_path' in item -%}
+                <img data-src="{{ item.thumb256_error_screen_path }}"/>
+                {%- else -%}
+                <img data-src="{{ item.error_screen_path }}"/>
+                {%- endif -%}
+            {%- elif template_name == 'detailed' -%}
+                {%- if 'thumb64_error_screen_path' in item -%}
+                <img data-src="{{ item.thumb64_error_screen_path }}"/>
+                {%- else -%}
+                <img data-src="{{ item.error_screen_path }}"/>
+                {%- endif -%}
+            {%- endif -%}
+
+        {%- else -%}
+            No error screen
+        {%- endif -%}
         </td>
     {%- endif -%}
 {%- endif -%}
@@ -330,9 +364,19 @@
     {%- endif -%}
 {%- endif -%}
 
-
-
-
+{#- ------------------------------ CASE FUNCTIONS ------------------------------ -#}
+{%- if column.name == 'case_functions' -%}
+    {%- if is_head -%}
+        <th data-field="case_functions" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}">Case functions
+        </th>
+    {%- else -%}
+        <td>
+            {% for function in item.case_functions %}
+                {{ function }}<br>
+            {% endfor %}
+        </td>
+    {%- endif -%}
+{%- endif -%}
 
 {#- ****************************** RENDER TIME ****************************** -#}
 {#- ------------------------------ RENDER TIME ------------------------------ -#}
