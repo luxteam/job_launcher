@@ -569,13 +569,13 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
                                 possible_baseline_json_path = os.path.join(work_dir, report_dir, baseline_color_parts[0].rsplit(os.path.sep, 1)[0], possible_json_name)
 
                                 # add info about baselines
-                                if 'baseline_json_path' in case:
-                                    if os.path.exists(case['baseline_json_path']):
+                                if 'baseline_json_path' in case and os.path.exists(case['baseline_json_path']):
                                         with open(case['baseline_json_path'], "r") as file:
                                             case['baseline_info'] = json.load(file)
                                 elif os.path.exists(possible_baseline_json_path):
                                     with open(possible_baseline_json_path, "r") as file:
                                         case['baseline_info'] = json.load(file)
+                                print(case['baseline_info'])
                     else:
                         # test case was lost
                         continue

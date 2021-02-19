@@ -261,8 +261,7 @@ def main(args):
             render_json = json.loads(file.read())
             for img in render_json:
                 img.update({'difference_time': -0.0,
-                            'baseline_color_path': os.path.relpath(os.path.join(args.base_dir, 'baseline.png'), args.work_dir),
-                            'baseline_json_path': os.path.relpath(os.path.join(args.base_dir, img['test_group'], img['test_case'] + core.config.CASE_REPORT_SUFFIX), args.work_dir)})
+                            'baseline_color_path': os.path.relpath(os.path.join(args.base_dir, 'baseline.png'), args.work_dir)})
     except (FileNotFoundError, OSError) as err:
         core.config.main_logger.error(
             "Can't read report.json: {}".format(str(err)))
@@ -293,6 +292,7 @@ def main(args):
 
     core.config.main_logger.info("Began metrics calculation")
     for img in render_json:
+        img.update({'baseline_json_path': os.path.relpath(os.path.join(args.base_dir, img['test_group'], img['test_case'] + core.config.CASE_REPORT_SUFFIX), args.work_dir)})
         # if update baselines - skip comparision of images and set stub as a baseline image
         if 'Update' in args.update_refs:
             img.update({'baseline_color_path': os.path.relpath(
