@@ -445,7 +445,7 @@
         <th data-field="baseline_render_time" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-formatter="timeFormatterFull">Baseline render time
         </th>
     {%- else -%}
-        {%- if item.baseline_info is defined -%}
+        {%- if item.baseline_info is defined and item.baseline_info.render_time is defined -%}
             <td>{{ item.baseline_info.render_time | round(3) }}</td>
         {%- else -%}
             <td>No data</td>
