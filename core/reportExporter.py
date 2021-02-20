@@ -363,17 +363,9 @@ def build_summary_report(work_dir, node_retry_info, collect_tracked_metrics):
                                             temp_report['results'][test_package][test_conf].update(
                                                 {'status': GROUP_TIMEOUT})
 
-                                    # FIXME: added for rebuild old builds. Remove it later
-                                    baseline_color_parts = os.path.split(jtem['baseline_color_path'].replace('\\', os.path.sep).replace('/', os.path.sep))
-                                    possible_json_name = baseline_color_parts[1].rsplit('.', 1)[0] + CASE_REPORT_SUFFIX
-                                    possible_baseline_json_path = os.path.join(work_dir, baseline_color_parts[0].rsplit(os.path.sep, 1)[0], possible_json_name)
-
                                     baseline_json_path = None
                                     if 'baseline_json_path' in jtem:
                                         baseline_json_path = os.path.join(work_dir, jtem['baseline_json_path'])
-                                    elif os.path.exists(possible_baseline_json_path):
-                                        with open(possible_baseline_json_path, "r") as file:
-                                            jtem['baseline_info'] = json.load(file)
 
                                     # add info about baselines
                                     if baseline_json_path and os.path.exists(baseline_json_path):
@@ -580,11 +572,6 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
                                     common_info.update({key_upd: render_report[0][key_upd]})
 
                             for case in render_report:
-                                # FIXME: added for rebuild old builds. Remove it later
-                                baseline_color_parts = os.path.split(case['baseline_color_path'].replace('\\', os.path.sep).replace('/', os.path.sep))
-                                possible_json_name = baseline_color_parts[1].rsplit('.', 1)[0] + CASE_REPORT_SUFFIX
-                                possible_baseline_json_path = os.path.join(work_dir, report_dir, baseline_color_parts[0].rsplit(os.path.sep, 1)[0], possible_json_name)
-
                                 baseline_json_path = None
                                 if 'baseline_json_path' in case:
                                     baseline_json_path = os.path.join(work_dir, report_dir, case['baseline_json_path'])
@@ -592,9 +579,6 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
                                 # add info about baselines
                                 if baseline_json_path and os.path.exists(baseline_json_path):
                                     with open(baseline_json_path, "r") as file:
-                                        case['baseline_info'] = json.load(file)
-                                elif os.path.exists(possible_baseline_json_path):
-                                    with open(possible_baseline_json_path, "r") as file:
                                         case['baseline_info'] = json.load(file)
                     else:
                         # test case was lost
