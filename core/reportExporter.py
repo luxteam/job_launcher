@@ -363,6 +363,15 @@ def build_summary_report(work_dir, node_retry_info, collect_tracked_metrics):
                                             temp_report['results'][test_package][test_conf].update(
                                                 {'status': GROUP_TIMEOUT})
 
+                                    baseline_json_path = None
+                                    if 'baseline_json_path' in jtem:
+                                        baseline_json_path = os.path.join(work_dir, jtem['baseline_json_path'])
+
+                                    # add info about baselines
+                                    if baseline_json_path and os.path.exists(baseline_json_path):
+                                        with open(baseline_json_path, "r") as file:
+                                            jtem['baseline_info'] = json.load(file)
+
                                 temp_report['results'][test_package][test_conf].update(
                                     {'result_path': os.path.relpath(
                                         os.path.join(work_dir, basepath, temp_report['results'][test_package][test_conf]['result_path']),
@@ -561,24 +570,19 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
                             for key_upd in keys_for_upd:
                                 if key_upd in render_report[0].keys():
                                     common_info.update({key_upd: render_report[0][key_upd]})
+
+                            for case in render_report:
+                                baseline_json_path = None
+                                if 'baseline_json_path' in case:
+                                    baseline_json_path = os.path.join(work_dir, report_dir, case['baseline_json_path'])
+
+                                # add info about baselines
+                                if baseline_json_path and os.path.exists(baseline_json_path):
+                                    with open(baseline_json_path, "r") as file:
+                                        case['baseline_info'] = json.load(file)
                     else:
                         # test case was lost
                         continue
-
-                    # for core baseline_render_time initialize via compareByJson script
-                    if report_type != 'ec':
-                        baseline_report_path = os.path.abspath(os.path.join(work_dir, execution, 'Baseline', test, BASELINE_REPORT_NAME))
-                        baseline_report = []
-
-                        if os.path.exists(baseline_report_path):
-                            with open(baseline_report_path, 'r') as file:
-                                baseline_report = json.loads(file.read())
-                                for render_item in render_report:
-                                    try:
-                                        baseline_item = list(filter(lambda item: item['test_case'] == render_item['test_case'], baseline_report))[0]
-                                        render_item.update({'baseline_render_time': baseline_item['render_time']})
-                                    except IndexError:
-                                        pass
 
                     # choose right plugin version based on building report type
                     if report_type != 'perf':
