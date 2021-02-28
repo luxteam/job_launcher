@@ -18,7 +18,7 @@ RENDER_REPORT_BASE = {
     "tool": "",
     "render_time": -0.0,
     "sync_time": -0.0,
-    "baseline_render_time": -0.0,
+    "baseline_json_path": "",
     "render_mode": "",
     "scene_name": "",
     "test_group": "",
@@ -112,7 +112,7 @@ POSSIBLE_JSON_IMG_RENDERED_KEYS_THUMBNAIL = ['thumb64_' + x for x in POSSIBLE_JS
 POSSIBLE_JSON_IMG_RENDERED_KEYS_THUMBNAIL = POSSIBLE_JSON_IMG_RENDERED_KEYS_THUMBNAIL + ['thumb256_' + x for x in POSSIBLE_JSON_IMG_RENDERED_KEYS]
 
 POSSIBLE_JSON_LOG_KEYS = ['original_render_log', 'rpr_render_log', 'conversion_log', 'render_log']
-REPORT_FILES = POSSIBLE_JSON_IMG_KEYS + POSSIBLE_JSON_IMG_KEYS_THUMBNAIL + POSSIBLE_JSON_LOG_KEYS
+REPORT_FILES = POSSIBLE_JSON_IMG_KEYS + POSSIBLE_JSON_IMG_KEYS_THUMBNAIL + POSSIBLE_JSON_LOG_KEYS + ['baseline_json_path']
 
 IMG_KEYS_FOR_COMPARE = ['render_color_path']
 
@@ -166,6 +166,7 @@ SETUP_STEPS_RPR_PLUGIN = ["Prepare tests", "Open tool", "Load rpr", "Open scene"
 ODD_FOR_BASELINES = [
     'baseline_render_time',
     'baseline_color_path',
+    'baseline_json_path',
     'error_screen_path',
     'difference_color_2',
     'difference_color',
