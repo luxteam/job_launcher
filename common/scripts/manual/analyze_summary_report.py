@@ -64,8 +64,7 @@ if __name__ == "__main__":
             min=str(datetime.timedelta(seconds=round(value["min"]))), 
             max=str(datetime.timedelta(seconds=round(value["max"])))))
 
-    print()
-    print("Averange all suites execution time: {avrg} (one suite average: {one})".format(
+    print("\nAverange all suites execution time: {avrg} (one suite average: {one})".format(
         avrg=str(datetime.timedelta(seconds=round(sum_summary_duration / platforms_count))),
         one=str(datetime.timedelta(seconds=round(sum_summary_duration / len(test_suites_info) / platforms_count)))))
 
