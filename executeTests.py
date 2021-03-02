@@ -183,8 +183,12 @@ def main():
             # TODO: Monitoring start
             interval = 5
             main_logger.info('Started monitoring: {}'.format(found_job[0]))
+            if machine_info['os'] == "Windows (64bit)":
+                python_version = "python"
+            else:
+                python_version = "python3.9"
             monitor = subprocess.Popen([
-                "python",
+                python_version,
                 os.path.join("..", "jobs_launcher", "progress_monitor.py"),
                 "--interval",
                 str(interval),
