@@ -180,9 +180,9 @@ def main():
         main_logger.info('Started job: {}'.format(found_job[0]))
 
         if machine_info['os'] == "Windows (64bit)":
-                python_version = "python"
-            else:
-                python_version = "python3.9"
+            python_version = "python"
+        else:
+            python_version = "python3.9"
 
         if ums_client_prod or ums_client_dev:
             # TODO: Monitoring start
