@@ -210,8 +210,8 @@ def main():
             if (args.execute_stages and str(i + 1) in args.execute_stages) or not args.execute_stages:
                 print("  Executing job {}/{}".format(i+1, len(found_job[3])))
                 main_logger.info("  Executing job {}/{}".format(i+1, len(found_job[3])))
-                found_job[3][i].replace("python", python_version)
-                job_launcher_report = jobs_launcher.job_launcher.launch_job(found_job[3][i].format(SessionDir=session_dir), found_job[6][i])
+                job = found_job[3][i].replace("python", python_version)
+                job_launcher_report = jobs_launcher.job_launcher.launch_job(job.format(SessionDir=session_dir), found_job[6][i])
                 report['results'][found_job[0]][' '.join(found_job[1])]['duration'] += job_launcher_report['report']['duration']
             report['results'][found_job[0]][' '.join(found_job[1])]['result_path'] = os.path.relpath(temp_path, session_dir)
 
