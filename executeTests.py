@@ -179,7 +179,7 @@ def main():
     for found_job in found_jobs:
         main_logger.info('Started job: {}'.format(found_job[0]))
 
-        if machine_info['os'] == "Windows (64bit)":
+        if "Windows" in machine_info['os']:
             python_version = "python"
         else:
             python_version = "python3.9"
