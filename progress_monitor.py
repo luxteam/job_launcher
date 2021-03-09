@@ -86,7 +86,7 @@ def send_finished_cases(session_dir, suite_name):
             name_key = 'scene'
     else:
         # case of Max
-        test_cases_path = os.path.join(session_dir, suite_name, 'case_list.json')
+        test_cases_path = os.path.join(session_dir, suite_name, 'test_cases.json')
         with open(test_cases_path) as test_cases_file:
             global transferred_test_cases
             test_cases = json.load(test_cases_file)['cases']

@@ -15,7 +15,7 @@ def get_error_case(cases_path):
 
         for case in data["cases"]:
             if case["status"] == "progress":
-                return case["name"]
+                return case["case"]
         else:
             return False
     else:

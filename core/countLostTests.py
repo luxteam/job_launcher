@@ -108,7 +108,7 @@ def get_lost_tests(data, tool_name, test_package_name):
 			lost_tests.append(test['case'])
 	elif tool_name == 'max':
 		for test in data['cases']:
-			lost_tests.append(test['name'])
+			lost_tests.append(test['case'])
 	elif tool_name == 'core':
 		for test in data:
 			lost_tests.append(test['case'])
