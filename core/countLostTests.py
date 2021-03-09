@@ -138,9 +138,9 @@ def main(lost_tests_results, tests_dir, output_dir, split_tests_execution, tests
 		results_directories = next(os.walk(os.path.abspath(output_dir)))[1]
 		for results_directory in results_directories:
 
-            # skip @tmp dirs
-            if "@tmp" in results_directory:
-                continue
+			# skip @tmp dirs
+			if "@tmp" in results_directory:
+				continue
 
 			session_report_exist = False
 			for path, dirs, files in os.walk(os.path.abspath(os.path.join(output_dir, results_directory))):
