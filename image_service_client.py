@@ -23,7 +23,7 @@ class ISClient:
             raise RequestException("Cant connect image service. Check url")
         content = response.content.decode("utf-8")
         if 'error' in content:
-            raise RequestException('Check login and password')
+            raise RequestException(content)
         token = json.loads(content)["token"]
         self.token = token
         self.headers = {
