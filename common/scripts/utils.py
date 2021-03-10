@@ -11,9 +11,9 @@ def get_error_case(cases_path):
     # FIXME: make general implementation after refactoring of Max repository
     if local_config.tool_name == "max":
         with open(cases_path) as file:
-            data = json.loads(file.read())
+            cases = json.loads(file.read())
 
-        for case in data["cases"]:
+        for case in cases:
             if case["status"] == "progress":
                 return case["case"]
         else:
