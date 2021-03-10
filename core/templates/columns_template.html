@@ -219,7 +219,9 @@
                     <b>Plugin version:</b> {{ item.baseline_info.render_version }}<br/>
                     <b>Core version:</b> {{ item.baseline_info.core_version }}<br/>
                     <b>Render time:</b> {{ item.baseline_info.render_time | round(3) }}<br/>
-                    <b>Synchronization time:</b> {{ item.baseline_info.sync_time | round(3) }}<br/>
+                    {%- if item.baseline_info.sync_time -%}
+                        <b>Synchronization time:</b> {{ item.baseline_info.sync_time | round(3) }}<br/>
+                    {%- endif -%}
                 </td>
             {%- elif report_type == 'ec' -%}
                 <td class="infoColumn">
@@ -227,7 +229,9 @@
                     <b>Minor version:</b> {{ item.baseline_info.minor_version }}<br/>
                     <b>Core version:</b> {{ item.baseline_info.core_version }}<br/>
                     <b>Render time:</b> {{ item.baseline_info.render_time | round(3) }}<br/>
-                    <b>Synchronization time:</b> {{ item.baseline_info.sync_time | round(3) }}<br/>
+                    {%- if item.baseline_info.sync_time -%}
+                        <b>Synchronization time:</b> {{ item.baseline_info.sync_time | round(3) }}<br/>
+                    {%- endif -%}
                 </td>
             {%- endif -%}
         {%- else -%}
