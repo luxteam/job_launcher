@@ -14,3 +14,4 @@ requests
 imageio
 opencv-python
 Minio
+pyobjc-framework-Quartz
