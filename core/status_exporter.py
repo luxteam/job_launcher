@@ -27,29 +27,31 @@ def main(work_dir='', multiple_reports='False'):
         report_directories = ['']
 
     for report_directory in report_directories:
-        with open(os.path.join(args.work_dir, report_directory, SUMMARY_REPORT), 'r') as file:
-            summary_report = json.load(file)
+        report_path = os.path.join(args.work_dir, report_directory, SUMMARY_REPORT)
+        if os.path.exists(report_path):
+            with open(report_path, 'r') as file:
+                summary_report = json.load(file)
 
-            if len(summary_report) == 0:
-                continue
+                if len(summary_report) == 0:
+                    continue
 
-            if not max_name:
-                max_name = max([len(x) for x in summary_report.keys()])
-                max_name = max(max_name, 12)
+                if not max_name:
+                    max_name = max([len(x) for x in summary_report.keys()])
+                    max_name = max(max_name, 12)
 
-            for execution in summary_report:
-                if execution not in results:
-                    results[execution] = {}
-                    results[execution]['total'] = 0
-                    results[execution]['passed'] = 0
-                    results[execution]['failed'] = 0
-                    results[execution]['error'] = 0
-                    results[execution]['skipped'] = 0
-                results[execution]['total'] += summary_report[execution]['summary']['total']
-                results[execution]['passed'] += summary_report[execution]['summary']['passed']
-                results[execution]['failed'] += summary_report[execution]['summary']['failed']
-                results[execution]['error'] += summary_report[execution]['summary']['error']
-                results[execution]['skipped'] += summary_report[execution]['summary']['skipped']
+                for execution in summary_report:
+                    if execution not in results:
+                        results[execution] = {}
+                        results[execution]['total'] = 0
+                        results[execution]['passed'] = 0
+                        results[execution]['failed'] = 0
+                        results[execution]['error'] = 0
+                        results[execution]['skipped'] = 0
+                    results[execution]['total'] += summary_report[execution]['summary']['total']
+                    results[execution]['passed'] += summary_report[execution]['summary']['passed']
+                    results[execution]['failed'] += summary_report[execution]['summary']['failed']
+                    results[execution]['error'] += summary_report[execution]['summary']['error']
+                    results[execution]['skipped'] += summary_report[execution]['summary']['skipped']
 
     for execution in results:
         status_to_export += "_{: <{name_fill}}_ | *{}*/{}/`{}`/`{}`/{}\n".format(
