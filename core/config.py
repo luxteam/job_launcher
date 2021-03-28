@@ -139,18 +139,6 @@ REPORT_RESOURCES_PATH = 'resources'
 REPORT_CONVERSION_LOG = 'conversion.log'
 REPORT_RPR_LOG = 'renderTool.log'
 
-
-TEST_CASES_JSON_NAME = {
-        'blender': 'test_cases.json',
-        'maya': 'test_cases.json',
-        'max': 'test_cases.json',
-        'core': 'test_cases.json',
-        'rprviewer': 'test_cases.json',
-        'USD': 'test_cases.json',
-        'usdviewer': 'test_cases.json',
-        'blender_usd_hydra': 'test_cases.json'
-    }
-
 LOST_TESTS_JSON_NAME = 'lost_tests.json'
 SKIPPED_TESTS_JSON_NAME = 'skipped_tests.json'
 RETRY_INFO_NAME = 'retry_info.json'
