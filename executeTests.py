@@ -7,6 +7,7 @@ import uuid
 import traceback
 import subprocess
 import time
+import sys
 
 import core.reportExporter
 import core.system_info
@@ -53,6 +54,8 @@ def send_machine_info(ums_client, machine_info, args):
 
 
 def main():
+
+    main_logger.info("Python version: {}".format(sys.version))
 
     # create UMS client
     ums_client_prod = None
