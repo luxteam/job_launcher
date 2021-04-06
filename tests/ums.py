@@ -14,7 +14,6 @@ def test_execute():
         password=os.getenv("UMS_PASSWORD")
     )
     print("UMS Client created with url {url}\n build_id: {build_id}\n env_label: {label} \n job_id: {job_id}".format(
-             instance=client_postfix_raw,
              url=ums_client.url,
              build_id=ums_client.build_id,
              label=ums_client.env_label,
