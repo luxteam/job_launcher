@@ -23,8 +23,8 @@ def test_execute():
     assert ums_client.token is not None
 
     for group in os.getenv('UMS_TEST_GROUPS').split(','):
-        response = ums_client.get_suite_id_by_name(group)
-        assert response.status_code == 200
+        ums_client.get_suite_id_by_name(group)
+        assert ums_client.suite_id is not None
 
         env = {
             "hostname": "PC-TESTING",
