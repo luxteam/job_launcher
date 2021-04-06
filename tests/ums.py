@@ -1,4 +1,5 @@
 import pytest
+import os
 from ums_client import UMS_Client
 
 
