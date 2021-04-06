@@ -1,3 +1,3 @@
 #!/bin/bash
-python -m pip install pytest
-python -m pytest tests/ums.py
+python3 -m pip install pytest
+python3 -m pytest tests/ums.py
