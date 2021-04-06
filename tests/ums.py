@@ -46,7 +46,7 @@ def test_execute():
                 "metrics": {
                     "render_time": 10 * i
                 },
-                "name": str(i)
+                "name": "CASE_" + str(i)
             } for i in range(10)
         ]
 
