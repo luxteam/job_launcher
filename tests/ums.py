@@ -40,7 +40,7 @@ def test_execute():
         res = [
             {
                 "artefacts": {
-                    "rendered_image": "i-" + str(i)
+                    "rendered_image": "passed"
                 },
                 "status": "passed",
                 "metrics": {
