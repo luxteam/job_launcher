@@ -1,9 +1,25 @@
 import pytest
-from ums_client import create_ums_client
+from ums_client import UMS_Client
 
 
 def test_execute():
-    ums_client = create_ums_client("TEST")
+    ums_client = UMS_Client(
+        job_id=os.getenv("UMS_JOB_ID"),
+        url=os.getenv("UMS_URL"),
+        build_id=os.getenv("UMS_BUILD_ID"),
+        env_label=os.getenv("UMS_ENV_LABEL"),
+        suite_id=None,
+        login=os.getenv("UMS_LOGIN"),
+        password=os.getenv("UMS_PASSWORD")
+    )
+    print("UMS Client created with url {url}\n build_id: {build_id}\n env_label: {label} \n job_id: {job_id}".format(
+             instance=client_postfix_raw,
+             url=ums_client.url,
+             build_id=ums_client.build_id,
+             label=ums_client.env_label,
+             job_id=ums_client.job_id
+         )
+    )
     assert ums_client.token is not None
 
     for group in os.getenv('TEST_FILTER').split(','):
