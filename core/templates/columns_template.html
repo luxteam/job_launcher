@@ -518,7 +518,7 @@
         {%- if report_type == 'default' or report_type == 'perf' -%}
             <td>
                 {%- if 'render_log' in item -%}
-                <a href="{{ item.render_log }}">Render log</a>
+                    <a href="{{ item.render_log }}">Render log</a>
                 {%- else -%}
 
                     {%- if template_name == 'local' -%}
@@ -527,6 +527,10 @@
                         <a href="{{ report[i].results[test_package][test_conf].result_path }}/{{ config.REPORT_RPR_LOG }}">Render Log</a>
                     {%- endif -%}
 
+                {%- endif -%}<br/>
+
+                {%- if 'execution_log' in item -%}
+                    <a href="{{ item.execution_log }}">Execution log</a>
                 {%- endif -%}
             </td>
         {%- elif report_type == 'ec' -%}

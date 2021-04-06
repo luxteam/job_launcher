@@ -148,7 +148,8 @@ TEST_CASES_JSON_NAME = {
         'rprviewer': 'test_cases.json',
         'USD': 'test_cases.json',
         'usdviewer': 'test_cases.json',
-        'blender_usd_hydra': 'test_cases.json'
+        'blender_usd_hydra': 'test_cases.json',
+        'inventor': 'test_cases.json'
     }
 
 LOST_TESTS_JSON_NAME = 'lost_tests.json'
