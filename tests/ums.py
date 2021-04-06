@@ -24,7 +24,7 @@ def test_execute():
         res = [
             {
                 "artefacts": {
-                    "rendered_image": str(i)
+                    "rendered_image": "i-" + str(i)
                 },
                 "status": "passed",
                 "metrics": {
