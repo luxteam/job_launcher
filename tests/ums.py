@@ -4,7 +4,7 @@ from ums_client import create_ums_client
 
 def test_execute():
     ums_client = create_ums_client("TEST")
-    assert ums_client.token in not None
+    assert ums_client.token is not None
 
     for group in os.getenv('TEST_FILTER').split(','):
         response = ums_client.get_suite_id_by_name(group)
