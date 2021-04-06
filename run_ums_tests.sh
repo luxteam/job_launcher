@@ -1,3 +1,3 @@
 #!/bin/bash
-python -m pip install -r install/requirements.txt
+python -m pip install pytest
 python -m pytest tests/ums.py
