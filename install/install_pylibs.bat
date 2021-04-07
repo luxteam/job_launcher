@@ -1,4 +1,4 @@
-set PATH=c:\python35\;c:\python35\scripts\;%PATH%
-python3 get-pip.py
-python3 -m pip install --upgrade pip wheel setuptools
-python3 -m pip install -r requirements.txt
+set PATH=c:\python39\;c:\python39\scripts\;%PATH%
+python get-pip.py
+python -m pip install --upgrade pip wheel setuptools
+python -m pip install -r requirements.txt

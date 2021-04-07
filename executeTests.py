@@ -7,6 +7,7 @@ import uuid
 import traceback
 import subprocess
 import time
+import sys
 
 import core.reportExporter
 import core.system_info
@@ -53,6 +54,8 @@ def send_machine_info(ums_client, machine_info, args):
 
 
 def main():
+
+    main_logger.info("Python version: {}".format(sys.version))
 
     # create UMS client
     ums_client_prod = None
@@ -178,13 +181,18 @@ def main():
 
     for found_job in found_jobs:
         main_logger.info('Started job: {}'.format(found_job[0]))
-        
+
+        if "Windows" in machine_info['os']:
+            python_version = "python"
+        else:
+            python_version = "python3.9"
+
         if ums_client_prod or ums_client_dev:
             # TODO: Monitoring start
             interval = 5
             main_logger.info('Started monitoring: {}'.format(found_job[0]))
             monitor = subprocess.Popen([
-                "python",
+                python_version,
                 os.path.join("..", "jobs_launcher", "progress_monitor.py"),
                 "--interval",
                 str(interval),
@@ -205,7 +213,8 @@ def main():
             if (args.execute_stages and str(i + 1) in args.execute_stages) or not args.execute_stages:
                 print("  Executing job {}/{}".format(i+1, len(found_job[3])))
                 main_logger.info("  Executing job {}/{}".format(i+1, len(found_job[3])))
-                job_launcher_report = jobs_launcher.job_launcher.launch_job(found_job[3][i].format(SessionDir=session_dir), found_job[6][i])
+                job = found_job[3][i].replace("python", python_version)
+                job_launcher_report = jobs_launcher.job_launcher.launch_job(job.format(SessionDir=session_dir), found_job[6][i])
                 report['results'][found_job[0]][' '.join(found_job[1])]['duration'] += job_launcher_report['report']['duration']
             report['results'][found_job[0]][' '.join(found_job[1])]['result_path'] = os.path.relpath(temp_path, session_dir)
 
