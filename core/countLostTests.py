@@ -52,7 +52,8 @@ PLATFORM_CONVERTATIONS = {
 		"os_name": "Darwin 10.15.7(64bit)",
 		"cards": {
 			"AMD_RXVEGA": "AMD Radeon RX Vega 56 (Metal)",
-			"RadeonPro560": "Radeon Pro 560"
+			"RadeonPro560": "Radeon Pro 560",
+			"AMD_RX5700XT": "AMD Radeon RX 5700XT (Metal)"
 		}
 	}
 }
@@ -95,7 +96,8 @@ LABELS_CONVERTATIONS = {
 		"os_name": "OSX",
 		"cards": {
 			"AMD Radeon RX Vega 56 (Metal)": "AMD_RXVEGA",
-			"Radeon Pro 560": "RadeonPro560"
+			"Radeon Pro 560": "RadeonPro560",
+			"AMD Radeon RX 5700XT (Metal)": "AMD_RX5700XT"
 		}
 	}
 }
@@ -103,7 +105,7 @@ LABELS_CONVERTATIONS = {
 def get_lost_tests(data, tool_name, test_package_name):
 	# list of lost tests = tests in test suite taken from configuration
 	lost_tests = []
-	if tool_name in ['blender', 'maya', 'rprviewer', 'USD', 'usdviewer', 'ml', 'blender_usd_hydra', 'max']:
+	if tool_name in ['blender', 'maya', 'rprviewer', 'USD', 'usdviewer', 'ml', 'blender_usd_hydra', 'inventor', 'max']:
 		for test in data:
 			lost_tests.append(test['case'])
 	elif tool_name == 'core':

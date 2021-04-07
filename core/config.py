@@ -139,6 +139,9 @@ REPORT_RESOURCES_PATH = 'resources'
 REPORT_CONVERSION_LOG = 'conversion.log'
 REPORT_RPR_LOG = 'renderTool.log'
 
+
+TEST_CASES_JSON_NAME = 'test_cases.json'
+
 LOST_TESTS_JSON_NAME = 'lost_tests.json'
 SKIPPED_TESTS_JSON_NAME = 'skipped_tests.json'
 RETRY_INFO_NAME = 'retry_info.json'
