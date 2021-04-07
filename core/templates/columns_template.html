@@ -152,14 +152,19 @@
         {%- if report_type == 'default' -%}
             <td class="infoColumn">
                 <b>Scene:</b> {{ item.scene_name }}<br/>
-                <b>Render time:</b> {{ item.render_time | round(3) }}<br/>
-                <b>Baseline render time: </b> 
-                {%- if item.baseline_info is defined -%}
-                    {{ item.baseline_info.render_time | round(3) }}
-                {%- else -%}
-                    No data
-                {%- endif -%}
-                <br/>
+
+                {% if show_render_time %}
+                    <b>Render time:</b> {{ item.render_time | round(3) }}<br/>
+
+                    <b>Baseline render time: </b> 
+                    {%- if item.baseline_info is defined -%}
+                        {{ item.baseline_info.render_time | round(3) }}
+                    {%- else -%}
+                        No data
+                    {%- endif -%}
+                    <br/>
+                {% endif %}
+
                 <b>Test info:</b><br/>
                 {%- for param in item.script_info -%}
                     {{ param }}<br/>
@@ -176,7 +181,10 @@
                 {%- if item.bin -%}
                     <b>BIN file:</b> {{ item.bin }}<br/>
                 {%- endif -%}
-                <b>Render time:</b> {{ item.render_time | round(3) }}<br/>
+
+                {% if show_render_time %}
+                    <b>Render time:</b> {{ item.render_time | round(3) }}<br/>
+                {% endif %}
             </td>
         {%- elif report_type == 'ec' -%}
             <td class="infoColumn {{ item.test_status }}Status">
@@ -186,14 +194,18 @@
                 {%- if item.core_scene_configuration != 'not.exist' -%}
                     <b>Scene conf.:</b> <a class="highlightedLink" href="{{ item.core_scene_configuration }}">OPEN</a> <a class="highlightedLink" href="{{ item.core_scene_configuration }}" download>DOWNLOAD</a><br/>
                 {%- endif -%}
-                <b>Render time:</b> {{ item.render_time | round(3) }}<br/>
-                <b>Baseline render time: </b> 
-                {%- if item.baseline_info is defined -%}
-                    {{ item.baseline_info.render_time | round(3) }}
-                {%- else -%}
-                    No data
-                {%- endif -%}
-                <br/>
+
+                {% if show_render_time %}
+                    <b>Render time:</b> {{ item.render_time | round(3) }}<br/>
+                    <b>Baseline render time: </b> 
+                    {%- if item.baseline_info is defined -%}
+                        {{ item.baseline_info.render_time | round(3) }}
+                    {%- else -%}
+                        No data
+                    {%- endif -%}
+                    <br/>
+                {% endif %}
+
                 <b>GPU memory usage:</b> {{ item.gpu_memory_usage | round(3) }}<br/>
                 <b>Baseline GPU memory usage:</b> {{ item.baseline_gpu_memory_usage | round(3) }}<br/>
                 <b>GPU memory total:</b> {{ item.gpu_memory_total }}<br/>
@@ -218,20 +230,20 @@
                     <b>Tool version:</b> {{ item.baseline_info.tool }}<br/>
                     <b>Plugin version:</b> {{ item.baseline_info.render_version }}<br/>
                     <b>Core version:</b> {{ item.baseline_info.core_version }}<br/>
-                    <b>Render time:</b> {{ item.baseline_info.render_time | round(3) }}<br/>
-                    {%- if item.baseline_info.sync_time -%}
+                    {% if show_render_time %}
+                        <b>Render time:</b> {{ item.baseline_info.render_time | round(3) }}<br/>
                         <b>Synchronization time:</b> {{ item.baseline_info.sync_time | round(3) }}<br/>
-                    {%- endif -%}
+                    {% endif %}
                 </td>
             {%- elif report_type == 'ec' -%}
                 <td class="infoColumn">
                     <b>Tool version:</b> {{ item.baseline_info.tool }}<br/>
                     <b>Minor version:</b> {{ item.baseline_info.minor_version }}<br/>
                     <b>Core version:</b> {{ item.baseline_info.core_version }}<br/>
-                    <b>Render time:</b> {{ item.baseline_info.render_time | round(3) }}<br/>
-                    {%- if item.baseline_info.sync_time -%}
+                    {% if show_render_time %}
+                        <b>Render time:</b> {{ item.baseline_info.render_time | round(3) }}<br/>
                         <b>Synchronization time:</b> {{ item.baseline_info.sync_time | round(3) }}<br/>
-                    {%- endif -%}
+                    {% endif %}
                 </td>
             {%- endif -%}
         {%- else -%}
@@ -306,22 +318,25 @@
             Test case finished</b><br/>
 
 
-            <b>
-            {%- if not item.has_time_diff -%}
-                &check; 
-            {%- else -%}
-                &times; 
-            {%- endif %}
-            Difference render time:</b> {{ item.difference_time | round(3) }} %<br/>
-            {%- if item.message -%}
-                <b>Message:</b> {{ item.message | join('. ') }}<br/>
-            {%- endif -%}
+            {% if show_render_time %}
+                <b>
+                {%- if not item.has_time_diff -%}
+                    &check; 
+                {%- else -%}
+                    &times; 
+                {%- endif %}
+
+                Difference render time:</b> {{ item.difference_time | round(3) }} %<br/>
+                {%- if item.message -%}
+                    <b>Message:</b> {{ item.message | join('. ') }}<br/>
+                {%- endif -%}
+            {% endif %}
         </td>
     {%- endif -%}
 {%- endif -%}
 
 {#- ------------------------------ RENDER TIME DIFFERENCE ------------------------------ -#}
-{%- if column.name == 'time_diff' -%}
+{%- if column.name == 'time_diff' and show_render_time -%}
     {%- if is_head -%}
         <th data-field="time_diff" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}">Render time diff, %</th>
     {%- else -%}
@@ -425,7 +440,7 @@
 
 {#- ****************************** RENDER TIME ****************************** -#}
 {#- ------------------------------ RENDER TIME ------------------------------ -#}
-{%- if column.name == 'render_time' -%}
+{%- if column.name == 'render_time' and show_render_time -%}
     {%- if is_head -%}
         <th data-field="render_time" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-formatter="timeFormatterFull">
             {%- if report_type == 'default' or report_type == 'ec' or report_type == 'perf' -%}
@@ -444,7 +459,7 @@
 {%- endif -%}
 
 {#- ------------------------------ BASELINE RENDER TIME ------------------------------ -#}
-{%- if column.name == 'baseline_render_time' -%}
+{%- if column.name == 'baseline_render_time' and show_render_time -%}
     {%- if is_head -%}
         <th data-field="baseline_render_time" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-formatter="timeFormatterFull">Baseline render time
         </th>
@@ -458,7 +473,7 @@
 {%- endif -%}
 
 {#- ------------------------------ ORIGINAL RENDER TIME ------------------------------ -#}
-{%- if column.name == 'original_time' -%}
+{%- if column.name == 'original_time' and show_render_time -%}
     {%- if is_head -%}
         <th data-field="original_time" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-formatter="timeFormatterFull">{{ original_render | title }} render time
         </th>
@@ -521,16 +536,24 @@
     {%- else -%}
         {%- if report_type == 'default' or report_type == 'perf' -%}
             <td>
-                {%- if 'render_log' in item -%}
-                <a href="{{ item.render_log }}">Render log</a>
-                {%- else -%}
+                {%- if show_render_log -%}
 
-                    {%- if template_name == 'local' -%}
-                        <a href="{{ config.REPORT_RPR_LOG }}">Render log</a>
-                    {%- elif template_name == 'detailed' -%}
-                        <a href="{{ report[i].results[test_package][test_conf].result_path }}/{{ config.REPORT_RPR_LOG }}">Render Log</a>
-                    {%- endif -%}
+                    {%- if 'render_log' in item -%}
+                        <a href="{{ item.render_log }}">Render log</a>
+                    {%- else -%}
 
+                        {%- if template_name == 'local' -%}
+                            <a href="{{ config.REPORT_RPR_LOG }}">Render log</a>
+                        {%- elif template_name == 'detailed' -%}
+                            <a href="{{ report[i].results[test_package][test_conf].result_path }}/{{ config.REPORT_RPR_LOG }}">Render Log</a>
+                        {%- endif -%}
+
+                    {%- endif -%}<br/>
+
+                {%- endif -%}
+
+                {%- if 'execution_log' in item -%}
+                    <a href="{{ item.execution_log }}">Execution log</a>
                 {%- endif -%}
             </td>
         {%- elif report_type == 'ec' -%}
