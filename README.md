@@ -8,7 +8,7 @@ Required content - definition of:
 * report_type
 
 _Example_
-```python3
+```python3.9
 tool_name = 'maya'
 report_type = 'default'
 ```

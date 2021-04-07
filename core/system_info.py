@@ -1,4 +1,4 @@
-#!usr/bin/env python3
+#!usr/bin/env python3.9
 import os
 import re
 import platform
@@ -98,7 +98,7 @@ def get_machine_info():
         # info['asic_count'] = "{}".format(len(info['asic'].split('+')))
         info['ram'] = psutil.virtual_memory().total / 1024 ** 3
         # info['cpu'] = platform.processor()
-        info['cpu'] = cpuinfo.get_cpu_info()['brand']
+        info['cpu'] = cpuinfo.get_cpu_info()['brand_raw']
         return info
     except Exception as err:
         print("Exception: {0}".format(err))
@@ -106,4 +106,4 @@ def get_machine_info():
 
 
 def print_machine_info():
-    info = get_machine_info();
+    info = get_machine_info()

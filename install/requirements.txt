@@ -1,7 +1,7 @@
 pip
 psutil
 mkl
-numpy
+numpy==1.19.3
 scipy
 olefile
 Pillow
@@ -9,9 +9,9 @@ MarkupSafe
 Jinja2
 pytest
 pyscreenshot
-py-cpuinfo==4.0.0
+py-cpuinfo
 requests
 imageio
-opencv-python==4.1.2.30
+opencv-python
 Minio
 pytest
