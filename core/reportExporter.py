@@ -1,4 +1,3 @@
-from datetime import datetime
 import os
 import subprocess
 import jinja2
@@ -88,7 +87,7 @@ def get_jobs_launcher_version(value):
 
 
 def get_year():
-    return datetime.now().year
+    return datetime.datetime.now().year
 
 
 def generate_thumbnails(session_dir):
