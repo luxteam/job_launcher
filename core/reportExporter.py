@@ -645,6 +645,7 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
                         'report_type': report_type,
                         'tool_name': tool_name,
                         'pre_path': '.',
+                        'get_year': get_year,
                         'config': config})
     env.filters['env_override'] = env_override
     env.filters['get_jobs_launcher_version'] = get_jobs_launcher_version
