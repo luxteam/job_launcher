@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import subprocess
 import jinja2
@@ -84,6 +85,10 @@ def env_override(value, key):
 
 def get_jobs_launcher_version(value):
     return subprocess.check_output("git describe --tags --always", shell=True).decode("utf-8")
+
+
+def get_year():
+    return datetime.now().year
 
 
 def generate_thumbnails(session_dir):
@@ -644,6 +649,7 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
                         'config': config})
     env.filters['env_override'] = env_override
     env.filters['get_jobs_launcher_version'] = get_jobs_launcher_version
+    env.filters['get_year'] = get_year
 
     common_info = {}
     summary_report = None
