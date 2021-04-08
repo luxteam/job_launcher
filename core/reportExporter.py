@@ -86,6 +86,10 @@ def get_jobs_launcher_version(value):
     return subprocess.check_output("git describe --tags --always", shell=True).decode("utf-8")
 
 
+def get_year():
+    return datetime.datetime.now().year
+
+
 def generate_thumbnails(session_dir):
     current_test_report = []
     main_logger.info("Start thumbnails creation")
@@ -641,6 +645,7 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
                         'report_type': report_type,
                         'tool_name': tool_name,
                         'pre_path': '.',
+                        'get_year': get_year,
                         'config': config})
     env.filters['env_override'] = env_override
     env.filters['get_jobs_launcher_version'] = get_jobs_launcher_version
@@ -807,6 +812,7 @@ def build_performance_reports(work_dir, major_title, commit_sha='undefined', bra
     env.globals.update({'report_type': report_type,
                         'tool_name': tool_name,
                         'pre_path': '.',
+                        'get_year': get_year,
                         'config': config})
     env.filters['env_override'] = env_override
     env.filters['get_jobs_launcher_version'] = get_jobs_launcher_version
