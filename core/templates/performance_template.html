@@ -9,7 +9,7 @@
             <tr>
                 <th>Tool</th>
                 {% for hw in hardware %}
-                    <th data-formatter="timeFormatterFull">{{ hw[0].split('Darwin')[0].split('Windows')[0] }}</th>
+                    <th data-formatter="timeFormatterFull">{{ hw[0] }}</th>
                 {% endfor %}
             </tr>
         </thead>
@@ -64,7 +64,7 @@
             <tr>
                 <th data-halign="center" data-sortable="true">Test</th>
                 {% for hw in hardware %}
-                    <th data-halign="center" data-sortable="true" data-cell-style="performanceNormalizeStyleFormatter" data-formatter="timeFormatterFull">{{ hw[0].split('Darwin')[0].split('Windows')[0] }}</th>
+                    <th data-halign="center" data-sortable="true" data-cell-style="performanceNormalizeStyleFormatter" data-formatter="timeFormatterFull">{{ hw[0] }}</th>
                 {% endfor %}
             </tr>
             </thead>
@@ -112,7 +112,7 @@
             <tr>
                 <th data-filed="test_case" data-halign="center" data-sortable="true">Test</th>
                 {% for hw in hardware %}
-                <th data-filed="{{ hw[0] }}" data-halign="center" data-sortable="true" data-formatter="performanceNormalizeFormatter" data-cell-style="performanceNormalizeStyleFormatter">{{ hw[0].split('Darwin')[0].split('Windows')[0] }}</th>
+                <th data-filed="{{ hw[0] }}" data-halign="center" data-sortable="true" data-formatter="performanceNormalizeFormatter" data-cell-style="performanceNormalizeStyleFormatter">{{ hw[0] }}</th>
                 {% endfor %}
             </tr>
             </thead>
@@ -146,7 +146,7 @@
                 <tr>
                     <th>Tool</th>
                     {% for hw in hardware %}
-                    <th data-formatter="timeFormatterFull">{{ hw[0].split('Darwin')[0].split('Windows')[0] }}</th>
+                    <th data-formatter="timeFormatterFull">{{ hw[0] }}</th>
                     {% endfor %}
                 </tr>
             </thead>
@@ -201,7 +201,7 @@
                 <tr>
                     <th data-halign="center" data-sortable="true">Test</th>
                     {% for hw in hardware %}
-                        <th data-halign="center" data-sortable="true" data-cell-style="performanceNormalizeStyleFormatter" data-formatter="timeFormatterFull">{{ hw[0].split('Darwin')[0].split('Windows')[0] }}</th>
+                        <th data-halign="center" data-sortable="true" data-cell-style="performanceNormalizeStyleFormatter" data-formatter="timeFormatterFull">{{ hw[0] }}</th>
                     {% endfor %}
                 </tr>
                 </thead>
@@ -249,7 +249,7 @@
                 <tr>
                     <th data-filed="test_case" data-halign="center" data-sortable="true">Test</th>
                     {% for hw in hardware %}
-                    <th data-filed="{{ hw[0].split('Darwin')[0].split('Windows')[0] }}" data-halign="center" data-sortable="true" data-formatter="performanceNormalizeFormatter" data-cell-style="performanceNormalizeStyleFormatter">{{ hw[0].split('Darwin')[0].split('Windows')[0] }}</th>
+                    <th data-filed="{{ hw[0] }}" data-halign="center" data-sortable="true" data-formatter="performanceNormalizeFormatter" data-cell-style="performanceNormalizeStyleFormatter">{{ hw[0] }}</th>
                     {% endfor %}
                 </tr>
                 </thead>
@@ -284,7 +284,7 @@
                 <tr>
                     <th>Step</th>
                     {% for hw in hardware %}
-                    <th data-formatter="timeFormatterFull">{{ hw[0].split('Darwin')[0].split('Windows')[0] }}</th>
+                    <th data-formatter="timeFormatterFull">{{ hw[0] }}</th>
                     {% endfor %}
                 </tr>
             </thead>
@@ -337,7 +337,7 @@
                     <tr>
                         <th data-halign="center" data-sortable="true">Step</th>
                         {% for hw in hardware %}
-                            <th data-halign="center" data-sortable="true" data-cell-style="performanceNormalizeStyleFormatter" data-formatter="timeFormatterFull">{{ hw[0].split('Darwin')[0].split('Windows')[0] }}</th>
+                            <th data-halign="center" data-sortable="true" data-cell-style="performanceNormalizeStyleFormatter" data-formatter="timeFormatterFull">{{ hw[0] }}</th>
                         {% endfor %}
                     </tr>
                     </thead>
@@ -375,7 +375,7 @@
     syncDataSet = [
       {% for hw in hardware %}
         {
-          label: '{{ hw[0].split('Darwin')[0].split('Windows')[0] }}',
+          label: '{{ hw[0] }}',
           backgroundColor: toolColors[{{ loop.index }} % toolColors.length],
           data: [
             {% for tool in test_info %}
@@ -411,7 +411,7 @@
     syncToolData = {
       labels: [
           {% for hw in hardware %}
-            '{{ hw[0].split('Darwin')[0].split('Windows')[0] }}'{{ "," if not loop.last }}
+            '{{ hw[0] }}'{{ "," if not loop.last }}
           {% endfor %}
         ],
 
@@ -475,7 +475,7 @@
     var setupData = {
     labels: [
         {% for hw in hardware %}
-          '{{ hw[0].split('Darwin')[0].split('Windows')[0] }}'{{ "," if not loop.last }}
+          '{{ hw[0] }}'{{ "," if not loop.last }}
         {% endfor %}
       ],
 
@@ -489,7 +489,7 @@
   renderDataSet = [
     {% for hw in hardware %}
       {
-        label: '{{ hw[0].split('Darwin')[0].split('Windows')[0] }}',
+        label: '{{ hw[0] }}',
         backgroundColor: toolColors[{{ loop.index }} % toolColors.length],
         data: [
           {% for tool in test_info %}
@@ -525,7 +525,7 @@
   var renderToolData = {
     labels: [
         {% for hw in hardware %}
-          '{{ hw[0].split('Darwin')[0].split('Windows')[0] }}'{{ "," if not loop.last }}
+          '{{ hw[0] }}'{{ "," if not loop.last }}
         {% endfor %}
       ],
 
