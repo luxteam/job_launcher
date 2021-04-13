@@ -327,10 +327,11 @@
                 {%- endif %}
 
                 Difference render time:</b> {{ item.difference_time | round(3) }} %<br/>
-                {%- if item.message -%}
-                    <b>Message:</b> {{ item.message | join('. ') }}<br/>
-                {%- endif -%}
             {% endif %}
+
+            {%- if item.message -%}
+                <b>Message:</b> {{ item.message | join('. ') }}<br/>
+            {%- endif -%}
         </td>
     {%- endif -%}
 {%- endif -%}
