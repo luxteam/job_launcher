@@ -86,6 +86,10 @@ def get_jobs_launcher_version(value):
     return subprocess.check_output("git describe --tags --always", shell=True).decode("utf-8")
 
 
+def get_year():
+    return datetime.datetime.now().year
+
+
 def generate_thumbnails(session_dir):
     current_test_report = []
     main_logger.info("Start thumbnails creation")
@@ -599,7 +603,9 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
                                            pre_path=os.path.relpath(work_dir, os.path.join(work_dir, report_dir)),
                                            platform=execution,
                                            groupped_tracked_metrics=groupped_tracked_metrics,
-                                           tracked_metrics_history=tracked_metrics_history)
+                                           tracked_metrics_history=tracked_metrics_history,
+                                           show_render_time=show_render_time,
+                                           show_render_log=show_render_log)
                     save_html_report(html, os.path.join(work_dir, report_dir), 'report.html', replace_pathsep=True)
     except Exception as err:
         traceback.print_exc()
@@ -639,6 +645,7 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
                         'report_type': report_type,
                         'tool_name': tool_name,
                         'pre_path': '.',
+                        'get_year': get_year,
                         'config': config})
     env.filters['env_override'] = env_override
     env.filters['get_jobs_launcher_version'] = get_jobs_launcher_version
@@ -662,6 +669,13 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
 
         add_retry_info(summary_report, node_retry_info, work_dir)
 
+        if "show_render_time" not in globals():
+            global show_render_time
+            show_render_time = True
+        if "show_render_log" not in globals():
+            global show_render_log
+            show_render_log = True
+
         common_info.update({'commit_sha': commit_sha})
         common_info.update({'branch_name': branch_name})
         common_info.update({'commit_message': commit_message})
@@ -681,7 +695,9 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
                                                common_info=common_info,
                                                synchronization_time=sync_time(summary_report),
                                                groupped_tracked_metrics=groupped_tracked_metrics,
-                                               tracked_metrics_history=tracked_metrics_history)
+                                               tracked_metrics_history=tracked_metrics_history,
+                                               show_render_time=show_render_time,
+                                               show_render_log=show_render_log)
         save_html_report(summary_html, work_dir, SUMMARY_REPORT_HTML, replace_pathsep=True)
 
         for execution in summary_report.keys():
@@ -690,7 +706,9 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
                                                                      pageID="summaryA",
                                                                      PIX_DIFF_MAX=PIX_DIFF_MAX,
                                                                      common_info=common_info,
-                                                                     i=execution)
+                                                                     i=execution,
+                                                                     show_render_time=show_render_time,
+                                                                     show_render_log=show_render_log)
             save_html_report(detailed_summary_html, work_dir, execution + "_detailed.html", replace_pathsep=True)
     except Exception as err:
         traceback.print_exc()
@@ -794,6 +812,7 @@ def build_performance_reports(work_dir, major_title, commit_sha='undefined', bra
     env.globals.update({'report_type': report_type,
                         'tool_name': tool_name,
                         'pre_path': '.',
+                        'get_year': get_year,
                         'config': config})
     env.filters['env_override'] = env_override
     env.filters['get_jobs_launcher_version'] = get_jobs_launcher_version

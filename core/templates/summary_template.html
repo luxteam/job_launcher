@@ -32,21 +32,23 @@
                     <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
                         title="[Skipped] status means case wasn't launched by QA team decision."></span>
                 </th>
-                <th data-formatter="timeFormatterFull" data-switchable="false" data-visible="false" data-field="fullTimeTaken">
-                    Time taken
-                    <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
-                        title="Time taken = Render time + Sycnhronization time + Setup time"></span>
-                </th>
-                <th data-formatter="timeFormatterFull" data-field="syncTimeTaken" data-switchable="false">
-                    Time taken
-                    <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
-                        title="Time taken = Render time + Sycnhronization time"></span>
-                </th>
-                <th data-formatter="timeFormatterFull">Render time</th>
-                {% if synchronization_time %}
-                    <th data-formatter="timeFormatterFull">Synchronization time</th>
+                {% if show_render_time %}
+                    <th data-formatter="timeFormatterFull" data-switchable="false" data-visible="false" data-field="fullTimeTaken">
+                        Time taken
+                        <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
+                            title="Time taken = Render time + Sycnhronization time + Setup time"></span>
+                    </th>
+                    <th data-formatter="timeFormatterFull" data-field="syncTimeTaken" data-switchable="false">
+                        Time taken
+                        <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
+                            title="Time taken = Render time + Sycnhronization time"></span>
+                    </th>
+                    <th data-formatter="timeFormatterFull">Render time</th>
+                    {% if synchronization_time %}
+                        <th data-formatter="timeFormatterFull">Synchronization time</th>
+                    {% endif %}
+                    <th data-formatter="timeFormatterFull" data-visible="false" data-field="setupTime">Setup time</th>
                 {% endif %}
-                <th data-formatter="timeFormatterFull" data-visible="false" data-field="setupTime">Setup time</th>
             </tr>
         </thead>
         <tbody>
@@ -88,18 +90,20 @@
                 {% endif -%}
                 >{{ report[i].summary.skipped }}</td>
 
-                <td>{{ report[i].summary.duration }}</td>
-                <td>{{ report[i].summary.duration_sync }}</td>
+                {% if show_render_time %}
+                    <td>{{ report[i].summary.duration }}</td>
+                    <td>{{ report[i].summary.duration_sync }}</td>
 
-                <td
-                {%- if report[i].summary.render_duration == -0.0 and report[i].summary.total != report[i].summary.skipped %}
-                class="badResult"
-                {% endif -%}
-                >{{ report[i].summary.render_duration | round(3) }}</td>
-                {% if synchronization_time %}
-                    <td>{{ report[i].summary.synchronization_duration }}</td>
+                    <td
+                    {%- if report[i].summary.render_duration == -0.0 and report[i].summary.total != report[i].summary.skipped %}
+                    class="badResult"
+                    {% endif -%}
+                    >{{ report[i].summary.render_duration | round(3) }}</td>
+                    {% if synchronization_time %}
+                        <td>{{ report[i].summary.synchronization_duration }}</td>
+                    {% endif %}
+                    <td>{{ report[i].summary.setup_duration }}</td>
                 {% endif %}
-                <td>{{ report[i].summary.setup_duration }}</td>
             </tr>
     {% endfor %}
         </tbody>
@@ -149,21 +153,23 @@
                     <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
                         title="[Skipped] status means case wasn't launched by QA team decision."></span>
                 </th>
-                <th data-formatter="timeFormatterFull" data-switchable="false" data-visible="false" data-field="fullTimeTaken">
-                    Time taken
-                    <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
-                        title="Fact time"></span>
-                </th>
-                <th data-formatter="timeFormatterFull" data-field="syncTimeTaken" data-switchable="false">
-                    Time taken
-                    <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
-                        title="Time taken = Render time + Sycnhronization time"></span>
-                </th>
-                <th data-formatter="timeFormatterFull">Render time</th>
-                {% if synchronization_time %}
-                    <th data-formatter="timeFormatterFull">Synchronization time</th>
+                {% if show_render_time %}
+                    <th data-formatter="timeFormatterFull" data-switchable="false" data-visible="false" data-field="fullTimeTaken">
+                        Time taken
+                        <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
+                            title="Fact time"></span>
+                    </th>
+                    <th data-formatter="timeFormatterFull" data-field="syncTimeTaken" data-switchable="false">
+                        Time taken
+                        <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
+                            title="Time taken = Render time + Sycnhronization time"></span>
+                    </th>
+                    <th data-formatter="timeFormatterFull">Render time</th>
+                    {% if synchronization_time %}
+                        <th data-formatter="timeFormatterFull">Synchronization time</th>
+                    {% endif %}
+                    <th data-formatter="timeFormatterFull" data-visible="false" data-field="setupTime">Setup time</th>
                 {% endif %}
-                <th data-formatter="timeFormatterFull" data-visible="false" data-field="setupTime">Setup time</th>
             </tr>
         </thead>
         <tbody>
@@ -306,36 +312,40 @@
                 {% endif %}
                 >{{ report[i].results[test_package][test_conf].skipped }}</td>
 
-                {% if report[i].results[test_package][test_conf].duration %}
-                    <td>{{ report[i].results[test_package][test_conf].duration }}</td>
-                {% else %}
-                    <td></td>
-                {% endif %}
+                {% if show_render_time %}
 
-                {% if report[i].results[test_package][test_conf].duration_sync %}
-                    <td>{{ report[i].results[test_package][test_conf].duration_sync }}</td>
-                {% else %}
-                    <td></td>
-                {% endif %}
-
-                {% if report[i].results[test_package][test_conf].duration %}
-                    <td
-                    {% if report[i].results[test_package][test_conf].render_duration == -0.0 and report[i].results[test_package][test_conf].total != report[i].results[test_package][test_conf].skipped %}
-                    class="badResult"
+                    {% if report[i].results[test_package][test_conf].duration %}
+                        <td>{{ report[i].results[test_package][test_conf].duration }}</td>
+                    {% else %}
+                        <td></td>
                     {% endif %}
-                    >{{ report[i].results[test_package][test_conf].render_duration | round(3) }}</td>
-                {% else %}
-                    <td></td>
-                {% endif %}
 
-                {% if synchronization_time %}
-                    <td>{{ report[i].results[test_package][test_conf].synchronization_duration }}</td>
-                {% endif %}
+                    {% if report[i].results[test_package][test_conf].duration_sync %}
+                        <td>{{ report[i].results[test_package][test_conf].duration_sync }}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
 
-                {% if report[i].results[test_package][test_conf].setup_duration %}
-                    <td>{{ report[i].results[test_package][test_conf].setup_duration }}</td>
-                {% else %}
-                    <td></td>
+                    {% if report[i].results[test_package][test_conf].duration %}
+                        <td
+                        {% if report[i].results[test_package][test_conf].render_duration == -0.0 and report[i].results[test_package][test_conf].total != report[i].results[test_package][test_conf].skipped %}
+                        class="badResult"
+                        {% endif %}
+                        >{{ report[i].results[test_package][test_conf].render_duration | round(3) }}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+
+                    {% if synchronization_time %}
+                        <td>{{ report[i].results[test_package][test_conf].synchronization_duration }}</td>
+                    {% endif %}
+
+                    {% if report[i].results[test_package][test_conf].setup_duration %}
+                        <td>{{ report[i].results[test_package][test_conf].setup_duration }}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+
                 {% endif %}
             </tr>
             {% endfor %}
@@ -370,18 +380,22 @@
                 {% endif %}
                 >{{ report[i].summary.skipped }}</td>
 
-                <td>{{ report[i].summary.duration }}</td>
-                <td>{{ report[i].summary.duration_sync }}</td>
+                {% if show_render_time %}
 
-                <td
-                {% if report[i].summary.render_duration == -0.0 and report[i].summary.total != report[i].summary.skipped %}
-                class="badResult"
+                    <td>{{ report[i].summary.duration }}</td>
+                    <td>{{ report[i].summary.duration_sync }}</td>
+
+                    <td
+                    {% if report[i].summary.render_duration == -0.0 and report[i].summary.total != report[i].summary.skipped %}
+                    class="badResult"
+                    {% endif %}
+                    >{{ report[i].summary.render_duration | round(3) }}</td>
+                    {% if synchronization_time %}
+                        <td>{{ report[i].summary.synchronization_duration }}</td>
+                    {% endif %}
+                    <td>{{ report[i].summary.setup_duration }}</td>
+
                 {% endif %}
-                >{{ report[i].summary.render_duration | round(3) }}</td>
-                {% if synchronization_time %}
-                    <td>{{ report[i].summary.synchronization_duration }}</td>
-                {% endif %}
-                <td>{{ report[i].summary.setup_duration }}</td>
             </tr>
         </tbody>
     </table>
