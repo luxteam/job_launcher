@@ -559,6 +559,13 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
     template = jinja_env.get_template('local_template.html')
     report_dir = ""
 
+    if "show_render_time" not in globals():
+        global show_render_time
+        show_render_time = True
+    if "show_render_log" not in globals():
+        global show_render_log
+        show_render_log = True
+
     try:
         for execution in summary_report:
             for test in summary_report[execution]['results']:

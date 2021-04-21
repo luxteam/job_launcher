@@ -43,6 +43,7 @@
                         let datasets
                         let dataset
                         let has_only_nulls
+                        let label_has_only_nulls
                         {% for metric_group_name in groupped_tracked_metrics %}
                             datasets = []
 
@@ -134,7 +135,6 @@
                             {% endfor %}
 
                             // remove labels with all null values
-                            let label_has_only_nulls
 
                             for (let label_number = labels.length - 1; label_number >= 0; label_number--) {
                                 label_has_only_nulls = true
