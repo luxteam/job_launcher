@@ -17,6 +17,8 @@ class MetricsCollector:
         self.found_metrics = {}
         # grouped lists of metrics (how they should be grouped on charts)
         self.groupped_metrics = {}
+        # general info about build (e.g. core version, commit sha)
+        self.general_info = {}
 
     def collect_metrics_test_case(self, platform, test_package, item):
         try:
@@ -200,15 +202,20 @@ class MetricsCollector:
             if not os.path.exists(tracked_metrics_file_path):
                 os.makedirs(tracked_metrics_file_path)
             with open(os.path.abspath(os.path.join(tracked_metrics_file_path, TRACKED_METRICS_JSON_NAME.format(build_number))), "w", encoding='utf8') as file:
-                json.dump(self.tracked_metrics_data, file, indent=4, sort_keys=True)
+                json.dump({"general_info": self.general_info, "data": self.tracked_metrics_data}, file, indent=4, sort_keys=True)
         except Exception as e:
             main_logger.error("Can't save tracked metrics data: {}".format(str(e)))
             main_logger.error("Traceback: {}".format(traceback.format_exc()))
 
 
+    def save_general_info(self, key, value):
+        self.general_info[key] = value
+
+
     @staticmethod
     def load_tracked_metrics_history(work_dir, max_files_number):
         tracked_metrics_history = OrderedDict()
+        general_info_history = OrderedDict()
         try:
             tracked_metrics_file_path = os.path.join(work_dir, TRACKED_METRICS_LOCATION_NAME)
             tracked_metrics_files = sorted(glob(os.path.join(tracked_metrics_file_path ,'*.json')), key=lambda x: int(os.path.splitext(x)[0].split('_')[-1]), reverse=True)
@@ -218,10 +225,15 @@ class MetricsCollector:
                 with open(tracked_metrics_files[i], 'r') as tracked_metrics_file:
                     tracked_metrics_file_data = json.load(tracked_metrics_file) 
                 file_build_number = re.search(r'\d+', tracked_metrics_files[i].split(os.path.sep)[-1]).group(0)
-                tracked_metrics_history[file_build_number] = tracked_metrics_file_data
+                if "general_info" in tracked_metrics_file_data:
+                    tracked_metrics_history[file_build_number] = tracked_metrics_file_data["data"]
+                    general_info_history[file_build_number] = tracked_metrics_file_data["general_info"]
+                else:
+                    tracked_metrics_history[file_build_number] = tracked_metrics_file_data
+                    general_info_history[file_build_number] = {}
             tracked_metrics_history = OrderedDict(reversed(list(tracked_metrics_history.items())))
         except Exception as e:
             main_logger.error("Can't collect history of tracked metrics: {}".format(str(e)))
             main_logger.error("Traceback: {}".format(traceback.format_exc()))
 
-        return tracked_metrics_history
+        return tracked_metrics_history, general_info_history

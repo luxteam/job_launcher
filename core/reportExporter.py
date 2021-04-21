@@ -681,12 +681,25 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
         common_info.update({'commit_message': commit_message})
         common_info.update({'engine': engine})
         save_json_report(summary_report, work_dir, SUMMARY_REPORT)
+
         tracked_metrics_history = OrderedDict()
+        general_info_history = OrderedDict()
         groupped_tracked_metrics = {}
         if metrics_collector:
+            metrics_collector.save_general_info("commit_sha", commit_sha)
+            metrics_collector.save_general_info("branch_name", branch_name)
+            metrics_collector.save_general_info("commit_message", commit_message)
+            metrics_collector.save_general_info("engine", engine)
+            if "core_version" in common_info:
+                metrics_collector.save_general_info("core_version", common_info["core_version"])
+            if "minor_version" in common_info:
+                metrics_collector.save_general_info("minor_version", common_info["minor_version"])
+            if "render_version" in common_info:
+                metrics_collector.save_general_info("render_version", common_info["render_version"])
+
             metrics_collector.add_groupped_metrics_in_cases()
             metrics_collector.update_tracked_metrics_history(work_dir, build_number)
-            tracked_metrics_history = MetricsCollector.load_tracked_metrics_history(work_dir, tracked_metrics_files_number)
+            tracked_metrics_history, general_info_history = MetricsCollector.load_tracked_metrics_history(work_dir, tracked_metrics_files_number)
             groupped_tracked_metrics = metrics_collector.groupped_metrics 
         summary_html = summary_template.render(title=major_title + " Summary",
                                                report=summary_report,
@@ -696,6 +709,7 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
                                                synchronization_time=sync_time(summary_report),
                                                groupped_tracked_metrics=groupped_tracked_metrics,
                                                tracked_metrics_history=tracked_metrics_history,
+                                               general_info_history=general_info_history,
                                                show_render_time=show_render_time,
                                                show_render_log=show_render_log)
         save_html_report(summary_html, work_dir, SUMMARY_REPORT_HTML, replace_pathsep=True)
@@ -834,11 +848,22 @@ def build_performance_reports(work_dir, major_title, commit_sha='undefined', bra
         save_json_report(summary_report, work_dir, SUMMARY_REPORT)
 
         tracked_metrics_history = OrderedDict()
+        general_info_history = OrderedDict()
         groupped_tracked_metrics = {}
         if metrics_collector:
+            metrics_collector.save_general_info("commit_sha", commit_sha)
+            metrics_collector.save_general_info("branch_name", branch_name)
+            metrics_collector.save_general_info("commit_message", commit_message)
+            if "core_version" in common_info:
+                metrics_collector.save_general_info("core_version", common_info["core_version"])
+            if "minor_version" in common_info:
+                metrics_collector.save_general_info("minor_version", common_info["minor_version"])
+            if "render_version" in common_info:
+                metrics_collector.save_general_info("render_version", common_info["render_version"])
+
             metrics_collector.add_groupped_metrics_in_cases()
             metrics_collector.update_tracked_metrics_history(work_dir, build_number)
-            tracked_metrics_history = MetricsCollector.load_tracked_metrics_history(work_dir, tracked_metrics_files_number)
+            tracked_metrics_history, general_info_history = MetricsCollector.load_tracked_metrics_history(work_dir, tracked_metrics_files_number)
             groupped_tracked_metrics = metrics_collector.groupped_metrics
         summary_html = summary_template.render(title=major_title + " Summary",
                                                report=summary_report,
@@ -847,7 +872,8 @@ def build_performance_reports(work_dir, major_title, commit_sha='undefined', bra
                                                common_info=common_info,
                                                synchronization_time=sync_time(summary_report),
                                                groupped_tracked_metrics=groupped_tracked_metrics,
-                                               tracked_metrics_history=tracked_metrics_history)
+                                               tracked_metrics_history=tracked_metrics_history,
+                                               general_info_history=general_info_history)
         save_html_report(summary_html, work_dir, SUMMARY_REPORT_HTML, replace_pathsep=True)
 
         for execution in summary_report.keys():
