@@ -553,7 +553,7 @@ def build_compare_report(summary_report):
     return compare_report, hardware
 
 
-def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupped_tracked_metrics, tracked_metrics_history):
+def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupped_tracked_metrics, tracked_metrics_history, general_info_history):
     work_dir = os.path.abspath(work_dir)
 
     template = jinja_env.get_template('local_template.html')
@@ -604,6 +604,7 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
                                            platform=execution,
                                            groupped_tracked_metrics=groupped_tracked_metrics,
                                            tracked_metrics_history=tracked_metrics_history,
+                                           general_info_history=general_info_history,
                                            show_render_time=show_render_time,
                                            show_render_log=show_render_log)
                     save_html_report(html, os.path.join(work_dir, report_dir), 'report.html', replace_pathsep=True)
@@ -797,7 +798,7 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
         rc = -3
 
     try:
-        build_local_reports(work_dir, summary_report, common_info, env, groupped_tracked_metrics, tracked_metrics_history)
+        build_local_reports(work_dir, summary_report, common_info, env, groupped_tracked_metrics, tracked_metrics_history, general_info_history)
     except Exception as err:
         traceback.print_exc()
         main_logger.error(str(err))
@@ -895,7 +896,7 @@ def build_performance_reports(work_dir, major_title, commit_sha='undefined', bra
         rc = -1
 
     try:
-        build_local_reports(work_dir, summary_report, common_info, env, groupped_tracked_metrics, tracked_metrics_history)
+        build_local_reports(work_dir, summary_report, common_info, env, groupped_tracked_metrics, tracked_metrics_history, general_info_history)
     except Exception as err:
         traceback.print_exc()
         main_logger.error(str(err))

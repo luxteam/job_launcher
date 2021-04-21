@@ -139,16 +139,16 @@
                             for (let label_number = labels.length - 1; label_number >= 0; label_number--) {
                                 label_has_only_nulls = true
 
-                                for (let dataset_number in datasets.data) {
+                                for (let dataset_number in datasets) {
                                     if (datasets[dataset_number].data[label_number] || datasets[dataset_number].data[label_number] == 0) {
                                         label_has_only_nulls = false
                                     }
                                 }
 
-                                if (!label_has_only_nulls) {
+                                if (label_has_only_nulls) {
                                     labels.splice(label_number, 1)
 
-                                    for (let dataset_number in datasets.data) {
+                                    for (let dataset_number in datasets) {
                                         datasets[dataset_number].data.splice(label_number, 1)
                                     }
                                 }
