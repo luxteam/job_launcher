@@ -161,13 +161,18 @@ def get_rendertime_difference(base_dir, img, time_diff_max):
         except IndexError:
             baseline_time = -0.0
 
-        for threshold in time_diff_max:
-            if baseline_time < float(threshold) and render_time - baseline_time > time_diff_max[threshold]:
-                img.update({'time_diff_status': core.config.TEST_DIFF_STATUS})
-                if img['test_status'] != core.config.TEST_CRASH_STATUS:
-                    img['message'].append('Unacceptable time difference')
-                    img['has_time_diff'] = True
-                    break
+        if not 'groups_without_time_comparision' in globals():
+            global groups_without_time_comparision
+            groups_without_time_comparision = []
+
+        if img['test_group'] not in groups_without_time_comparision:
+            for threshold in time_diff_max:
+                if baseline_time < float(threshold) and render_time - baseline_time > time_diff_max[threshold]:
+                    img.update({'time_diff_status': core.config.TEST_DIFF_STATUS})
+                    if img['test_status'] != core.config.TEST_CRASH_STATUS:
+                        img['message'].append('Unacceptable time difference')
+                        img['has_time_diff'] = True
+                        break
 
         img.update({'difference_time': get_diff(render_time, baseline_time)})
     else:
