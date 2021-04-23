@@ -101,50 +101,55 @@ def get_pixel_difference(work_dir, base_dir, img, tolerance, pix_diff_max):
             img['test_status'] = core.config.TEST_CRASH_STATUS
             return img
 
-        if core.config.DONT_COMPARE not in img.get('script_info', ''):
-            metrics = None
-            try:
-                metrics = CompareMetrics(render_img_path, baseline_img_path)
-            except (FileNotFoundError, OSError) as err:
-                core.config.main_logger.error(
-                    "Error during metrics calculation: {}".format(str(err)))
-                return img
+        if not 'groups_without_images_comparision' in globals():
+            global groups_without_images_comparision
+            groups_without_images_comparision = []
 
-            if report_type == 'ec':
-                pix_difference = metrics.getDiffPixeles(tolerance=tolerance)
-                img.update({'difference_color': pix_difference})
-                if type(pix_difference) is str or pix_difference > pix_diff_max:
-                    img['test_status'] = core.config.TEST_DIFF_STATUS
-            else:
-                # if 'Black image expected' in script_info - allow black img
-                mark_failed_if_black = core.config.CASE_EXPECTS_BLACK not in img.get('script_info', '')
-                pix_difference_2 = metrics.getPrediction(mark_failed_if_black=mark_failed_if_black)
-                img.update({'difference_color_2': pix_difference_2})
-                # if type(pix_difference) is str or pix_difference > float(pix_diff_max):
-                if pix_difference_2 != 0 and img['test_status'] != core.config.TEST_CRASH_STATUS:
-                    img['message'].append('Unacceptable pixel difference')
-                    img['test_status'] = core.config.TEST_DIFF_STATUS
-                elif pix_difference_2 == 2:
-                    img['message'].append('Render is unexpected full black image.')
-                    img['test_status'] = core.config.TEST_CRASH_STATUS
+        if core.config.DONT_COMPARE_IMAGES not in img.get('script_info', ''):
+            if img['test_group'] not in groups_without_images_comparision:
+                metrics = None
+                try:
+                    metrics = CompareMetrics(render_img_path, baseline_img_path)
+                except (FileNotFoundError, OSError) as err:
+                    core.config.main_logger.error(
+                        "Error during metrics calculation: {}".format(str(err)))
+                    return img
 
-            for field in ['render_color_path', 'baseline_color_path']:
-                image_path = os.path.join(base_dir, img['test_group'], img.get(field, 'None'))
-                if image_path.endswith('.jpg') and os.path.exists(image_path):
-                    try:
-                        image = Image.open(image_path)
-                        image.save(image_path, quality=75)
-                    except Exception as e:
-                        core.config.main_logger.warning('Failed to squeeze image. Exception: {}'.format(str(e)))
+                if report_type == 'ec':
+                    pix_difference = metrics.getDiffPixeles(tolerance=tolerance)
+                    img.update({'difference_color': pix_difference})
+                    if type(pix_difference) is str or pix_difference > pix_diff_max:
+                        img['test_status'] = core.config.TEST_DIFF_STATUS
+                else:
+                    # if 'Black image expected' in script_info - allow black img
+                    mark_failed_if_black = core.config.CASE_EXPECTS_BLACK not in img.get('script_info', '')
+                    pix_difference_2 = metrics.getPrediction(mark_failed_if_black=mark_failed_if_black)
+                    img.update({'difference_color_2': pix_difference_2})
+                    # if type(pix_difference) is str or pix_difference > float(pix_diff_max):
+                    if pix_difference_2 != 0 and img['test_status'] != core.config.TEST_CRASH_STATUS:
+                        img['message'].append('Unacceptable pixel difference')
+                        img['test_status'] = core.config.TEST_DIFF_STATUS
+                    elif pix_difference_2 == 2:
+                        img['message'].append('Render is unexpected full black image.')
+                        img['test_status'] = core.config.TEST_CRASH_STATUS
 
-            if md5(render_img_path) == md5(baseline_img_path):
-                for thumb in core.config.THUMBNAIL_PREFIXES + ['']:
-                    baseline = os.path.join(base_dir, img['test_group'], 'Color', thumb + img.get('baseline_color_path', 'None'))
-                    if os.path.exists(baseline):
-                        os.remove(baseline)
-                        img[thumb + 'baseline_color_path'] = img[thumb + 'render_color_path']
-                if img.get('render_color_path', False):
-                    img.update({'baseline_color_path': img['render_color_path']})
+                for field in ['render_color_path', 'baseline_color_path']:
+                    image_path = os.path.join(base_dir, img['test_group'], img.get(field, 'None'))
+                    if image_path.endswith('.jpg') and os.path.exists(image_path):
+                        try:
+                            image = Image.open(image_path)
+                            image.save(image_path, quality=75)
+                        except Exception as e:
+                            core.config.main_logger.warning('Failed to squeeze image. Exception: {}'.format(str(e)))
+
+                if md5(render_img_path) == md5(baseline_img_path):
+                    for thumb in core.config.THUMBNAIL_PREFIXES + ['']:
+                        baseline = os.path.join(base_dir, img['test_group'], 'Color', thumb + img.get('baseline_color_path', 'None'))
+                        if os.path.exists(baseline):
+                            os.remove(baseline)
+                            img[thumb + 'baseline_color_path'] = img[thumb + 'render_color_path']
+                    if img.get('render_color_path', False):
+                        img.update({'baseline_color_path': img['render_color_path']})
 
     return img
 
@@ -161,18 +166,13 @@ def get_rendertime_difference(base_dir, img, time_diff_max):
         except IndexError:
             baseline_time = -0.0
 
-        if not 'groups_without_time_comparision' in globals():
-            global groups_without_time_comparision
-            groups_without_time_comparision = []
-
-        if img['test_group'] not in groups_without_time_comparision:
-            for threshold in time_diff_max:
-                if baseline_time < float(threshold) and render_time - baseline_time > time_diff_max[threshold]:
-                    img.update({'time_diff_status': core.config.TEST_DIFF_STATUS})
-                    if img['test_status'] != core.config.TEST_CRASH_STATUS:
-                        img['message'].append('Unacceptable time difference')
-                        img['has_time_diff'] = True
-                        break
+        for threshold in time_diff_max:
+            if baseline_time < float(threshold) and render_time - baseline_time > time_diff_max[threshold]:
+                img.update({'time_diff_status': core.config.TEST_DIFF_STATUS})
+                if img['test_status'] != core.config.TEST_CRASH_STATUS:
+                    img['message'].append('Unacceptable time difference')
+                    img['has_time_diff'] = True
+                    break
 
         img.update({'difference_time': get_diff(render_time, baseline_time)})
     else:
@@ -310,8 +310,14 @@ def main(args):
         if img['number_of_tries'] > 1:
             img['message'].append('Case was retried {} times'.format(img['number_of_tries'] - 1))
 
-        img.update(get_rendertime_difference(
-            args.base_dir, img, args.time_diff_max))
+        if not 'groups_without_time_comparision' in globals():
+            global groups_without_time_comparision
+            groups_without_time_comparision = []
+
+        if core.config.DONT_COMPARE_TIME not in img.get('script_info', '')
+            if img['test_group'] not in groups_without_time_comparision:
+                img.update(get_rendertime_difference(
+                    args.base_dir, img, args.time_diff_max))
 
         if hasattr(args, 'vram_diff_max'):
             path_to_baseline_json = os.path.join(

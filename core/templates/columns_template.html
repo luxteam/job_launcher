@@ -318,7 +318,7 @@
             Test case finished</b><br/>
 
 
-            {% if show_render_time %}
+            {% if show_render_time and item.difference_time != -0.0 %}
                 <b>
                 {%- if not item.has_time_diff -%}
                     &check; 

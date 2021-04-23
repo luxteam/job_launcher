@@ -148,7 +148,8 @@ RETRY_INFO_NAME = 'retry_info.json'
 TRACKED_METRICS_JSON_NAME = 'tracked_metrics_{}.json'
 TRACKED_METRICS_LOCATION_NAME = 'tracked_metrics'
 
-DONT_COMPARE = "Do not compare"
+DONT_COMPARE_IMAGES = "Do not compare"
+DONT_COMPARE_TIME = "Do not compare time"
 
 POSSIBLE_BASELINE_EXTENSIONS = ['jpg', 'png', 'gif', 'bmp']
 
