@@ -314,7 +314,7 @@ def main(args):
             global groups_without_time_comparision
             groups_without_time_comparision = []
 
-        if core.config.DONT_COMPARE_TIME not in img.get('script_info', '')
+        if core.config.DONT_COMPARE_TIME not in img.get('script_info', ''):
             if img['test_group'] not in groups_without_time_comparision:
                 img.update(get_rendertime_difference(
                     args.base_dir, img, args.time_diff_max))
