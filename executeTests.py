@@ -135,6 +135,16 @@ def main():
             file_name = args.file_filter.split('~')[0]
             with open(os.path.join(args.tests_root, file_name), 'r') as file:
                 file_content = json.load(file)
+
+                # check that package is splitted to parts
+                if isinstance(file_content['split'], list):
+                    # choose necessary part based on number in package name
+                    if "-" in file_name:
+                        part_number = (int)(args.file_filter.replace(".json", "").split('-')[1])
+                        file_content['groups'] = file_content['groups'][part_number]
+                        with open(os.path.join(args.tests_root, file_name), 'w') as file:
+                            json.dump(file_content, file, indent=4)
+
                 # exclude some tests from non-splitted tests package
                 if not file_content['split']:
                     # save path to tests package
