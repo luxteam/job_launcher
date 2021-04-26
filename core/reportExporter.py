@@ -142,6 +142,8 @@ def build_session_report(report, session_dir):
 
     generate_thumbnails(session_dir)
 
+    report['machine_info'].update({'core_version': []})
+
     current_test_report = {}
     for result in report['results']:
         for item in report['results'][result]:
@@ -166,6 +168,20 @@ def build_session_report(report, session_dir):
 
                                 jtem.update({group_report_file: os.path.relpath(cur_img_path, session_dir)})
 
+                                # provide more detailed information about core version for core autotests
+                                if report_type == 'ec':
+                                    # get engine name (ignore Hybrid)
+                                    engine = None
+                                    for e in ['Tahoe64', 'Northstar64']:
+                                        if e in jtem['package_name']:
+                                            engine = e
+                                            break
+
+                                    if engine:
+                                        core_version = "{}-{}".format(engine[0], jtem['core_version'])
+                                        if core_version not in report['machine_info']:
+                                            report['machine_info'].append(core_version)
+
                         render_duration += jtem['render_time']
                         synchronization_duration += jtem.get('sync_time', 0.0)
                         if jtem['test_status'] == 'undefined':
@@ -173,15 +189,19 @@ def build_session_report(report, session_dir):
                         else:
                             report['results'][result][item][jtem['test_status']] += 1
 
+                    if report_type == 'ec':
+                        report['machine_info'].sort()
+                        report['machine_info'] = ' '.join(str(x) for x in report['machine_info'])
+
                     try:
                         report['machine_info'].update({'render_device': jtem['render_device']})
                         if jtem['tool']:
                             report['machine_info'].update({'tool': jtem['tool']})
                         if report_type != 'ec':
                             report['machine_info'].update({'render_version': jtem['render_version']})
+                            report['machine_info'].update({'core_version': jtem['core_version']})
                         else:
                             report['machine_info'].update({'minor_version': jtem['minor_version']})
-                        report['machine_info'].update({'core_version': jtem['core_version']})
                     except Exception as err:
                         print("Exception while updating machine_info in session_report")
                         main_logger.warning(str(err))
