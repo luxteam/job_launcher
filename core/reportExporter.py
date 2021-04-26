@@ -173,14 +173,14 @@ def build_session_report(report, session_dir):
                                     # get engine name (ignore Hybrid)
                                     engine = None
                                     for e in ['Tahoe64', 'Northstar64']:
-                                        if e in jtem['package_name']:
+                                        if e in jtem['test_group']:
                                             engine = e
                                             break
 
                                     if engine:
                                         core_version = "{}-{}".format(engine[0], jtem['core_version'])
-                                        if core_version not in report['machine_info']:
-                                            report['machine_info'].append(core_version)
+                                        if core_version not in report['machine_info']['core_version']:
+                                            report['machine_info']['core_version'].append(core_version)
 
                         render_duration += jtem['render_time']
                         synchronization_duration += jtem.get('sync_time', 0.0)
@@ -188,10 +188,6 @@ def build_session_report(report, session_dir):
                             report['results'][result][item]['total'] += 1
                         else:
                             report['results'][result][item][jtem['test_status']] += 1
-
-                    if report_type == 'ec':
-                        report['machine_info'].sort()
-                        report['machine_info'] = ' '.join(str(x) for x in report['machine_info'])
 
                     try:
                         report['machine_info'].update({'render_device': jtem['render_device']})
@@ -229,6 +225,10 @@ def build_session_report(report, session_dir):
                 total[key] += report['results'][result][item][key]
     report.update({'summary': total})
     report['machine_info'].update({'reporting_date': datetime.date.today().strftime('%m/%d/%Y %H:%M:%S')})
+
+    if report_type == 'ec':
+        report['machine_info']['core_version'].sort(reverse=True)
+        report['machine_info']['core_version'] = ' '.join(str(x) for x in report['machine_info']['core_version'])
 
     save_json_report(report, session_dir, SESSION_REPORT)
 
