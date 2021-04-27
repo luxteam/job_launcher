@@ -84,13 +84,7 @@ def send_finished_cases(session_dir, suite_name):
             name_key = 'name'
         else:
             name_key = 'scene'
-    else:
-        # case of Max
-        test_cases_path = os.path.join(session_dir, suite_name, 'case_list.json')
-        with open(test_cases_path) as test_cases_file:
-            global transferred_test_cases
-            test_cases = json.load(test_cases_file)['cases']
-        name_key = 'name'
+
     new_test_cases = {}
     for test_case in test_cases:
         if test_case['status'] in ('skipped', 'error', 'failed', 'done', 'passed') and not test_case[name_key] in transferred_test_cases:
