@@ -177,7 +177,7 @@ def build_session_report(report, session_dir):
                                             engine = e
                                             break
 
-                                    if engine:
+                                    if engine and jtem['core_version']:
                                         core_version = "{}-{}".format(engine[0], jtem['core_version'])
                                         if core_version not in report['machine_info']['core_version']:
                                             report['machine_info']['core_version'].append(core_version)
