@@ -142,6 +142,8 @@ def build_session_report(report, session_dir):
 
     generate_thumbnails(session_dir)
 
+    report['machine_info'].update({'core_version': []})
+
     current_test_report = {}
     for result in report['results']:
         for item in report['results'][result]:
@@ -166,6 +168,20 @@ def build_session_report(report, session_dir):
 
                                 jtem.update({group_report_file: os.path.relpath(cur_img_path, session_dir)})
 
+                                # provide more detailed information about core version for core autotests
+                                if report_type == 'ec':
+                                    # get engine name (ignore Hybrid)
+                                    engine = None
+                                    for e in ['Tahoe64', 'Northstar64']:
+                                        if e in jtem['test_group']:
+                                            engine = e
+                                            break
+
+                                    if engine and jtem['core_version']:
+                                        core_version = "{}-{}".format(engine[0], jtem['core_version'])
+                                        if core_version not in report['machine_info']['core_version']:
+                                            report['machine_info']['core_version'].append(core_version)
+
                         render_duration += jtem['render_time']
                         synchronization_duration += jtem.get('sync_time', 0.0)
                         if jtem['test_status'] == 'undefined':
@@ -179,9 +195,9 @@ def build_session_report(report, session_dir):
                             report['machine_info'].update({'tool': jtem['tool']})
                         if report_type != 'ec':
                             report['machine_info'].update({'render_version': jtem['render_version']})
+                            report['machine_info'].update({'core_version': jtem['core_version']})
                         else:
                             report['machine_info'].update({'minor_version': jtem['minor_version']})
-                        report['machine_info'].update({'core_version': jtem['core_version']})
                     except Exception as err:
                         print("Exception while updating machine_info in session_report")
                         main_logger.warning(str(err))
@@ -209,6 +225,10 @@ def build_session_report(report, session_dir):
                 total[key] += report['results'][result][item][key]
     report.update({'summary': total})
     report['machine_info'].update({'reporting_date': datetime.date.today().strftime('%m/%d/%Y %H:%M:%S')})
+
+    if report_type == 'ec':
+        report['machine_info']['core_version'].sort(reverse=True)
+        report['machine_info']['core_version'] = ' '.join(str(x) for x in report['machine_info']['core_version'])
 
     save_json_report(report, session_dir, SESSION_REPORT)
 
@@ -553,11 +573,18 @@ def build_compare_report(summary_report):
     return compare_report, hardware
 
 
-def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupped_tracked_metrics, tracked_metrics_history):
+def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupped_tracked_metrics, tracked_metrics_history, general_info_history):
     work_dir = os.path.abspath(work_dir)
 
     template = jinja_env.get_template('local_template.html')
     report_dir = ""
+
+    if "show_render_time" not in globals():
+        global show_render_time
+        show_render_time = True
+    if "show_render_log" not in globals():
+        global show_render_log
+        show_render_log = True
 
     try:
         for execution in summary_report:
@@ -604,6 +631,7 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
                                            platform=execution,
                                            groupped_tracked_metrics=groupped_tracked_metrics,
                                            tracked_metrics_history=tracked_metrics_history,
+                                           general_info_history=general_info_history,
                                            show_render_time=show_render_time,
                                            show_render_log=show_render_log)
                     save_html_report(html, os.path.join(work_dir, report_dir), 'report.html', replace_pathsep=True)
@@ -681,12 +709,25 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
         common_info.update({'commit_message': commit_message})
         common_info.update({'engine': engine})
         save_json_report(summary_report, work_dir, SUMMARY_REPORT)
+
         tracked_metrics_history = OrderedDict()
+        general_info_history = OrderedDict()
         groupped_tracked_metrics = {}
         if metrics_collector:
+            metrics_collector.save_general_info("commit_sha", commit_sha)
+            metrics_collector.save_general_info("branch_name", branch_name)
+            metrics_collector.save_general_info("commit_message", commit_message)
+            metrics_collector.save_general_info("engine", engine)
+            if "core_version" in common_info:
+                metrics_collector.save_general_info("core_version", common_info["core_version"])
+            if "minor_version" in common_info:
+                metrics_collector.save_general_info("minor_version", common_info["minor_version"])
+            if "render_version" in common_info:
+                metrics_collector.save_general_info("render_version", common_info["render_version"])
+
             metrics_collector.add_groupped_metrics_in_cases()
             metrics_collector.update_tracked_metrics_history(work_dir, build_number)
-            tracked_metrics_history = MetricsCollector.load_tracked_metrics_history(work_dir, tracked_metrics_files_number)
+            tracked_metrics_history, general_info_history = MetricsCollector.load_tracked_metrics_history(work_dir, tracked_metrics_files_number)
             groupped_tracked_metrics = metrics_collector.groupped_metrics 
         summary_html = summary_template.render(title=major_title + " Summary",
                                                report=summary_report,
@@ -696,6 +737,7 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
                                                synchronization_time=sync_time(summary_report),
                                                groupped_tracked_metrics=groupped_tracked_metrics,
                                                tracked_metrics_history=tracked_metrics_history,
+                                               general_info_history=general_info_history,
                                                show_render_time=show_render_time,
                                                show_render_log=show_render_log)
         save_html_report(summary_html, work_dir, SUMMARY_REPORT_HTML, replace_pathsep=True)
@@ -783,7 +825,7 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
         rc = -3
 
     try:
-        build_local_reports(work_dir, summary_report, common_info, env, groupped_tracked_metrics, tracked_metrics_history)
+        build_local_reports(work_dir, summary_report, common_info, env, groupped_tracked_metrics, tracked_metrics_history, general_info_history)
     except Exception as err:
         traceback.print_exc()
         main_logger.error(str(err))
@@ -834,11 +876,22 @@ def build_performance_reports(work_dir, major_title, commit_sha='undefined', bra
         save_json_report(summary_report, work_dir, SUMMARY_REPORT)
 
         tracked_metrics_history = OrderedDict()
+        general_info_history = OrderedDict()
         groupped_tracked_metrics = {}
         if metrics_collector:
+            metrics_collector.save_general_info("commit_sha", commit_sha)
+            metrics_collector.save_general_info("branch_name", branch_name)
+            metrics_collector.save_general_info("commit_message", commit_message)
+            if "core_version" in common_info:
+                metrics_collector.save_general_info("core_version", common_info["core_version"])
+            if "minor_version" in common_info:
+                metrics_collector.save_general_info("minor_version", common_info["minor_version"])
+            if "render_version" in common_info:
+                metrics_collector.save_general_info("render_version", common_info["render_version"])
+
             metrics_collector.add_groupped_metrics_in_cases()
             metrics_collector.update_tracked_metrics_history(work_dir, build_number)
-            tracked_metrics_history = MetricsCollector.load_tracked_metrics_history(work_dir, tracked_metrics_files_number)
+            tracked_metrics_history, general_info_history = MetricsCollector.load_tracked_metrics_history(work_dir, tracked_metrics_files_number)
             groupped_tracked_metrics = metrics_collector.groupped_metrics
         summary_html = summary_template.render(title=major_title + " Summary",
                                                report=summary_report,
@@ -847,7 +900,8 @@ def build_performance_reports(work_dir, major_title, commit_sha='undefined', bra
                                                common_info=common_info,
                                                synchronization_time=sync_time(summary_report),
                                                groupped_tracked_metrics=groupped_tracked_metrics,
-                                               tracked_metrics_history=tracked_metrics_history)
+                                               tracked_metrics_history=tracked_metrics_history,
+                                               general_info_history=general_info_history)
         save_html_report(summary_html, work_dir, SUMMARY_REPORT_HTML, replace_pathsep=True)
 
         for execution in summary_report.keys():
@@ -869,7 +923,7 @@ def build_performance_reports(work_dir, major_title, commit_sha='undefined', bra
         rc = -1
 
     try:
-        build_local_reports(work_dir, summary_report, common_info, env, groupped_tracked_metrics, tracked_metrics_history)
+        build_local_reports(work_dir, summary_report, common_info, env, groupped_tracked_metrics, tracked_metrics_history, general_info_history)
     except Exception as err:
         traceback.print_exc()
         main_logger.error(str(err))

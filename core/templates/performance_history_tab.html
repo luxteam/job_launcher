@@ -43,6 +43,7 @@
                         let datasets
                         let dataset
                         let has_only_nulls
+                        let label_has_only_nulls
                         {% for metric_group_name in groupped_tracked_metrics %}
                             datasets = []
 
@@ -56,7 +57,11 @@
 
                             labels = [
                                 {% for build_number in tracked_metrics_history %}
-                                    "Build #{{ build_number }}"{{ "," if not loop.last }}
+                                    {% if general_info_history[build_number]['core_version'] is defined %}
+                                        "Build #{{ build_number }} ({{ general_info_history[build_number]['core_version'] }})"{{ "," if not loop.last }}
+                                    {% else %}
+                                        "Build #{{ build_number }}"{{ "," if not loop.last }}
+                                    {% endif %}
                                 {% endfor %}
                             ]
 
@@ -128,6 +133,27 @@
                                     datasets.push(dataset)
                                 }
                             {% endfor %}
+
+                            // remove labels with all null values
+
+                            for (let label_number = labels.length - 1; label_number >= 0; label_number--) {
+                                label_has_only_nulls = true
+
+                                for (let dataset_number in datasets) {
+                                    if (datasets[dataset_number].data[label_number] || datasets[dataset_number].data[label_number] == 0) {
+                                        label_has_only_nulls = false
+                                    }
+                                }
+
+                                if (label_has_only_nulls) {
+                                    labels.splice(label_number, 1)
+
+                                    for (let dataset_number in datasets) {
+                                        datasets[dataset_number].data.splice(label_number, 1)
+                                    }
+                                }
+                            }
+
                             performanceCharts[currentChart].renderData["{{ metric_group_name }}"] = { "labels": labels, "datasets": datasets }
                             performanceCharts[currentChart].optionsData["{{ metric_group_name }}"] = options
                         {% endfor %}
