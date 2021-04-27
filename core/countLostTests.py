@@ -5,13 +5,14 @@ from core.config import *
 import sys
 import argparse
 import os
+import traceback
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)))
 try:
-    from local_config import *
+	from local_config import *
 except ImportError:
-    main_logger.critical("local config file not found. Default values will be used.")
-    main_logger.critical("Correct report building isn't guaranteed")
-    from core.defaults_local_config import *
+	main_logger.critical("local config file not found. Default values will be used.")
+	main_logger.critical("Correct report building isn't guaranteed")
+	from core.defaults_local_config import *
 
 
 # match gpu and OS labels in Jenkins and platform name which session_report.json contains
@@ -187,16 +188,42 @@ def main(lost_tests_results, tests_dir, output_dir, split_tests_execution, tests
 				# e.g. regression
 				lost_package_staches = []
 				for lost_test_result in lost_tests_results:
-					if lost_test_result.endswith(tests_package):
+
+					raw_lost_test_result = lost_test_result.split("~")[0].replace(".json", "")
+
+					# check that lost package has parts or not (format: <package_name>.<part_number>.json)
+					if "." in raw_lost_test_result:
+						raw_lost_test_parts = raw_lost_test_result.split(".")
+						parsed_lost_test_result = raw_lost_test_parts[0] + ".json"
+					else:
+						parsed_lost_test_result = raw_lost_test_result + ".json"
+
+					if parsed_lost_test_result.endswith(tests_package.split("~")[0]):
 						lost_package_staches.append(lost_test_result)
+
 				for lost_package_stach in lost_package_staches:
 					lost_tests_results.remove(lost_package_stach)
 					excluded_groups = tests_package.split("~")[1].split(",")
-					for test_package_name in tests_package_data["groups"]:
+
+                    # get part number of package if it exists
+					raw_lost_test_result = lost_package_stach.split("~")[0].replace(".json", "")
+					part_number = None
+
+					if "." in raw_lost_test_result:
+						part_number = int(raw_lost_test_result.split(".")[1])
+
+					if part_number is not None:
+						# get groups from some part of package
+						current_tests_package_data = tests_package_data["groups"][part_number]
+					else:
+						# get all groups from package (parts don't exist)
+						current_tests_package_data = tests_package_data["groups"]
+
+					for test_package_name in current_tests_package_data:
 						if test_package_name in excluded_groups:
 							continue
 						try:
-							lost_tests_count = tests_package_data["groups"][test_package_name].replace(' ', '').split(',')
+							lost_tests_count = current_tests_package_data[test_package_name].replace(' ', '').split(',')
 							gpu_name = lost_package_stach.split('-')[0]
 							os_name = lost_package_stach.split('-')[1]
 							# join converted gpu name and os name
@@ -206,6 +233,7 @@ def main(lost_tests_results, tests_dir, output_dir, split_tests_execution, tests
 							lost_tests_data[joined_gpu_os_names][test_package_name] = lost_tests_count
 						except Exception as e:
 							print("Failed to count lost tests for test group {}. Reason: {}".format(test_package_name, str(e)))
+							print("Traceback: {}".format(traceback.format_exc()))
 
 		for lost_test_result in lost_tests_results:
 			try:
@@ -231,6 +259,7 @@ def main(lost_tests_results, tests_dir, output_dir, split_tests_execution, tests
 						lost_tests_data[joined_gpu_os_names][test_package_name] = lost_tests_count
 			except Exception as e:
 				print("Failed to count lost tests for test group {}. Reason: {}".format(test_package_name, str(e)))
+				print("Traceback: {}".format(traceback.format_exc()))
 	else:
 		for test_package_name in tests_list:
 			try:
@@ -247,6 +276,7 @@ def main(lost_tests_results, tests_dir, output_dir, split_tests_execution, tests
 					lost_tests_data[joined_gpu_os_names][test_package_name] = lost_tests_count
 			except Exception as e:
 				print("Failed to count lost tests for test group {}. Reason: {}".format(test_package_name, str(e)))
+				print("Traceback: {}".format(traceback.format_exc()))
 
 	os.makedirs(output_dir, exist_ok=True)
 	with open(os.path.join(output_dir, LOST_TESTS_JSON_NAME), "w") as file:
