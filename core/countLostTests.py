@@ -152,7 +152,7 @@ def main(lost_tests_results, tests_dir, output_dir, split_tests_execution, tests
 							for test_package_name in session_report['results']:
 								case_results = session_report["results"][test_package_name][""]
 								if case_results["total"] == 0:
-									with open(os.path.join(tests_dir, "jobs", "Tests", test_package_name, 'test_cases.json'), "r") as tests_conf:
+									with open(os.path.join(tests_dir, "jobs", "Tests", test_package_name, TEST_CASES_JSON_NAME), "r") as tests_conf:
 										data = json.load(tests_conf)
 									number_of_cases = get_lost_tests(data, tool_name, test_package_name)
 									case_results["error"] = number_of_cases
@@ -211,7 +211,7 @@ def main(lost_tests_results, tests_dir, output_dir, split_tests_execution, tests
 				test_packages_names = lost_test_result.split('-')[2]
 
 				for test_package_name in test_packages_names.split():
-					with open(os.path.join(tests_dir, "jobs", "Tests", test_package_name, 'test_cases.json'), "r") as file:
+					with open(os.path.join(tests_dir, "jobs", "Tests", test_package_name, TEST_CASES_JSON_NAME), "r") as file:
 						data = json.load(file)
 					lost_tests_count = get_lost_tests(data, tool_name, test_package_name)
 					# join converted gpu name and os name
@@ -231,7 +231,7 @@ def main(lost_tests_results, tests_dir, output_dir, split_tests_execution, tests
 	else:
 		for test_package_name in tests_list:
 			try:
-				with open(os.path.join(tests_dir, "jobs", "Tests", test_package_name, 'test_cases.json'), "r") as file:
+				with open(os.path.join(tests_dir, "jobs", "Tests", test_package_name, TEST_CASES_JSON_NAME), "r") as file:
 					data = json.load(file)
 				lost_tests_count = get_lost_tests(data, tool_name, test_package_name)
 				for lost_test_result in lost_tests_results:
