@@ -8,6 +8,7 @@ import traceback
 import subprocess
 import time
 import sys
+import re
 
 import core.reportExporter
 import core.system_info
@@ -132,9 +133,29 @@ def main():
     # extend test_filter by values in file_filter
     if args.file_filter and args.file_filter != 'none':
         try:
-            file_name = args.file_filter.split('~')[0]
+            raw_file_name = args.file_filter.split('~')[0].replace(".json", "")
+
+            file_name = None
+            part_number = None
+
+            # check that file filter has part number or not (format: <package_name>.<part_number>.json)
+            if "." in raw_file_name:
+                raw_file_name_parts = raw_file_name.split(".")
+                file_name = raw_file_name_parts[0] + ".json"
+                part_number = int(raw_file_name_parts[1])
+            else:
+                file_name = raw_file_name + ".json"
+
             with open(os.path.join(args.tests_root, file_name), 'r') as file:
                 file_content = json.load(file)
+
+                # check that package is splitted to parts
+                if isinstance(file_content['groups'], list) and part_number is not None:
+                    # choose necessary part based on number in package name
+                    file_content['groups'] = file_content['groups'][part_number]
+                    with open(os.path.join(args.tests_root, file_name), 'w') as file:
+                        json.dump(file_content, file, indent=4)
+
                 # exclude some tests from non-splitted tests package
                 if not file_content['split']:
                     # save path to tests package

@@ -245,16 +245,33 @@ def recover_hostname(lost_test_package, gpu_os_case, node_retry_info, status):
                 for groups in retry_info['Tries']:
                     package_or_default_execution = None
                     for group in groups.keys():
-                        parsed_group_name = group.split('~')[0]
+                        parsed_group_name = group.split('~')[0].replace(".json", "")
+                        part_number = None
+
+                        # check that lost package has parts or not (format: <package_name>.<part_number>.json)
+                        if "." in parsed_group_name:
+                            parsed_group_name_parts = parsed_group_name.split(".")
+                            parsed_group_name = parsed_group_name_parts[0] + ".json"
+                            part_number = int(parsed_group_name_parts[1])
+                        else:
+                            if ".json" in group:
+                                parsed_group_name = parsed_group_name + ".json"
+
                         #all non splitTestsExecution and non regression builds (e.g. any build of core)
                         if 'DefaultExecution' in group:
                             package_or_default_execution = group
                             break
                         elif parsed_group_name.endswith('.json') and lost_test_package not in group.split('~')[1]:
                             with open(os.path.abspath(os.path.join('..', 'jobs', parsed_group_name))) as f:
-                                if lost_test_package in json.load(f)['groups']:
-                                    package_or_default_execution = group
-                                    break
+                                if part_number is not None:
+                                    if lost_test_package in json.load(f)['groups'][part_number]:
+                                        package_or_default_execution = group
+                                        break
+                                else:
+                                    if lost_test_package in json.load(f)['groups']:
+                                        package_or_default_execution = group
+                                        break
+
                     if lost_test_package in groups.keys() or package_or_default_execution:
                         for test_tries in retry_info['Tries']:
                             if lost_test_package in test_tries:
@@ -1031,16 +1048,32 @@ def add_retry_info(summary_report, retry_info, work_dir):
                             for groups in retry['Tries']:
                                 package_or_default_execution = None
                                 for group in groups.keys():
-                                    parsed_group_name = group.split('~')[0]
+                                    parsed_group_name = group.split('~')[0].replace(".json", "")
+                                    part_number = None
+
+                                    # check that lost package has parts or not (format: <package_name>.<part_number>.json)
+                                    if "." in parsed_group_name:
+                                        parsed_group_name_parts = parsed_group_name.split(".")
+                                        parsed_group_name = parsed_group_name_parts[0] + ".json"
+                                        part_number = int(parsed_group_name_parts[1])
+                                    else:
+                                        if ".json" in group:
+                                            parsed_group_name = parsed_group_name + ".json"
+
                                     #all non splitTestsExecution and non regression builds (e.g. any build of core)
                                     if 'DefaultExecution' in group:
                                         package_or_default_execution = group
                                         break
                                     elif parsed_group_name.endswith('.json') and test_package not in group.split('~')[1]:
                                         with open(os.path.abspath(os.path.join('..', 'jobs', parsed_group_name))) as f:
-                                            if test_package in json.load(f)['groups']:
-                                                package_or_default_execution = group
-                                                break
+                                            if part_number is not None:
+                                                if test_package in json.load(f)['groups'][part_number]:
+                                                    package_or_default_execution = group
+                                                    break
+                                            else:
+                                                if test_package in json.load(f)['groups']:
+                                                    package_or_default_execution = group
+                                                    break
                                 if test_package in groups.keys() or package_or_default_execution:
                                     retries_list = []
                                     groupOrJson = []
@@ -1049,7 +1082,10 @@ def add_retry_info(summary_report, retry_info, work_dir):
                                             groupOrJson = test_tries[test_package]
                                             break
                                     if not groupOrJson and package_or_default_execution:
-                                        groupOrJson = test_tries[package_or_default_execution]
+                                        for test_tries in retry['Tries']:
+                                            if package_or_default_execution in test_tries:
+                                                groupOrJson = test_tries[package_or_default_execution]
+                                                break
                                     if groupOrJson:
                                         for test_try in groupOrJson:
                                             retries_list.append(test_try)
