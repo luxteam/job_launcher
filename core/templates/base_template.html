@@ -3,9 +3,6 @@
 
 <head>
     <meta charset="utf-8">
-    <link rel="icon" href="{{ pre_path }}/report_resources/favicon.ico" type="image/x-icon"/>
-    <link rel="shortcut icon" href="{{ pre_path }}/report_resources/favicon.ico" type="image/x-icon"/>
-
     <link rel="stylesheet" type="text/css" href="{{ pre_path }}/report_resources/css/bootstrap.css"/>
     <link rel="stylesheet" type="text/css" href="{{ pre_path }}/report_resources/css/bootstrap-table.css"/>
     <link rel="stylesheet" type="text/css" href="{{ pre_path }}/report_resources/css/style.css"/>
@@ -48,7 +45,7 @@
             <a class="logo" href='{{ pre_path }}/summary_report.html'>{{ tool_name }} performance</a>
         {% else %}
             {% if '' | env_override('BUILD_URL') %}
-                <a id="goBack" href="{{ '' | env_override('BUILD_URL') }}" title="Go back to Jenkins"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true" aria-label="Go back to Jenkins"></span></a>
+                <a id="goBack" title="Go back to Jenkins"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true" aria-label="Go back to Jenkins" onclick="makeRedirect(&quot;{{ '' | env_override('BUILD_URL') }}&quot;)"></span></a>
             {% endif %}
 
             <img src="{{ pre_path}}/report_resources/img/logo.png"/>
