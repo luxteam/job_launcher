@@ -50,7 +50,7 @@
         <th data-field="baseline_img" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-events="openFullImgSize" data-formatter="metaAJAX">
             {%- if report_type == 'default' or report_type == 'ec' -%}
                 {%- if 0 | env_override("JL_ENGINES_COMPARE") -%}
-                    Tahoe
+                    {{ first_engine_name }}
                 {%- else -%}
                     Baseline Color
                 {%- endif -%}
@@ -88,7 +88,7 @@
         <th data-field="rendered_img" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-events="openFullImgSize" data-formatter="metaAJAX">
             {%- if report_type == 'default' or report_type == 'ec' -%}
                 {%- if 0 | env_override("JL_ENGINES_COMPARE") -%}
-                    NorthStar
+                    {{ second_engine_name }}
                 {%- else -%}
                     Rendered color
                 {%- endif -%}
@@ -123,8 +123,8 @@
         {%- if report_type == 'default' -%}
             <td class="infoColumn">
                 <b>Scene:</b> {{ item.scene_name }}<br/>
-                <b>Tahoe Render time:</b> {{ item.render_time | round(3) }}<br/>
-                <b>NorthStar Render time:</b> {{ item.baseline_render_time | round(3) }}<br/>
+                <b>{{ first_engine_name }} Render time:</b> {{ item.render_time | round(3) }}<br/>
+                <b>{{ second_engine_name }} Render time:</b> {{ item.baseline_render_time | round(3) }}<br/>
                 <b>Difference render time:</b> {{ item.difference_time | round(3) }} %<br/>
                 <b>Test info:</b><br/>
                 {%- for param in item.script_info -%}
@@ -236,13 +236,13 @@
         <th data-field="render_time" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-formatter="timeFormatterFull">
             {%- if report_type == 'default' or report_type == 'ec' -%}
                 {%- if 0 | env_override("JL_ENGINES_COMPARE") -%}
-                    Tahoe render time
+                    {{ first_engine_name }} render time
                 {%- else -%}
                     RPR render time
                 {%- endif -%}
             {%- elif report_type == 'ct' -%}
                 {%- if 0 | env_override("JL_ENGINES_COMPARE") -%}
-                    NorthStar render time
+                    {{ second_engine_name }} render time
                 {%- else -%}
                     RPR render time
                 {%- endif -%}
@@ -261,7 +261,7 @@
 {%- if column.name == 'baseline_render_time' -%}
     {%- if is_head -%}
         {%- if 0 | env_override("JL_ENGINES_COMPARE") -%}
-            <th data-field="baseline_render_time" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-formatter="timeFormatterFull">NorthStar render time</th>
+            <th data-field="baseline_render_time" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-formatter="timeFormatterFull">{{ second_engine_name }} render time</th>
         {%- else -%}
             <th data-field="baseline_render_time" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-formatter="timeFormatterFull">Baseline render time</th>
         {%- endif -%}
@@ -339,7 +339,12 @@
         {%- if report_type == 'default' -%}
             <td>
                 {%- if 'render_log' in item -%}
-                <a href="{{ item.render_log }}">Render log</a>
+                    {%- if 0 | env_override("JL_ENGINES_COMPARE") -%}
+                        <a href="{{ item.render_log }}">{{ first_engine_name }} render log</a></br>
+                        <a href="{{ item.baseline_render_log }}">{{ second_engine_name }} render log</a>
+                    {%- else -%}
+                        <a href="{{ item.render_log }}">Render log</a>
+                    {%- endif -%}
                 {%- else -%}
 
                     {%- if template_name == 'local' -%}

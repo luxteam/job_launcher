@@ -11,12 +11,14 @@
         <thead>
             <tr>
                 <th>Job Name</th>
-                <th data-formatter="timeFormatterFull">Render time Tahoe</th>
-                <th data-formatter="timeFormatterFull">Render time NorthStar</th>
-                <th data-formatter="timeFormatterFull">Synchronization time Tahoe</th>
-                <th data-formatter="timeFormatterFull">Synchronization time NorthStar</th>
-                <th data-formatter="timeFormatterFull">Time taken Tahoe</th>
-                <th data-formatter="timeFormatterFull">Time taken NorthStar</th>
+                <th data-formatter="timeFormatterFull">Render time {{ first_engine_name }}</th>
+                <th data-formatter="timeFormatterFull">Render time {{ second_engine_name }}</th>
+                {% if 'true' | env_override('SHOW_SYNC_TIME') != 'false' %}
+                    <th data-formatter="timeFormatterFull">Synchronization time {{ first_engine_name }}</th>
+                    <th data-formatter="timeFormatterFull">Synchronization time {{ second_engine_name }}</th>
+                {% endif %}
+                <th data-formatter="timeFormatterFull">Time taken {{ first_engine_name }}</th>
+                <th data-formatter="timeFormatterFull">Time taken {{ second_engine_name }}</th>
             </tr>
         </thead>
         <tbody>
@@ -40,8 +42,10 @@
                 {% endif -%}
                 >{{ report[i].summary.render_duration_north | round(3) }}</td>
 
-                <td>{{ report[i].summary.synchronization_duration }}</td>
-                <td>{{ report[i].summary.synchronization_duration_north }}</td>
+                {% if 'true' | env_override('SHOW_SYNC_TIME') != 'false' %}
+                    <td>{{ report[i].summary.synchronization_duration }}</td>
+                    <td>{{ report[i].summary.synchronization_duration_north }}</td>
+                {% endif %}
 
                 <td>{{ report[i].summary.duration_sync }}</td>
                 <td>{{ report[i].summary.render_duration_north + report[i].summary.synchronization_duration_north }}</td>
@@ -73,12 +77,14 @@
             <tr>
                 <th>Test package name</th>
                 <th>Local report</th>
-                <th data-formatter="timeFormatterFull">Render time Tahoe</th>
-                <th data-formatter="timeFormatterFull">Render time NorthStar</th>
-                <th data-formatter="timeFormatterFull">Synchronization time Tahoe</th>
-                <th data-formatter="timeFormatterFull">Synchronization time NorthStar</th>
-                <th data-formatter="timeFormatterFull">Time taken Tahoe</th>
-                <th data-formatter="timeFormatterFull">Time taken NorthStar</th>
+                <th data-formatter="timeFormatterFull">Render time {{ first_engine_name }}</th>
+                <th data-formatter="timeFormatterFull">Render time {{ second_engine_name }}</th>
+                {% if 'true' | env_override('SHOW_SYNC_TIME') != 'false' %}
+                    <th data-formatter="timeFormatterFull">Synchronization time {{ first_engine_name }}</th>
+                    <th data-formatter="timeFormatterFull">Synchronization time {{ second_engine_name }}</th>
+                {% endif %}
+                <th data-formatter="timeFormatterFull">Time taken {{ first_engine_name }}</th>
+                <th data-formatter="timeFormatterFull">Time taken {{ second_engine_name }}</th>
             </tr>
         </thead>
         <tbody>
@@ -105,8 +111,10 @@
                 {% endif %}
                 >{{ report[i].results[test_package][test_conf].render_duration_north | round(3) }}</td>
 
-                <td>{{ report[i].results[test_package][test_conf].synchronization_duration }}</td>
-                <td>{{ report[i].results[test_package][test_conf].synchronization_duration_north }}</td>
+                {% if 'true' | env_override('SHOW_SYNC_TIME') != 'false' %}
+                    <td>{{ report[i].results[test_package][test_conf].synchronization_duration }}</td>
+                    <td>{{ report[i].results[test_package][test_conf].synchronization_duration_north }}</td>
+                {% endif %}
 
                 <td>{{ report[i].results[test_package][test_conf].render_duration + report[i].results[test_package][test_conf].synchronization_duration }}</td>
                 <td>{{ report[i].results[test_package][test_conf].render_duration_north + report[i].results[test_package][test_conf].synchronization_duration_north }}</td>
@@ -129,8 +137,10 @@
                 {% endif %}
                 >{{ report[i].summary.render_duration_north | round(3) }}</td>
 
-                <td>{{ report[i].summary.synchronization_duration }}</td>
-                <td>{{ report[i].summary.synchronization_duration_north }}</td>
+                {% if 'true' | env_override('SHOW_SYNC_TIME') != 'false' %}
+                    <td>{{ report[i].summary.synchronization_duration }}</td>
+                    <td>{{ report[i].summary.synchronization_duration_north }}</td>
+                {% endif %}
 
                 <td>{{ report[i].summary.duration_sync }}</td>
                 <td>{{ report[i].summary.render_duration_north + report[i].summary.synchronization_duration_north }}</td>

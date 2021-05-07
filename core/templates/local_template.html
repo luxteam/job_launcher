@@ -19,6 +19,9 @@
                 {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'true', 'name': 'baseline_render_time'},
             ]
             %}
+            {% if 'false' | env_override('SHOW_RENDER_LOGS') != 'false' %}
+                {{ template_columns.append({'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'true', 'name': 'render_log'}) }}
+            {% endif %}
     {%- else -%}
             {%
             set template_columns = [

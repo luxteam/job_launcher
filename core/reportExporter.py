@@ -79,6 +79,10 @@ def get_jobs_launcher_version(value):
     return subprocess.check_output("git describe --tags --always", shell=True).decode("utf-8")
 
 
+def get_year():
+    return datetime.datetime.now().year
+
+
 def generate_thumbnails(session_dir):
     current_test_report = []
     main_logger.info("Start thumbnails creation")
@@ -381,6 +385,7 @@ def build_performance_report_engine(summary_report):
         summary_info_for_report[render_engine][device]['sync'] = sync
 
     hardware = sorted(hardware.items(), key=operator.itemgetter(1))
+
     return performance_report, hardware, performance_report_detail, summary_info_for_report
 
 
@@ -493,6 +498,9 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env):
     template = jinja_env.get_template('local_template.html')
     report_dir = ""
 
+    first_engine_name = os.getenv("FIRST_ENGINE_NAME", "Tahoe")
+    second_engine_name = os.getenv("SECOND_ENGINE_NAME", "NorthStar")
+
     try:
         for execution in summary_report:
             for test in summary_report[execution]['results']:
@@ -529,7 +537,9 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env):
                     html = template.render(title="{} {} plugin version: {}".format(common_info['tool'], test, version_in_title),
                                            common_info=common_info,
                                            render_report=render_report,
-                                           pre_path=os.path.relpath(work_dir, os.path.join(work_dir, report_dir)))
+                                           pre_path=os.path.relpath(work_dir, os.path.join(work_dir, report_dir)),
+                                           first_engine_name=first_engine_name,
+                                           second_engine_name=second_engine_name)
                     save_html_report(html, os.path.join(work_dir, report_dir), 'report.html', replace_pathsep=True)
     except Exception as err:
         traceback.print_exc()
@@ -550,6 +560,10 @@ def build_summary_reports(work_dir, major_title='', commit_sha='undefined', bran
         loader=jinja2.PackageLoader('core.reportExporter', 'templates'),
         autoescape=True
     )
+
+    first_engine_name = os.getenv("FIRST_ENGINE_NAME", "Tahoe")
+    second_engine_name = os.getenv("SECOND_ENGINE_NAME", "NorthStar")
+
     # check that original_render variable exists
     if not 'original_render' in globals():
         global original_render
@@ -557,6 +571,7 @@ def build_summary_reports(work_dir, major_title='', commit_sha='undefined', bran
     env.globals.update({'original_render': original_render,
                         'report_type': report_type,
                         'pre_path': '.',
+                        'get_year': get_year,
                         'config': config})
     env.filters['env_override'] = env_override
     env.filters['get_jobs_launcher_version'] = get_jobs_launcher_version
@@ -590,7 +605,9 @@ def build_summary_reports(work_dir, major_title='', commit_sha='undefined', bran
                                                PIX_DIFF_MAX=PIX_DIFF_MAX,
                                                common_info=common_info,
                                                node_retry_info=node_retry_info,
-                                               synchronization_time=sync_time(summary_report))
+                                               synchronization_time=sync_time(summary_report),
+                                               first_engine_name=first_engine_name,
+                                               second_engine_name=second_engine_name)
         save_html_report(summary_html, work_dir, SUMMARY_REPORT_HTML, replace_pathsep=True)
 
         for execution in summary_report.keys():
@@ -599,7 +616,9 @@ def build_summary_reports(work_dir, major_title='', commit_sha='undefined', bran
                                                                      pageID="summaryA",
                                                                      PIX_DIFF_MAX=PIX_DIFF_MAX,
                                                                      common_info=common_info,
-                                                                     i=execution)
+                                                                     i=execution,
+                                                                     first_engine_name=first_engine_name,
+                                                                     second_engine_name=second_engine_name)
             save_html_report(detailed_summary_html, work_dir, execution + "_detailed.html", replace_pathsep=True)
     except Exception as err:
         traceback.print_exc()
@@ -663,7 +682,9 @@ def build_summary_reports(work_dir, major_title='', commit_sha='undefined', bran
                                                        test_info=summary_info_for_report,
                                                        setupTimeSum=setup_sum,
                                                        setupTimeDetails=setup_details,
-                                                       synchronization_time=sync_time(summary_report))
+                                                       synchronization_time=sync_time(summary_report),
+                                                       first_engine_name=first_engine_name,
+                                                       second_engine_name=second_engine_name)
         save_html_report(performance_html, work_dir, PERFORMANCE_REPORT_HTML, replace_pathsep=True)
     except Exception as err:
         traceback.print_exc()
@@ -811,6 +832,9 @@ def generate_reports_for_perf_comparison(rpr_dir, northstar_dir, work_dir):
                    'results': {},
                    'summary': {}}
 
+    first_engine_name = os.getenv("FIRST_ENGINE_NAME", "Tahoe")
+    second_engine_name = os.getenv("SECOND_ENGINE_NAME", "NorthStar")
+
     #######################
 
     for root_dir in os.listdir(northstar_dir):
@@ -828,7 +852,7 @@ def generate_reports_for_perf_comparison(rpr_dir, northstar_dir, work_dir):
                             current_item = json.loads(open(os.path.join(group_dir_path, x), 'r').read())
                             current_item_content = current_item[0] if type(current_item) is list else current_item
                             # ignore error cases - them will be replaced by baselines
-                            if current_item_content["test_status"] != "error":
+                            if os.getenv("USE_BASELINES", "true") == "false" or current_item_content["test_status"] != "error":
                                 sr.append(current_item[0] if type(current_item) is list else current_item)
 
                     with open(os.path.join(group_dir_path, BASELINE_REPORT_NAME), "w") as write_sum_report:
@@ -913,7 +937,7 @@ def generate_reports_for_perf_comparison(rpr_dir, northstar_dir, work_dir):
                             current_test_report = json.loads(file.read())
                         current_session_report = copy.deepcopy(report_base)
                         current_session_report['machine_info'].update({'os': session_os,
-                                                                       'render_engine': 'Tahoe'})
+                                                                       'render_engine': first_engine_name})
                         current_session_report['results'].update(
                             {current_test_report[0]['test_group']: {"": {
                                 "render_results": current_test_report,
@@ -934,6 +958,10 @@ def generate_reports_for_perf_comparison(rpr_dir, northstar_dir, work_dir):
                             jtem.setdefault('baseline_render_time', 0)
                             jtem.setdefault('difference_time', 0)
                             jtem.setdefault('test_status', 'passed')
+
+                            baseline_render_log_path = os.path.join(path.replace(rpr_dir, northstar_dir), jtem["render_log"])
+                            jtem.update({"baseline_render_log": os.path.relpath(baseline_render_log_path, path)})
+
                             # main_logger.debug("keys: {}".format(POSSIBLE_JSON_IMG_BASELINE_KEYS + POSSIBLE_JSON_IMG_BASELINE_KEYS_THUMBNAIL))
                             for group_report_file in POSSIBLE_JSON_IMG_BASELINE_KEYS + POSSIBLE_JSON_IMG_BASELINE_KEYS_THUMBNAIL:
                                 # if group_report_file in jtem.keys():
@@ -946,7 +974,8 @@ def generate_reports_for_perf_comparison(rpr_dir, northstar_dir, work_dir):
                                         with open(os.path.join(path, json_report).replace(rpr_dir, northstar_dir), 'r') as north_report:
                                             nort_json = json.loads(north_report.read())
                                             if len([x for x in nort_json if x['test_case'] == jtem['test_case']]):
-                                                baseline_time = [x for x in nort_json if x['test_case'] == jtem['test_case']][0]['render_time']
+                                                case = [x for x in nort_json if x['test_case'] == jtem['test_case']][0]
+                                                baseline_time = case['render_time']
                                             else:
                                                 baseline_time = 0
                                                 main_logger.debug("baseline time: 0")
@@ -979,7 +1008,7 @@ def generate_reports_for_perf_comparison(rpr_dir, northstar_dir, work_dir):
                             current_session_report['machine_info'].update({'tool': jtem['tool']})
                             current_session_report['machine_info'].update({'render_version': jtem['render_version']})
                             current_session_report['machine_info'].update({'core_version': jtem['core_version']})
-                            current_session_report['machine_info'].update({'render_engine': 'Tahoe'})
+                            current_session_report['machine_info'].update({'render_engine': first_engine_name})
                         except Exception as err:
                             print("Exception while updating machine_info in session_report")
                             print(str(err))
@@ -1027,7 +1056,7 @@ def generate_reports_for_perf_comparison(rpr_dir, northstar_dir, work_dir):
                             current_test_report = json.loads(file.read())
                         current_session_report = copy.deepcopy(report_base)
                         current_session_report['machine_info'].update({'os': session_os,
-                                                                       'render_engine': 'NorthStar'})
+                                                                       'render_engine': second_engine_name})
                         current_session_report['results'].update(
                             {current_test_report[0]['test_group']: {"": {
                                 "render_results": current_test_report,
@@ -1064,7 +1093,7 @@ def generate_reports_for_perf_comparison(rpr_dir, northstar_dir, work_dir):
                             current_session_report['machine_info'].update({'tool': jtem['tool']})
                             current_session_report['machine_info'].update({'render_version': jtem['render_version']})
                             current_session_report['machine_info'].update({'core_version': jtem['core_version']})
-                            current_session_report['machine_info'].update({'render_engine': 'NorthStar'})
+                            current_session_report['machine_info'].update({'render_engine': second_engine_name})
                         except Exception as err:
                             print("Exception while updating machine_info in session_report")
                             print(str(err))
