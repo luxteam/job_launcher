@@ -17,11 +17,9 @@
                 {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'true',  'name': 'time_diff'},
                 {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'true', 'name': 'render_time'},
                 {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'true', 'name': 'baseline_render_time'},
+                {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'false' | env_override('SHOW_RENDER_LOGS') != 'false', 'name': 'render_log'},
             ]
             %}
-            {% if 'false' | env_override('SHOW_RENDER_LOGS') != 'false' %}
-                {{ template_columns.append({'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'true', 'name': 'render_log'}) }}
-            {% endif %}
     {%- else -%}
             {%
             set template_columns = [
