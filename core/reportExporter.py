@@ -406,7 +406,7 @@ def build_summary_report(work_dir, node_retry_info, collect_tracked_metrics):
 
                                     baseline_json_path = None
                                     if 'baseline_json_path' in jtem:
-                                        baseline_json_path = os.path.join(work_dir, jtem['baseline_json_path'])
+                                        baseline_json_path = os.path.join(work_dir, jtem['baseline_json_path']).replace("/", os.path.sep).replace("\\", os.path.sep)
 
                                     # add info about baselines
                                     if baseline_json_path and os.path.exists(baseline_json_path):
@@ -622,7 +622,7 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
                             for case in render_report:
                                 baseline_json_path = None
                                 if 'baseline_json_path' in case:
-                                    baseline_json_path = os.path.join(work_dir, report_dir, case['baseline_json_path'])
+                                    baseline_json_path = os.path.join(work_dir, report_dir, case['baseline_json_path']).replace("/", os.path.sep).replace("\\", os.path.sep)
 
                                 # add info about baselines
                                 if baseline_json_path and os.path.exists(baseline_json_path):
