@@ -70,7 +70,7 @@ function increaseImgSize() {
 
     imagesSelectorList.forEach(function(item) {
         $(item[0]).css("width", function( index, value ) {
-	        return parseInt(value, 10) + document.documentElement.clientWidth / 100 * item[1];
+            return parseInt(value, 10) + document.documentElement.clientWidth / 100 * item[1];
         });
     });
 }
@@ -81,7 +81,7 @@ function reduceImgSize() {
 
     imagesSelectorList.forEach(function(item) {
         $(item[0]).css("width", function( index, value ) {
-	        return parseInt(value, 10) - document.documentElement.clientWidth / 100 * item[1];
+            return parseInt(value, 10) - document.documentElement.clientWidth / 100 * item[1];
         });
     });
 }
@@ -174,4 +174,8 @@ function showCarousel(baselineId, renderId) {
         setTimeout(function(){showImg.src = renderImg.src;}, 300);
         setTimeout(function(){showImg.src = baselineImg.src;}, 600);
     }, 1200);
+}
+
+function makeRedirect(link) {
+    window.parent.location.href = link
 }
