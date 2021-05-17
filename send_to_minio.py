@@ -12,8 +12,8 @@ minio_client_dev = create_mc_client(os.getenv("UMS_JOB_ID_DEV"))
 
 
 def send_to_minio(files_path, pattern, dest_dir=None):
-    args_prod = (arg for arg in (os.getenv("UMS_BUILD_ID_PROD"), dest_dir) if arg is not None)
-    args_dev = (arg for arg in (os.getenv("UMS_BUILD_ID_DEV"), dest_dir) if arg is not None)
+    args_prod = [arg for arg in (os.getenv("UMS_BUILD_ID_PROD"), dest_dir) if arg is not None]
+    args_dev = [arg for arg in (os.getenv("UMS_BUILD_ID_DEV"), dest_dir) if arg is not None]
     
     files = glob.glob(os.path.join(files_path, pattern))
     for file in files:
