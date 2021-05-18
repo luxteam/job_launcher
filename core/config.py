@@ -201,3 +201,6 @@ UMS_POSSIBLE_INFO_FIELD = [
     'difference_vram',
     'difference_ram'
 ]
+
+SCREENS_PATH_KEY = "screens_path"
+SCREENS_COLLECTION_KEY = "screens_collection"
