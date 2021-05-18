@@ -101,14 +101,14 @@ def process_thumbnail(path, data, resolution):
         if os.path.exists(thumbnail_path):
             return thumbnail_path
 
-        cur_img = Image.open(cur_img_path)
+        cur_img = Image.open(path)
 
         thumbnail = cur_img.resize((resolution, int(resolution * cur_img.size[1] / cur_img.size[0])),
                                  Image.ANTIALIAS)
 
         thumbnail.save(thumbnail_path, quality=75)
     except Exception as err:
-        print("Thumbnail didn't created: json_report - {}, data - {}, img_key - {}".format(json_report, data, img_key))
+        print("Thumbnail didn't created: data - {}".format(data))
         main_logger.error("Thumbnail didn't created: {}".format(str(err)))
 
         return None
@@ -116,7 +116,7 @@ def process_thumbnail(path, data, resolution):
         return thumbnail_path
 
 
-def process_thumbnail(path, data, resolution, img_key):
+def process_thumbnail_case(path, data, resolution, img_key):
     try:
         cur_img_path = os.path.abspath(os.path.join(path, data[img_key]))
 
@@ -136,7 +136,7 @@ def process_thumbnail(path, data, resolution, img_key):
 
         thumbnail.save(thumbnail_path, quality=75)
     except Exception as err:
-        print("Thumbnail didn't created: json_report - {}, data - {}, img_key - {}".format(json_report, data, img_key))
+        print("Thumbnail didn't created: data - {}, img_key - {}".format(data, img_key))
         main_logger.error("Thumbnail didn't created: {}".format(str(err)))
     else:
         data.update({thumbnail_prefix + img_key: os.path.relpath(thumbnail_path, path)})
@@ -155,8 +155,8 @@ def generate_thumbnails(session_dir):
                 for case in current_test_report:
                     for img_key in POSSIBLE_JSON_IMG_KEYS:
                         if img_key in case.keys():
-                            process_thumbnail(path, case, 64, img_key)
-                            process_thumbnail(path, case, 256, img_key)
+                            process_thumbnail_case(path, case, 64, img_key)
+                            process_thumbnail_case(path, case, 256, img_key)
 
                     if SCREENS_PATH_KEY in case:
                         if os.path.exists(case[SCREENS_PATH_KEY]):
@@ -173,9 +173,9 @@ def generate_thumbnails(session_dir):
                                 case[SCREENS_COLLECTION_KEY].append(screen_info)
 
                                 thumbnail_path = process_thumbnail(screen, case, 64)
-
-                                thumbnail_prefix = "thumb{}".format(str(resolution))
-                                screen_info[thumbnail_prefix] = os.path.relpath(thumbnail_path, path)
+                                screen_info["thumb64"] = os.path.relpath(thumbnail_path, path)
+                                thumbnail_path = process_thumbnail(screen, case, 256)
+                                screen_info["thumb256"] = os.path.relpath(thumbnail_path, path)
 
                 with open(os.path.join(path, TEST_REPORT_NAME_COMPARED), 'w') as file:
                     json.dump(current_test_report, file, indent=4)
