@@ -168,7 +168,7 @@ def generate_thumbnails(session_dir):
                                 screen_path, screen_name = os.path.split(screen)
                                 screen_info = {}
                                 screen_info["name"] = screen_name
-                                screen_info["path"] = screen
+                                screen_info["path"] = os.path.relpath(screen, path)
 
                                 case[SCREENS_COLLECTION_KEY].append(screen_info)
 

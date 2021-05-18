@@ -147,56 +147,51 @@
 {#- ------------------------------ SCREENS CAROUSEL ------------------------------ -#}
 {%- if column.name == 'screens_carousel' -%}
     {%- if is_head -%}
-        <th data-field="screens_carousel" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-formatter="metaAJAX">Screens carousel
+        <th data-field="screens_carousel" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-formatter="metaAJAX">Screens
         </th>
     {%- else -%}
-        <td>
-            <a onclick="openCarousel('{{ item.test_case }}')">Open carousel</a>
+        <td class="hatching">
+            {%- if item.screens_collection is defined and item.screens_collection | length > 0 -%}
+                <img src="{{ item.screens_collection[0].thumb256 }}" onclick="openCarousel('{{ item.test_case }}')"/>
 
-            <div class="popup" id="carouselPopup_{{ item.test_case }}">
-                <div class="popupContent imgModalContent">
-                    <div id="carouselContainer_{{ item.test_case }}" class="carouselContainer">
-  
-                        <div class="col-md-12 hidden-sm hidden-xs carouselThumbnailsContainer">
-                              <ul class="list-inline">
-                              <li> <a id="carouselThumbnail-0" class="selected carouselThumbnail" onclick="changeActiveThumbnail(this, 0)">
-                                <img src="http://placehold.it/100x56&amp;text=one" class="img-responsive">
-                              </a></li>
-                              <li> <a id="carouselThumbnail-1" class="carouselThumbnail" onclick="changeActiveThumbnail(this, 1)">
-                                <img src="http://placehold.it/100x56&amp;text=two" class="img-responsive">
-                              </a></li>
-                              <li> <a id="carouselThumbnail-2" class="carouselThumbnail" onclick="changeActiveThumbnail(this, 2)">
-                                <img src="http://placehold.it/100x56&amp;text=three" class="img-responsive">
-                              </a></li>
-                        </div>
-  
-  
-                        <div class="col-md-12 carousel" id="slider">
-                            <div id="carousel" class="carousel slide">
-                                <div class="carousel-inner">
-                                    <div class="active item" data-slide-number="0">
-                                        <img src="http://placehold.it/1920x1080&amp;text=one" class="img-responsive">
-                                        <div class="imageDescription">Some text description</div>
-                                    </div>
-                                    <div class="item" data-slide-number="1">
-                                        <img src="http://placehold.it/1920x1080&amp;text=two" class="img-responsive">
-                                        <div class="imageDescription">Some text description</div>
-                                    </div>
-                                    <div class="item" data-slide-number="2">
-                                        <img src="http://placehold.it/1920x1080&amp;text=three" class="img-responsive">
-                                        <div class="imageDescription">Some text description</div>
-                                    </div>
-                                </div>
-                                
-                                <a class="carousel-control left" href="#carousel" data-slide="prev"></a>
-
-                                <a class="carousel-control right" href="#carousel" data-slide="next"></a>
+                <div class="popup" id="carouselPopup_{{ item.test_case }}">
+                    <div class="popupContent imgModalContent">
+                        <div id="carouselContainer_{{ item.test_case }}" class="carouselContainer">
+      
+                            <div class="col-md-12 hidden-sm hidden-xs carouselThumbnailsContainer">
+                                <ul class="list-inline">
+                                    {% for screen in item.screens_collection %}
+                                        <li><a id="carouselThumbnail-{{loop.index - 1}}" class="{% if loop.index == 1 %}selected{% endif %} carouselThumbnail" onclick="changeActiveThumbnail(this, {{loop.index - 1}})">
+                                        <img src="{{ screen.thumb64 }}"/>
+                                        </a></li>
+                                    {% endfor %}
+                                </ul>
                             </div>
-                        </div>
+      
+      
+                            <div class="col-md-12 carousel" id="slider">
+                                <div id="carousel" class="carousel slide">
+                                    <div class="carousel-inner">
+                                        {% for screen in item.screens_collection %}
+                                            <div class="{% if loop.index == 1 %}active{% endif %} item" data-slide-number="{{loop.index - 1}}">
+                                                <img src="{{ screen.path }}" class="img-responsive">
+                                                <div class="imageDescription">{{ screen.name }}</div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    
+                                    <a class="carousel-control left" href="#carousel" data-slide="prev"></a>
 
+                                    <a class="carousel-control right" href="#carousel" data-slide="next"></a>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
-            </div>
+            {%- else -%}
+                No screenshots available
+            {%- endif -%}
         </td>
     {%- endif -%}
 {%- endif -%}

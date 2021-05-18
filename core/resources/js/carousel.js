@@ -7,9 +7,9 @@ function openCarousel(caseName) {
 
 
 function changeActiveThumbnail(element, number) {
-    $('#carousel').carousel(number);
-    $('[id^=carouselThumbnail-]').removeClass('selected');
-    $(element).addClass('selected');
+    $('#carousel').carousel(number)
+    $('[id^=carouselThumbnail-]').removeClass('selected')
+    $(element).addClass('selected')
 }
 
 
@@ -19,9 +19,11 @@ function initCarousel() {
     });
 
     $('#carousel').on('slid.bs.carousel', function (e) {
-        let id = $('.item.active').data('slide-number');
-        id = parseInt(id);
-        $('[id^=carouselThumbnail-]').removeClass('selected');
-        $('[id=carouselThumbnail-' + id + ']').addClass('selected');
+        let id = $('.item.active').data('slide-number')
+        id = parseInt(id)
+        $('[id^=carouselThumbnail-]').removeClass('selected')
+        let newActiveElement = $('[id=carouselThumbnail-' + id + ']')
+        newActiveElement.addClass('selected')
+        newActiveElement[0].scrollIntoView()
     });
 }
