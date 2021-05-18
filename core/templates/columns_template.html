@@ -156,6 +156,10 @@
 
                 <div class="popup" id="carouselPopup_{{ item.test_case }}">
                     <div class="popupContent imgModalContent">
+                        <form class="popupForm">
+                            <button class="commonButton closePopup" type="button" onclick="closeModalWindow('carouselPopup_{{ item.test_case }}'); return false;"><img src="{{ pre_path }}/report_resources/img/close-button.png"/></button>
+                        </form>
+
                         <div id="carouselContainer_{{ item.test_case }}" class="carouselContainer">
       
                             <div class="col-md-12 hidden-sm hidden-xs carouselThumbnailsContainer">
