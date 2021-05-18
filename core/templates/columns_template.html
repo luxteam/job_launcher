@@ -165,7 +165,7 @@
                             <div class="col-md-12 hidden-sm hidden-xs carouselThumbnailsContainer">
                                 <ul class="list-inline">
                                     {% for screen in item.screens_collection %}
-                                        <li><a id="carouselThumbnail-{{loop.index - 1}}" class="{% if loop.index == 1 %}selected{% endif %} carouselThumbnail" onclick="changeActiveThumbnail(this, {{loop.index - 1}})">
+                                        <li><a id="carouselThumbnail-{{ item.test_case }}-{{loop.index - 1}}" class="{% if loop.index == 1 %}selected{% endif %} carouselThumbnail" onclick="changeActiveThumbnail(this, '{{ item.test_case }}', {{loop.index - 1}})">
                                         <img src="{{ screen.thumb64 }}"/>
                                         </a></li>
                                     {% endfor %}
@@ -174,7 +174,7 @@
       
       
                             <div class="col-md-12 carousel" id="slider">
-                                <div id="carousel" class="carousel slide">
+                                <div id="carousel_{{ item.test_case }}" class="carousel slide">
                                     <div class="carousel-inner">
                                         {% for screen in item.screens_collection %}
                                             <div class="{% if loop.index == 1 %}active{% endif %} item" data-slide-number="{{loop.index - 1}}">
@@ -184,9 +184,9 @@
                                         {% endfor %}
                                     </div>
                                     
-                                    <a class="carousel-control left" href="#carousel" data-slide="prev"></a>
+                                    <a class="carousel-control left" href="#carousel_{{ item.test_case }}" data-slide="prev"></a>
 
-                                    <a class="carousel-control right" href="#carousel" data-slide="next"></a>
+                                    <a class="carousel-control right" href="#carousel_{{ item.test_case }}" data-slide="next"></a>
                                 </div>
                             </div>
 

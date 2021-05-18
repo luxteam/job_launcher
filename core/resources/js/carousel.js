@@ -2,27 +2,27 @@ function openCarousel(caseName) {
     let carouselName = 'carouselPopup_' + caseName
 
     openModalWindow(carouselName)
-    initCarousel()
+    initCarousel(caseName)
 }
 
 
-function changeActiveThumbnail(element, number) {
-    $('#carousel').carousel(number)
-    $('[id^=carouselThumbnail-]').removeClass('selected')
+function changeActiveThumbnail(element, caseName, number) {
+    $(`#carousel_${caseName}`).carousel(number)
+    $(`[id^=carouselThumbnail-${caseName}-]`).removeClass('selected')
     $(element).addClass('selected')
 }
 
 
-function initCarousel() {
-    $('#carousel').carousel({
-        interval: 5000
+function initCarousel(caseName) {
+    $('#carousel_' + caseName).carousel({
+        interval: false
     });
 
-    $('#carousel').on('slid.bs.carousel', function (e) {
-        let id = $('.item.active').data('slide-number')
+    $('#carousel_' + caseName).on('slid.bs.carousel', function (e) {
+        let id = $('#carousel_' + caseName).find('.item.active').data('slide-number')
         id = parseInt(id)
-        $('[id^=carouselThumbnail-]').removeClass('selected')
-        let newActiveElement = $('[id=carouselThumbnail-' + id + ']')
+        $(`[id^=carouselThumbnail-${caseName}-]`).removeClass('selected')
+        let newActiveElement = $(`#carouselThumbnail-${caseName}-${id}`)
         newActiveElement.addClass('selected')
         newActiveElement[0].scrollIntoView()
     });
