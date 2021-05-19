@@ -144,6 +144,62 @@
     {%- endif -%}
 {%- endif -%}
 
+{#- ------------------------------ SCREENS CAROUSEL ------------------------------ -#}
+{%- if column.name == 'screens_carousel' -%}
+    {%- if is_head -%}
+        <th data-field="screens_carousel" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-formatter="metaAJAX">Screens
+        </th>
+    {%- else -%}
+        <td class="hatching">
+            {%- if item.screens_collection is defined and item.screens_collection | length > 0 -%}
+                <img data-src="{{ item.screens_collection[0].thumb256 }}" onclick="openCarousel('{{ item.test_case }}')"/>
+
+                <div class="popup" id="carouselPopup_{{ item.test_case }}">
+                    <div class="popupContent imgModalContent">
+                        <form class="popupForm">
+                            <button class="commonButton closePopup" type="button" onclick="closeModalWindow('carouselPopup_{{ item.test_case }}'); return false;"><img src="{{ pre_path }}/report_resources/img/close-button.png"/></button>
+                        </form>
+
+                        <div id="carouselContainer_{{ item.test_case }}" class="carouselContainer">
+      
+                            <div class="col-md-12 hidden-sm hidden-xs carouselThumbnailsContainer">
+                                <ul class="list-inline">
+                                    {% for screen in item.screens_collection %}
+                                        <li><a id="carouselThumbnail-{{ item.test_case }}-{{loop.index - 1}}" class="{% if loop.index == 1 %}selected{% endif %} carouselThumbnail" onclick="changeActiveThumbnail(this, '{{ item.test_case }}', {{loop.index - 1}})">
+                                        <img loading="lazy" data-src="{{ screen.thumb64 }}" id="carouselThumbnailImg-{{ item.test_case }}-{{loop.index - 1}}"/>
+                                        </a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+      
+      
+                            <div class="col-md-12 carousel" id="slider">
+                                <div id="carousel_{{ item.test_case }}" class="carousel slide">
+                                    <div class="carousel-inner">
+                                        {% for screen in item.screens_collection %}
+                                            <div class="{% if loop.index == 1 %}active{% endif %} item" data-slide-number="{{loop.index - 1}}">
+                                                <img loading="lazy" data-src="{{ screen.path }}" class="img-responsive" id="carouselImg-{{ item.test_case }}-{{loop.index - 1}}">
+                                                <div class="imageDescription">{{ screen.name }}</div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    
+                                    <a class="carousel-control left" href="#carousel_{{ item.test_case }}" data-slide="prev"></a>
+
+                                    <a class="carousel-control right" href="#carousel_{{ item.test_case }}" data-slide="next"></a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {%- else -%}
+                No screenshots available
+            {%- endif -%}
+        </td>
+    {%- endif -%}
+{%- endif -%}
+
 {#- ------------------------------ INFO ------------------------------ -#}
 {%- if column.name == 'info' -%}
     {%- if is_head -%}

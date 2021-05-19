@@ -442,3 +442,47 @@ a.highlightedLink {
 .perf_leak, .skippedStatus.perf_leak, .retries_detected{
   background: #f79232 !important;
 }
+
+.selected img {
+  opacity: 0.5;
+}
+
+.carouselThumbnail img {
+  width: 100px;
+}
+
+.carouselThumbnailsContainer {
+  width: 100%;
+  height: 80px;
+  margin-bottom: 20px;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+}
+
+.carouselContainer {
+  width: 90vw;
+  height: 90vh;
+  padding: 0 80px;
+}
+
+.carousel .carousel-inner {
+  height: 100%;
+}
+
+.carousel img{
+  width: 1920px;
+}
+
+.imageDescription {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: black;
+  color: white;
+  opacity: 0.8;
+  font-size: 16px;
+  font-family: "Open Sans";
+  font-weight: bold;
+}

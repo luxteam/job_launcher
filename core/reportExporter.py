@@ -90,6 +90,58 @@ def get_year():
     return datetime.datetime.now().year
 
 
+def process_thumbnail(path, data, resolution):
+    try:
+        thumbnail_prefix = "thumb{}_".format(str(resolution))
+
+        img_path, img_name = os.path.split(path)
+
+        thumbnail_path = os.path.abspath(os.path.join(img_path, thumbnail_prefix + img_name))
+
+        if os.path.exists(thumbnail_path):
+            return thumbnail_path
+
+        cur_img = Image.open(path)
+
+        thumbnail = cur_img.resize((resolution, int(resolution * cur_img.size[1] / cur_img.size[0])),
+                                 Image.ANTIALIAS)
+
+        thumbnail.save(thumbnail_path, quality=75)
+    except Exception as err:
+        print("Thumbnail didn't created: data - {}".format(data))
+        main_logger.error("Thumbnail didn't created: {}".format(str(err)))
+
+        return None
+    else:
+        return thumbnail_path
+
+
+def process_thumbnail_case(path, data, resolution, img_key):
+    try:
+        cur_img_path = os.path.abspath(os.path.join(path, data[img_key]))
+
+        thumbnail_prefix = "thumb{}_".format(str(resolution))
+
+        thumbnail_path = os.path.abspath(os.path.join(path, data[img_key]
+            .replace(data["test_case"], thumbnail_prefix + data["test_case"])))
+
+        if os.path.exists(thumbnail_path):
+            data.update({thumbnail_prefix + img_key: os.path.relpath(thumbnail_path, path)})
+            return
+
+        cur_img = Image.open(cur_img_path)
+
+        thumbnail = cur_img.resize((resolution, int(resolution * cur_img.size[1] / cur_img.size[0])),
+                                 Image.ANTIALIAS)
+
+        thumbnail.save(thumbnail_path, quality=75)
+    except Exception as err:
+        print("Thumbnail didn't created: data - {}, img_key - {}".format(data, img_key))
+        main_logger.error("Thumbnail didn't created: {}".format(str(err)))
+    else:
+        data.update({thumbnail_prefix + img_key: os.path.relpath(thumbnail_path, path)})
+
+
 def generate_thumbnails(session_dir):
     current_test_report = []
     main_logger.info("Start thumbnails creation")
@@ -100,37 +152,30 @@ def generate_thumbnails(session_dir):
                 with open(os.path.join(path, json_report), 'r') as file:
                     current_test_report = json.loads(file.read())
 
-                for test in current_test_report:
+                for case in current_test_report:
                     for img_key in POSSIBLE_JSON_IMG_KEYS:
-                        if img_key in test.keys():
-                            try:
-                                cur_img_path = os.path.abspath(os.path.join(path, test[img_key]))
-                                thumb64_path = os.path.abspath(
-                                    os.path.join(path, test[img_key].replace(test['test_case'],
-                                                                             'thumb64_' + test['test_case'])))
-                                thumb256_path = os.path.abspath(
-                                    os.path.join(path, test[img_key].replace(test['test_case'],
-                                                                             'thumb256_' + test['test_case'])))
+                        if img_key in case.keys():
+                            process_thumbnail_case(path, case, 64, img_key)
+                            process_thumbnail_case(path, case, 256, img_key)
 
-                                if os.path.exists(thumb64_path) and os.path.exists(thumb256_path):
-                                    test.update({'thumb64_' + img_key: os.path.relpath(thumb64_path, path)})
-                                    test.update({'thumb256_' + img_key: os.path.relpath(thumb256_path, path)})
-                                    continue
+                    if SCREENS_PATH_KEY in case:
+                        if os.path.exists(case[SCREENS_PATH_KEY]):
+                            case[SCREENS_COLLECTION_KEY] = []
 
-                                cur_img = Image.open(cur_img_path)
-                                thumb64 = cur_img.resize((64, int(64 * cur_img.size[1] / cur_img.size[0])),
-                                                         Image.ANTIALIAS)
-                                thumb256 = cur_img.resize((256, int(256 * cur_img.size[1] / cur_img.size[0])),
-                                                          Image.ANTIALIAS)
+                            screens = glob(os.path.join(case[SCREENS_PATH_KEY], "*"))
 
-                                thumb64.save(thumb64_path, quality=75)
-                                thumb256.save(thumb256_path, quality=75)
-                            except Exception as err:
-                                print("Thumbnail didn't created: json_report - {}, test - {}, img_key - {}".format(json_report, test, img_key))
-                                main_logger.error("Thumbnail didn't created: {}".format(str(err)))
-                            else:
-                                test.update({'thumb64_' + img_key: os.path.relpath(thumb64_path, path)})
-                                test.update({'thumb256_' + img_key: os.path.relpath(thumb256_path, path)})
+                            for screen in screens:
+                                screen_path, screen_name = os.path.split(screen)
+                                screen_info = {}
+                                screen_info["name"] = screen_name
+                                screen_info["path"] = os.path.relpath(screen, path)
+
+                                case[SCREENS_COLLECTION_KEY].append(screen_info)
+
+                                thumbnail_path = process_thumbnail(screen, case, 64)
+                                screen_info["thumb64"] = os.path.relpath(thumbnail_path, path)
+                                thumbnail_path = process_thumbnail(screen, case, 256)
+                                screen_info["thumb256"] = os.path.relpath(thumbnail_path, path)
 
                 with open(os.path.join(path, TEST_REPORT_NAME_COMPARED), 'w') as file:
                     json.dump(current_test_report, file, indent=4)
