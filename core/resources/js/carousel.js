@@ -14,6 +14,18 @@ function changeActiveThumbnail(element, caseName, number) {
 
 
 function initCarousel(caseName) {
+    $(`[id^=carouselThumbnailImg-${caseName}-]`).each(function() {
+        $(this).attr("src", $(this).attr("data-src"));
+        $(this).removeAttr("data-src");
+        console.log($(this)[0].outerHTML);
+    });
+
+    $(`[id^=carouselImg-${caseName}-]`).each(function() {
+        $(this).attr("src", $(this).attr("data-src"));
+        $(this).removeAttr("data-src");
+        console.log($(this)[0].outerHTML);
+    });
+
     $('#carousel_' + caseName).carousel({
         interval: false
     });

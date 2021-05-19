@@ -152,7 +152,7 @@
     {%- else -%}
         <td class="hatching">
             {%- if item.screens_collection is defined and item.screens_collection | length > 0 -%}
-                <img src="{{ item.screens_collection[0].thumb256 }}" onclick="openCarousel('{{ item.test_case }}')"/>
+                <img data-src="{{ item.screens_collection[0].thumb256 }}" onclick="openCarousel('{{ item.test_case }}')"/>
 
                 <div class="popup" id="carouselPopup_{{ item.test_case }}">
                     <div class="popupContent imgModalContent">
@@ -166,7 +166,7 @@
                                 <ul class="list-inline">
                                     {% for screen in item.screens_collection %}
                                         <li><a id="carouselThumbnail-{{ item.test_case }}-{{loop.index - 1}}" class="{% if loop.index == 1 %}selected{% endif %} carouselThumbnail" onclick="changeActiveThumbnail(this, '{{ item.test_case }}', {{loop.index - 1}})">
-                                        <img src="{{ screen.thumb64 }}"/>
+                                        <img loading="lazy" data-src="{{ screen.thumb64 }}" id="carouselThumbnailImg-{{ item.test_case }}-{{loop.index - 1}}"/>
                                         </a></li>
                                     {% endfor %}
                                 </ul>
@@ -178,7 +178,7 @@
                                     <div class="carousel-inner">
                                         {% for screen in item.screens_collection %}
                                             <div class="{% if loop.index == 1 %}active{% endif %} item" data-slide-number="{{loop.index - 1}}">
-                                                <img src="{{ screen.path }}" class="img-responsive">
+                                                <img loading="lazy" data-src="{{ screen.path }}" class="img-responsive" id="carouselImg-{{ item.test_case }}-{{loop.index - 1}}">
                                                 <div class="imageDescription">{{ screen.name }}</div>
                                             </div>
                                         {% endfor %}
