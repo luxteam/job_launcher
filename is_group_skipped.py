@@ -20,7 +20,9 @@ if __name__ == '__main__':
     with open(args.tests_path) as file:
         cases = json.load(file)
 
-    render_platform = {PLATFORM_CONVERTATIONS[args.os]["os_name"], PLATFORM_CONVERTATIONS[args.os]["cards"][args.gpu]}
+    recovered_gpu_name= PLATFORM_CONVERTATIONS[args.os]["cards"][args.gpu]
+    recovered_os_name = PLATFORM_CONVERTATIONS[args.os]["os_name"][recovered_gpu_name] if isinstance(args.os, dict) else PLATFORM_CONVERTATIONS[args.os]["os_name"]
+    render_platform = {recovered_os_name, recovered_gpu_name}
 
     skipped_cases_num = 0
     total_cases_num = len(cases)
