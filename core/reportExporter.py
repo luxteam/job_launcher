@@ -286,7 +286,7 @@ def recover_hostname(lost_test_package, gpu_os_case, node_retry_info, status):
         try:
             retry_gpu_name = PLATFORM_CONVERTATIONS[retry_info['osName']]["cards"][retry_info['gpuName']]
             os_name_struct = PLATFORM_CONVERTATIONS[retry_info['osName']]["os_name"]
-            retry_os_name = os_name_struct[recovered_gpu_name] if isinstance(os_name_struct, dict) else os_name_struct
+            retry_os_name = os_name_struct[retry_info['gpuName']] if isinstance(os_name_struct, dict) else os_name_struct
             if retry_gpu_name in gpu_os_case and retry_os_name in gpu_os_case:
                 for groups in retry_info['Tries']:
                     package_or_default_execution = None

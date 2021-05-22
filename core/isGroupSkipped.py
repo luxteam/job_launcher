@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
     recovered_gpu_name= PLATFORM_CONVERTATIONS[args.os]["cards"][args.gpu]
     os_name_struct = PLATFORM_CONVERTATIONS[args.os]["os_name"]
-    recovered_os_name = os_name_struct[recovered_gpu_name] if isinstance(os_name_struct, dict) else os_name_struct
+    recovered_os_name = os_name_struct[args.gpu] if isinstance(os_name_struct, dict) else os_name_struct
     render_platform = {recovered_os_name, recovered_gpu_name}
 
     skipped_cases_num = 0

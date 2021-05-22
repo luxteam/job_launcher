@@ -230,7 +230,7 @@ def main(lost_tests_results, tests_dir, output_dir, split_tests_execution, tests
 							# join converted gpu name and os name
 							recovered_gpu_name= PLATFORM_CONVERTATIONS[os_name]["cards"][gpu_name]
 							os_name_struct = PLATFORM_CONVERTATIONS[os_name]["os_name"]
-							recovered_os_name = os_name_struct[recovered_gpu_name] if isinstance(os_name_struct, dict) else os_name_struct
+							recovered_os_name = os_name_struct[gpu_name] if isinstance(os_name_struct, dict) else os_name_struct
 							joined_gpu_os_names = recovered_gpu_name + "-" + recovered_os_name
 							if joined_gpu_os_names not in lost_tests_data:
 								lost_tests_data[joined_gpu_os_names] = {}
@@ -252,7 +252,7 @@ def main(lost_tests_results, tests_dir, output_dir, split_tests_execution, tests
 					# join converted gpu name and os name
 					recovered_gpu_name= PLATFORM_CONVERTATIONS[os_name]["cards"][gpu_name]
 					os_name_struct = PLATFORM_CONVERTATIONS[os_name]["os_name"]
-					recovered_os_name = os_name_struct[recovered_gpu_name] if isinstance(os_name_struct, dict) else os_name_struct
+					recovered_os_name = os_name_struct[gpu_name] if isinstance(os_name_struct, dict) else os_name_struct
 					joined_gpu_os_names = recovered_gpu_name + "-" + recovered_os_name
 					# if test group is skipped
 					if (engine and (test_package_name + "-" + engine) in skipped_groups and (gpu_name + "-" + os_name) in skipped_groups[test_package_name + "-" + engine]) \
@@ -279,7 +279,7 @@ def main(lost_tests_results, tests_dir, output_dir, split_tests_execution, tests
 					# join converted gpu name and os name
 					recovered_gpu_name= PLATFORM_CONVERTATIONS[os_name]["cards"][gpu_name]
 					os_name_struct = PLATFORM_CONVERTATIONS[os_name]["os_name"]
-					recovered_os_name = os_name_struct[recovered_gpu_name] if isinstance(os_name_struct, dict) else os_name_struct
+					recovered_os_name = os_name_struct[gpu_name] if isinstance(os_name_struct, dict) else os_name_struct
 					joined_gpu_os_names = recovered_gpu_name + "-" + recovered_os_name
 					if joined_gpu_os_names not in lost_tests_data:
 						lost_tests_data[joined_gpu_os_names] = {}
