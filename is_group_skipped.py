@@ -21,7 +21,8 @@ if __name__ == '__main__':
         cases = json.load(file)
 
     recovered_gpu_name= PLATFORM_CONVERTATIONS[args.os]["cards"][args.gpu]
-    recovered_os_name = PLATFORM_CONVERTATIONS[args.os]["os_name"][recovered_gpu_name] if isinstance(args.os, dict) else PLATFORM_CONVERTATIONS[args.os]["os_name"]
+    os_name_struct =  PLATFORM_CONVERTATIONS[args.os]["os_name"]
+    recovered_os_name = os_name_struct[recovered_gpu_name] if isinstance(os_name_struct, dict) else os_name_struct
     render_platform = {recovered_os_name, recovered_gpu_name}
 
     skipped_cases_num = 0
