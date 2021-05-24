@@ -11,7 +11,6 @@ def extract_datetime(line):
 
 def closest_line_num_by_datetime(datetime, lines):
     
-
     left = 0
     right = len(lines) - 1
     best_ind = left
@@ -28,7 +27,6 @@ def closest_line_num_by_datetime(datetime, lines):
 
         if abs(extract_datetime(lines[mid]) - datetime) <= abs(extract_datetime(lines[best_ind]) - datetime):
             best_ind = mid
-    
     
     return best_ind
 
@@ -56,7 +54,6 @@ def main(args):
 
 
 if __name__ == '__main__':
-
     def parsed_datetime(str):
         return parse(str)
 

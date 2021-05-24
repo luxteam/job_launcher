@@ -4,8 +4,26 @@ import cpuinfo
 import subprocess
 import abc
 import argparse
+import os
 from threading import Timer, current_thread
 from distutils.util import strtobool
+from system_info import get_gpu
+
+
+CPU_FILENAME = 'cpu.log'
+RAM_FILENAME = 'ram.log'
+GPU_GR_CLOCK_FILENAME = 'gpu_gr_clock.log'
+GPU_MEM_CLOCK_FILENAME = 'gpu_mem_clock.log'
+GPU_SM_CLOCK_FILENAME = 'gpu_sm_clock.log'
+GPU_VIDEO_CLOCK_FILENAME = 'gpu_video_clock.log'
+GPU_FAN_SPEED_FILENAME = 'gpu_fan_speed.log'
+GPU_MEM_USAGE_FILENAME = 'gpu_mem_usage.log'
+GPU_POWER_DRAW_FILENAME = 'gpu_power_draw.log'
+GPU_TEMP_FILENAME = 'gpu_temp.log'
+GPU_UTIL_FILENAME = 'gpu_util.log'
+DISK_IO_FILENAME = 'disk_io.log'
+NET_IO_FILENAME = 'net_io.log'
+
 
 class RepeatTimer(Timer):
     def run(self):
@@ -14,14 +32,14 @@ class RepeatTimer(Timer):
 
 
 class MetricReader:
-    def __init__(self, filename, interval=3):
-        self.filename = filename
+    def __init__(self, filename, interval=3, out_dir='metrics_logs'):
+        self.log_file = os.path.join(out_dir, filename)
         self.interval = interval
 
 
     def write_measurement(self, value):
         current_time = time.strftime("%d.%m.%y %H:%M:%S", time.localtime())
-        with open(self.filename, 'a') as f:
+        with open(self.log_file, 'a') as f:
             f.write('{} - {}\n'.format(current_time, value))
 
 
@@ -34,6 +52,8 @@ class MetricReader:
 
 
     def start(self):
+        if not os.path.exists(os.path.dirname(self.log_file)):
+            os.mkdir(os.path.dirname(self.log_file))
         self.timer = RepeatTimer(self.interval, self.tick)
         self.timer.start()
 
@@ -120,40 +140,71 @@ def info(args):
     cpu_info = cpuinfo.get_cpu_info()
     
 
-
-def trace(args):
+def custom_readers(args):
     readers = []
-
     if args.cpu:
-        readers.append(CpuReader('cpu.txt', args.interval))
+        readers.append(CpuReader(CPU_FILENAME, args.interval))
 
     if args.ram:
-        readers.append(RamReader('ram.txt', args.interval))
+        readers.append(RamReader(RAM_FILENAME, args.interval))
     if args.gpu:
-        if 'gr_clock' in args.gpu:
-            readers.append(NvidiaGpuMetricsReader('gpu_gr_clock.txt', args.interval, 'clocks.gr', 'clocks.max.gr'))
-        if 'mem_clock' in args.gpu:
-            readers.append(NvidiaGpuMetricsReader('gpu_mem_clock.txt', args.interval, 'clocks.mem', 'clocks.max.mem'))
-        if 'sm_clock' in args.gpu:
-            readers.append(NvidiaGpuMetricsReader('gpu_sm_clock.txt', args.interval, 'clocks.sm', 'clocks.max.sm'))
-        if 'video_clock' in args.gpu:
-            readers.append(NvidiaGpuMetricsReader('gpu_video_clock.txt', args.interval, 'clocks.video'))
-        if 'fan_speed' in args.gpu:
-            readers.append(NvidiaGpuMetricsReader('gpu_fan_speed.txt', args.interval, 'fan.speed'))
-        if 'mem_usage' in args.gpu:
-            readers.append(NvidiaGpuMetricsReader('gpu_mem_usage.txt', args.interval, 'memory.used', 'memory.total'))
-        if 'power_draw' in args.gpu:
-            readers.append(NvidiaGpuMetricsReader('gpu_power_draw.txt', args.interval, 'power.draw', 'enforced.power.limit'))
-        if 'temp' in args.gpu:
-            readers.append(NvidiaGpuMetricsReader('gpu_temp.txt', args.interval, 'temperature.gpu'))
-        if 'util' in args.gpu:
-            readers.append(NvidiaGpuMetricsReader('gpu_util.txt', args.interval, 'utilization.gpu'))
+        if 'GeForce' in get_gpu():
+            if 'gr_clock' in args.gpu:
+                readers.append(NvidiaGpuMetricsReader(GPU_GR_CLOCK_FILENAME, args.interval, 'clocks.gr', 'clocks.max.gr'))
+            if 'mem_clock' in args.gpu:
+                readers.append(NvidiaGpuMetricsReader(GPU_MEM_CLOCK_FILENAME, args.interval, 'clocks.mem', 'clocks.max.mem'))
+            if 'sm_clock' in args.gpu:
+                readers.append(NvidiaGpuMetricsReader(GPU_SM_CLOCK_FILENAME, args.interval, 'clocks.sm', 'clocks.max.sm'))
+            if 'video_clock' in args.gpu:
+                readers.append(NvidiaGpuMetricsReader(GPU_VIDEO_CLOCK_FILENAME, args.interval, 'clocks.video'))
+            if 'fan_speed' in args.gpu:
+                readers.append(NvidiaGpuMetricsReader(GPU_FAN_SPEED_FILENAME, args.interval, 'fan.speed'))
+            if 'mem_usage' in args.gpu:
+                readers.append(NvidiaGpuMetricsReader(GPU_MEM_USAGE_FILENAME, args.interval, 'memory.used', 'memory.total'))
+            if 'power_draw' in args.gpu:
+                readers.append(NvidiaGpuMetricsReader(GPU_POWER_DRAW_FILENAME, args.interval, 'power.draw', 'enforced.power.limit'))
+            if 'temp' in args.gpu:
+                readers.append(NvidiaGpuMetricsReader(GPU_TEMP_FILENAME, args.interval, 'temperature.gpu'))
+            if 'util' in args.gpu:
+                readers.append(NvidiaGpuMetricsReader(GPU_UTIL_FILENAME, args.interval, 'utilization.gpu'))
+        else:
+            print('Current GPU is not supported')
 
     if args.disk_io:
-        readers.append(DiskIOReader('disk_io.txt', args.interval))
+        readers.append(DiskIOReader(DISK_IO_FILENAME, args.interval))
 
     if args.net_io:
-        readers.append(NetIOReader('net_io.txt', args.interval))
+        readers.append(NetIOReader(NET_IO_FILENAME, args.interval))
+    return readers
+
+
+def full_profile_readers():
+    readers = []
+    readers.append(CpuReader(CPU_FILENAME, args.interval))
+    readers.append(RamReader(RAM_FILENAME, args.interval))
+    if 'GeForce' in get_gpu():
+        readers.append(NvidiaGpuMetricsReader(GPU_GR_CLOCK_FILENAME, args.interval, 'clocks.gr', 'clocks.max.gr'))
+        readers.append(NvidiaGpuMetricsReader(GPU_MEM_CLOCK_FILENAME, args.interval, 'clocks.mem', 'clocks.max.mem'))
+        readers.append(NvidiaGpuMetricsReader(GPU_SM_CLOCK_FILENAME, args.interval, 'clocks.sm', 'clocks.max.sm'))
+        readers.append(NvidiaGpuMetricsReader(GPU_VIDEO_CLOCK_FILENAME, args.interval, 'clocks.video'))
+        readers.append(NvidiaGpuMetricsReader(GPU_FAN_SPEED_FILENAME, args.interval, 'fan.speed'))
+        readers.append(NvidiaGpuMetricsReader(GPU_MEM_USAGE_FILENAME, args.interval, 'memory.used', 'memory.total'))
+        readers.append(NvidiaGpuMetricsReader(GPU_POWER_DRAW_FILENAME, args.interval, 'power.draw', 'enforced.power.limit'))
+        readers.append(NvidiaGpuMetricsReader(GPU_TEMP_FILENAME, args.interval, 'temperature.gpu'))
+        readers.append(NvidiaGpuMetricsReader(GPU_UTIL_FILENAME, args.interval, 'utilization.gpu'))
+    else:
+        print('Current GPU is not supported')
+    readers.append(DiskIOReader(DISK_IO_FILENAME, args.interval))
+    readers.append(NetIOReader(NET_IO_FILENAME, args.interval))
+    return readers
+
+
+def trace(args):
+
+    if args.profile == 'full':
+        readers = full_profile_readers()
+    else:
+        readers = custom_readers(args)
 
     try:
         for reader in readers:
@@ -170,6 +221,7 @@ if __name__ == '__main__':
     subparsers = parser.add_subparsers()
 
     trace_parser = subparsers.add_parser('trace')
+    trace_parser.add_argument('--profile', required=False, choices=['full'])
     trace_parser.add_argument('--interval', required=False, default=3, type=int)
     trace_parser.add_argument('--gpu', required=False, choices=['gr_clock', 'mem_clock', 'sm_clock',
         'video_clock', 'fan_speed', 'mem_usage', 'power_draw', 'temp', 'util',], nargs="+")
