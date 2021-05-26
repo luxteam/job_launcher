@@ -206,6 +206,14 @@ def build_session_report(report, session_dir):
                 synchronization_duration = 0.0
                 try:
                     for jtem in current_test_report:
+                        if SCREENS_COLLECTION_KEY in jtem:
+                            for screen_info in jtem[SCREENS_COLLECTION_KEY]:
+                                for screen_info_key in screen_info:
+                                    if screen_info_key == 'path' or 'thumb' in screen_info_key:
+                                        cur_img_path = os.path.abspath(os.path.join(session_dir, report['results'][result][item]['result_path'], screen_info[screen_info_key]))
+
+                                        screen_info.update({screen_info_key: os.path.relpath(cur_img_path, session_dir)})
+
                         for group_report_file in REPORT_FILES:
                             if group_report_file in jtem.keys():
                                 # update paths
@@ -425,9 +433,9 @@ def build_summary_report(work_dir, node_retry_info, collect_tracked_metrics):
                                 else:
                                     common_info.update({'reporting_date': [temp_report['machine_info']['reporting_date']]})
 
-                                    if report_type != 'perf':
+                                    if report_type != 'perf' and report_type != 'streaming_sdk':
                                         if report_type != 'ec':
-                                            if temp_report['machine_info']['render_version']:
+                                            if 'render_version' in temp_report['machine_info'] and temp_report['machine_info']['render_version']:
                                                 common_info.update({'render_version': [temp_report['machine_info']['render_version']]})
                                             else:
                                                 common_info.update({'render_version': []})
@@ -439,6 +447,12 @@ def build_summary_report(work_dir, node_retry_info, collect_tracked_metrics):
                                     for group_report_file in REPORT_FILES:
                                         if group_report_file in jtem.keys():
                                             jtem.update({group_report_file: os.path.relpath(os.path.join(work_dir, basepath, jtem[group_report_file]), work_dir)})
+
+                                    if SCREENS_COLLECTION_KEY in jtem:
+                                        for screen_info in jtem[SCREENS_COLLECTION_KEY]:
+                                            for screen_info_key in screen_info:
+                                                if screen_info_key == 'path' or 'thumb' in screen_info_key:
+                                                    screen_info.update({screen_info_key: os.path.relpath(os.path.join(work_dir, basepath, screen_info[screen_info_key]), work_dir)})
 
                                     # collect tracked metrics for test cases
                                     if metrics_collector:
@@ -648,6 +662,12 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
     if "show_render_log" not in globals():
         global show_render_log
         show_render_log = True
+    if "show_performance_tab" not in globals():
+        global show_performance_tab
+        show_performance_tab = True
+    if "show_compare_tab" not in globals():
+        global show_compare_tab
+        show_compare_tab = True
 
     try:
         for execution in summary_report:
@@ -679,7 +699,7 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
                         continue
 
                     # choose right plugin version based on building report type
-                    if report_type != 'perf':
+                    if report_type != 'perf' and report_type != 'streaming_sdk':
                         if report_type != 'ec':
                             version_in_title = common_info['render_version']
                         else:
@@ -696,7 +716,9 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
                                            tracked_metrics_history=tracked_metrics_history,
                                            general_info_history=general_info_history,
                                            show_render_time=show_render_time,
-                                           show_render_log=show_render_log)
+                                           show_render_log=show_render_log,
+                                           show_performance_tab=show_performance_tab,
+                                           show_compare_tab=show_compare_tab)
                     save_html_report(html, os.path.join(work_dir, report_dir), 'report.html', replace_pathsep=True)
     except Exception as err:
         traceback.print_exc()
@@ -766,6 +788,13 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
         if "show_render_log" not in globals():
             global show_render_log
             show_render_log = True
+        if "show_performance_tab" not in globals():
+            global show_performance_tab
+            show_performance_tab = True
+        if "show_compare_tab" not in globals():
+            global show_compare_tab
+            show_compare_tab = True
+
 
         common_info.update({'commit_sha': commit_sha})
         common_info.update({'branch_name': branch_name})
@@ -802,7 +831,9 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
                                                tracked_metrics_history=tracked_metrics_history,
                                                general_info_history=general_info_history,
                                                show_render_time=show_render_time,
-                                               show_render_log=show_render_log)
+                                               show_render_log=show_render_log,
+                                               show_performance_tab=show_performance_tab,
+                                               show_compare_tab=show_compare_tab)
         save_html_report(summary_html, work_dir, SUMMARY_REPORT_HTML, replace_pathsep=True)
 
         for execution in summary_report.keys():
@@ -813,7 +844,9 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
                                                                      common_info=common_info,
                                                                      i=execution,
                                                                      show_render_time=show_render_time,
-                                                                     show_render_log=show_render_log)
+                                                                     show_render_log=show_render_log,
+                                                                     show_performance_tab=show_performance_tab,
+                                                                     show_compare_tab=show_compare_tab)
             save_html_report(detailed_summary_html, work_dir, execution + "_detailed.html", replace_pathsep=True)
     except Exception as err:
         traceback.print_exc()
@@ -827,65 +860,67 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
             main_logger.error(repr(e))
         rc = -1
 
-    main_logger.info("Saving performance report...")
-    try:
-        setup_time_count(work_dir)
-        copy_summary_report = copy.deepcopy(summary_report)
-        performance_template = env.get_template('performance_template.html')
-
-        performance_report, hardware, performance_report_detail, summary_info_for_report = build_performance_report(copy_summary_report, major_title)
-
-        setup_sum, setup_details = setup_time_report(work_dir, performance_report_detail)
-
-        save_json_report(performance_report, work_dir, PERFORMANCE_REPORT)
-        save_json_report(performance_report_detail, work_dir, 'performance_report_detailed.json')
-        performance_html = performance_template.render(title=major_title + " Performance",
-                                                       performance_report=performance_report,
-                                                       hardware=hardware,
-                                                       performance_report_detail=performance_report_detail,
-                                                       pageID="performanceA",
-                                                       common_info=common_info,
-                                                       test_info=summary_info_for_report,
-                                                       setupTimeSum=setup_sum,
-                                                       setupTimeDetails=setup_details,
-                                                       synchronization_time=sync_time(summary_report))
-        save_html_report(performance_html, work_dir, PERFORMANCE_REPORT_HTML, replace_pathsep=True)
-    except Exception as err:
-        traceback.print_exc()
-        main_logger.error(repr(err))
+    if show_performance_tab:
+        main_logger.info("Saving performance report...")
         try:
-            main_logger.error(performance_html)
+            setup_time_count(work_dir)
+            copy_summary_report = copy.deepcopy(summary_report)
+            performance_template = env.get_template('performance_template.html')
+
+            performance_report, hardware, performance_report_detail, summary_info_for_report = build_performance_report(copy_summary_report, major_title)
+
+            setup_sum, setup_details = setup_time_report(work_dir, performance_report_detail)
+
+            save_json_report(performance_report, work_dir, PERFORMANCE_REPORT)
+            save_json_report(performance_report_detail, work_dir, 'performance_report_detailed.json')
+            performance_html = performance_template.render(title=major_title + " Performance",
+                                                           performance_report=performance_report,
+                                                           hardware=hardware,
+                                                           performance_report_detail=performance_report_detail,
+                                                           pageID="performanceA",
+                                                           common_info=common_info,
+                                                           test_info=summary_info_for_report,
+                                                           setupTimeSum=setup_sum,
+                                                           setupTimeDetails=setup_details,
+                                                           synchronization_time=sync_time(summary_report))
             save_html_report(performance_html, work_dir, PERFORMANCE_REPORT_HTML, replace_pathsep=True)
-        except Exception as e:
+        except Exception as err:
             traceback.print_exc()
-            main_logger.error(repr(e))
-        # TODO: make building of performance tab more stable
-        # rc = -2
+            main_logger.error(repr(err))
+            try:
+                main_logger.error(performance_html)
+                save_html_report(performance_html, work_dir, PERFORMANCE_REPORT_HTML, replace_pathsep=True)
+            except Exception as e:
+                traceback.print_exc()
+                main_logger.error(repr(e))
+            # TODO: make building of performance tab more stable
+            # rc = -2
 
-    main_logger.info("Saving compare report...")
-    try:
-        compare_template = env.get_template('compare_template.html')
-        copy_summary_report = copy.deepcopy(summary_report)
-
-        compare_report, hardware = build_compare_report(copy_summary_report)
-
-        save_json_report(compare_report, work_dir, COMPARE_REPORT)
-        compare_html = compare_template.render(title=major_title + " Compare",
-                                               hardware=hardware,
-                                               compare_report=compare_report,
-                                               pageID="compareA",
-                                               common_info=common_info)
-        save_html_report(compare_html, work_dir, COMPARE_REPORT_HTML, replace_pathsep=True)
-    except Exception as err:
-        traceback.print_exc()
-        main_logger.error(repr(err))
+    if show_compare_tab:
+        main_logger.info("Saving compare report...")
         try:
-            main_logger.error(compare_html)
-            save_html_report(compare_html, work_dir, "compare_report.html", replace_pathsep=True)
-        except Exception as e:
+            compare_template = env.get_template('compare_template.html')
+            copy_summary_report = copy.deepcopy(summary_report)
+
+            compare_report, hardware = build_compare_report(copy_summary_report)
+
+            save_json_report(compare_report, work_dir, COMPARE_REPORT)
+            compare_html = compare_template.render(title=major_title + " Compare",
+                                                   hardware=hardware,
+                                                   compare_report=compare_report,
+                                                   pageID="compareA",
+                                                   common_info=common_info)
+            save_html_report(compare_html, work_dir, COMPARE_REPORT_HTML, replace_pathsep=True)
+        except Exception as err:
             traceback.print_exc()
-            main_logger.error(repr(e))
-        rc = -3
+            main_logger.error(repr(err))
+            try:
+                main_logger.error(compare_html)
+                save_html_report(compare_html, work_dir, "compare_report.html", replace_pathsep=True)
+            except Exception as e:
+                traceback.print_exc()
+                main_logger.error(repr(e))
+            rc = -3
 
     try:
         build_local_reports(work_dir, summary_report, common_info, env, groupped_tracked_metrics, tracked_metrics_history, general_info_history)

@@ -132,7 +132,7 @@
                 <th>Test package name</th>
                 <th>Host</th>
                 <th>Local report</th>
-                {% if report_type != 'ct' %}
+                {% if report_type == 'default' or report_type == 'perf' or report_type == 'ec' %}
                     <th>Tool's log</th>
                 {% endif %}
                 <th>Engine log</th>
@@ -353,7 +353,7 @@
 
             <tr class="summary_tr">
                 {% set colspan = 4 %}
-                {% if report_type != 'ct' %}
+                {% if report_type == 'default' or report_type == 'perf' or report_type == 'ec' %}
                     {% set colspan = colspan + 1 %}
                 {% endif %}
                 {% if tracked_metrics_history %}

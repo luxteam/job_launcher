@@ -152,7 +152,12 @@
     {%- else -%}
         <td class="hatching">
             {%- if item.screens_collection is defined and item.screens_collection | length > 0 -%}
-                <img data-src="{{ item.screens_collection[0].thumb256 }}" onclick="openCarousel('{{ item.test_case }}')"/>
+
+                {%- if template_name == 'local' -%}
+                    <img data-src="{{ item.screens_collection[0].thumb256 }}" onclick="openCarousel('{{ item.test_case }}')"/>
+                {%- elif template_name == 'detailed' -%}
+                    <img data-src="{{ item.screens_collection[0].thumb64 }}" onclick="openCarousel('{{ item.test_case }}')"/>
+                {%- endif -%}
 
                 <div class="popup" id="carouselPopup_{{ item.test_case }}">
                     <div class="popupContent imgModalContent">
@@ -270,6 +275,15 @@
                 <b>Width:</b> {{ item.width }}<br/>
                 <b>Height:</b> {{ item.height }}<br/>
                 <b>Iterations:</b> {{ item.iterations }}
+            </td>
+        {%- elif report_type == 'streaming_sdk' -%}
+            <td class="infoColumn">
+                <b>Transport protocol:</b> {{ item.transport_protocol }}<br/>
+
+                <b>Test info:</b><br/>
+                {%- for param in item.script_info -%}
+                    {{ param }}<br/>
+                {%- endfor -%}
             </td>
         {%- endif -%}
     {%- endif -%}
@@ -460,6 +474,8 @@
         {#- Colorize passed status for ML Performance reports -#}
         {%- if report_type == 'perf' and tool_name == 'ml' and item.test_status == 'passed' -%}
             {%- set status_postfix = 'Colored' -%}
+        {%- elif report_type == 'streaming_sdk' and item.test_status == 'passed' -%}
+            {%- set status_postfix = 'Colored' -%}
         {%- else -%}
             {%- set status_postfix = '' -%}
         {%- endif -%}
@@ -643,6 +659,29 @@
                     <a href="{{ report[i].results[test_package][test_conf].result_path }}/{{ config.REPORT_RPR_LOG }}">RPR Log</a>
                 {%- endif -%}
 
+            </td>
+        {%- elif report_type == 'streaming_sdk' -%}
+            <td>
+                {%- if show_render_log -%}
+
+                    {%- if 'server_log' in item -%}
+                        {%- if template_name == 'local' -%}
+                            <a href="{{ item.server_log }}">Server log</a><br/>
+                        {%- elif template_name == 'detailed' -%}
+                            <a href="{{ report[i].results[test_package][test_conf].result_path }}/{{ item.server_log }}">Server log</a><br/>
+                        {%- endif -%}
+                    {%- endif -%}
+
+                    {%- if 'client_log' in item -%}
+                        
+                        {%- if template_name == 'local' -%}
+                            <a href="{{ item.client_log }}">Client log</a><br/>
+                        {%- elif template_name == 'detailed' -%}
+                            <a href="{{ report[i].results[test_package][test_conf].result_path }}/{{ item.client_log }}">Client log</a><br/>
+                        {%- endif -%}
+                    {%- endif -%}
+
+                {%- endif -%}
             </td>
         {%- endif -%}
     {%- endif -%}
