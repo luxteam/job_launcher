@@ -286,6 +286,8 @@
 
                     <td>Engine log</td>
 
+                {% endif %}
+
                 {% if groupped_tracked_metrics and tracked_metrics_history %}
                     <td>
                         {%- set performance_window_name = "performanceWindow-" + i + "-" + test_package -%}
