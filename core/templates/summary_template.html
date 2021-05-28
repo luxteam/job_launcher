@@ -267,20 +267,25 @@
                 </td>
 
                 {% if report[i].results[test_package][test_conf].result_path %}
-                <td><a href="{{ report[i].results[test_package][test_conf].result_path }}/report.html">Report</a></td>
+                    <td><a href="{{ report[i].results[test_package][test_conf].result_path }}/report.html">Report</a></td>
 
-                {% if report_type == 'default' or report_type == 'perf' %}
-                    <td><a href="{{ report[i].results[test_package][test_conf].result_path }}/renderTool.log">Render Log</a></td>
-                {% elif report_type == 'ec' %}
-                    <td><a href="{{ report[i].results[test_package][test_conf].result_path }}/render_log.txt">Render Log</a></td>
-                {% endif %}
+                    {% if report_type == 'default' or report_type == 'perf' %}
+                        <td><a href="{{ report[i].results[test_package][test_conf].result_path }}/renderTool.log">Render Log</a></td>
+                    {% elif report_type == 'ec' %}
+                        <td><a href="{{ report[i].results[test_package][test_conf].result_path }}/render_log.txt">Render Log</a></td>
+                    {% endif %}
 
-                <td><a href="{{ report[i].results[test_package][test_conf].result_path }}/../launcher.engine.log">Engine log</a></td>
+                    <td><a href="{{ report[i].results[test_package][test_conf].result_path }}/../launcher.engine.log">Engine log</a></td>
                 {% else %}
-                <td>Report</td>
-                <td>Render Log</td>
-                <td>Engine log</td>
-                {% endif %}
+
+                    <td>Report</td>
+
+                    {% if report_type == 'default' or report_type == 'perf' or report_type == 'ec' %}
+                        <td>Render Log</td>
+                    {% endif %}
+
+                    <td>Engine log</td>
+
                 {% if groupped_tracked_metrics and tracked_metrics_history %}
                     <td>
                         {%- set performance_window_name = "performanceWindow-" + i + "-" + test_package -%}
