@@ -282,10 +282,10 @@
                 <b>Client configuration:</b> {{ item.client_configuration }}<br/>
 
                 {%- if item.min_server_latency is defined and item.max_server_latency is defined -%}
-                    <b>Server latency (min - max):</b> {{ item.min_server_latency }} - {{ item.max_server_latency }}<br/>
+                    <b>Server latency:</b> {{ item.min_server_latency }} - {{ item.max_server_latency }}<br/>
                 {%- endif -%}
                 {%- if item.min_client_latency is defined and item.max_client_latency is defined -%}
-                    <b>Client latency (min - max):</b> {{ item.min_client_latency }} - {{ item.max_client_latency }}<br/>
+                    <b>Client latency:</b> {{ item.min_client_latency }} - {{ item.max_client_latency }}<br/>
                 {%- endif -%}
 
                 <b>Transport protocol:</b> {{ item.transport_protocol }}<br/>
