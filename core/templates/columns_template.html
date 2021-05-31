@@ -147,7 +147,7 @@
 {#- ------------------------------ SCREENS CAROUSEL ------------------------------ -#}
 {%- if column.name == 'screens_carousel' -%}
     {%- if is_head -%}
-        <th data-field="screens_carousel" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-formatter="metaAJAX">Screens
+        <th data-field="screens_carousel" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-formatter="metaAJAX">Screens (click to open all screens)
         </th>
     {%- else -%}
         <td class="hatching">
@@ -278,6 +278,16 @@
             </td>
         {%- elif report_type == 'streaming_sdk' -%}
             <td class="infoColumn">
+                <b>Server configuration:</b> {{ item.server_configuration }}<br/>
+                <b>Client configuration:</b> {{ item.client_configuration }}<br/>
+
+                {%- if item.min_server_latency is defined and item.max_server_latency is defined -%}
+                    <b>Server latency (min - max):</b> {{ item.min_server_latency }} - {{ item.max_server_latency }}<br/>
+                {%- endif -%}
+                {%- if item.min_client_latency is defined and item.max_client_latency is defined -%}
+                    <b>Client latency (min - max):</b> {{ item.min_client_latency }} - {{ item.max_client_latency }}<br/>
+                {%- endif -%}
+
                 <b>Transport protocol:</b> {{ item.transport_protocol }}<br/>
 
                 <b>Test info:</b><br/>
