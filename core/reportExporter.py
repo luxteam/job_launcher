@@ -650,6 +650,46 @@ def build_compare_report(summary_report):
     return compare_report, hardware
 
 
+def build_compare_report_screens(summary_report):
+    IMAGE_KEY = "thumb256"
+
+    compare_report = AutoDict()
+    hardware = []
+    for platform in summary_report.keys():
+        for test_package in summary_report[platform]['results']:
+            for test_config in summary_report[platform]['results'][test_package]:
+                temp_report = summary_report[platform]['results'][test_package][test_config]
+
+                if temp_report['machine_info'] == "":
+                    # if machine info is empty it's blank data for lost test cases
+                    continue
+
+                # collect images links
+                for item in temp_report['render_results']:
+                    if SCREENS_COLLECTION_KEY in item:
+                        # generate column names
+                        for screen_number in range(len(item[SCREENS_COLLECTION_KEY])):
+                            hw = temp_report['machine_info']['render_device'] + ' ' + temp_report['machine_info']['os'] + ' #{}'.format(screen_number)
+
+                            if hw not in hardware:
+                                hardware.append(hw)
+
+                            # if test is processing first time
+                            if not compare_report[item['test_case']]:
+                                compare_report[item['test_case']] = {}
+
+                            screen_info = item[SCREENS_COLLECTION_KEY][screen_number]
+
+                            try:
+                                if IMAGE_KEY in screen_info:
+                                    compare_report[item['test_case']].update({hw: screen_info[IMAGE_KEY]})
+                            except KeyError as err:
+                                print("Missed testcase detected: platform - {}, test_package - {}, test_config - {}, item - {}".format(platform, test_package, test_config, item))
+                                main_logger.error("Missed testcase detected {}".format(str(err)))
+
+    return compare_report, hardware
+
+
 def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupped_tracked_metrics, tracked_metrics_history, general_info_history):
     work_dir = os.path.abspath(work_dir)
 
@@ -668,6 +708,9 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
     if "show_compare_tab" not in globals():
         global show_compare_tab
         show_compare_tab = True
+    if "compare_tab_type" not in globals():
+        global compare_tab_type
+        compare_tab_type = "default"
 
     try:
         for execution in summary_report:
@@ -882,7 +925,9 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
                                                            test_info=summary_info_for_report,
                                                            setupTimeSum=setup_sum,
                                                            setupTimeDetails=setup_details,
-                                                           synchronization_time=sync_time(summary_report))
+                                                           synchronization_time=sync_time(summary_report),
+                                                           show_performance_tab=show_performance_tab,
+                                                           show_compare_tab=show_compare_tab)
             save_html_report(performance_html, work_dir, PERFORMANCE_REPORT_HTML, replace_pathsep=True)
         except Exception as err:
             traceback.print_exc()
@@ -899,17 +944,36 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
     if show_compare_tab:
         main_logger.info("Saving compare report...")
         try:
-            compare_template = env.get_template('compare_template.html')
-            copy_summary_report = copy.deepcopy(summary_report)
+            if compare_tab_type == "default":
+                compare_template = env.get_template('compare_template.html')
+                copy_summary_report = copy.deepcopy(summary_report)
 
-            compare_report, hardware = build_compare_report(copy_summary_report)
+                compare_report, hardware = build_compare_report(copy_summary_report)
 
-            save_json_report(compare_report, work_dir, COMPARE_REPORT)
-            compare_html = compare_template.render(title=major_title + " Compare",
-                                                   hardware=hardware,
-                                                   compare_report=compare_report,
-                                                   pageID="compareA",
-                                                   common_info=common_info)
+                save_json_report(compare_report, work_dir, COMPARE_REPORT)
+                compare_html = compare_template.render(title=major_title + " Compare",
+                                                       hardware=hardware,
+                                                       compare_report=compare_report,
+                                                       pageID="compareA",
+                                                       common_info=common_info,
+                                                       show_performance_tab=show_performance_tab,
+                                                       show_compare_tab=show_compare_tab)
+
+            else:
+                compare_template = env.get_template('compare_template_screens.html')
+                copy_summary_report = copy.deepcopy(summary_report)
+
+                compare_report, hardware = build_compare_report_screens(copy_summary_report)
+
+                save_json_report(compare_report, work_dir, COMPARE_REPORT)
+                compare_html = compare_template.render(title=major_title + " Compare",
+                                                       hardware=hardware,
+                                                       compare_report=compare_report,
+                                                       pageID="compareA",
+                                                       common_info=common_info,
+                                                       show_performance_tab=show_performance_tab,
+                                                       show_compare_tab=show_compare_tab)
+
             save_html_report(compare_html, work_dir, COMPARE_REPORT_HTML, replace_pathsep=True)
         except Exception as err:
             traceback.print_exc()
