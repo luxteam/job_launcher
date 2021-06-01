@@ -122,7 +122,9 @@
     {%- else -%}
         {%- if report_type == 'default' -%}
             <td class="infoColumn">
-                <b>Scene:</b> {{ item.scene_name }}<br/>
+                {%- if item.scene_name -%}
+                    <b>Scene:</b> {{ item.scene_name }}<br/>
+                {%- endif -%}
                 <b>{{ first_engine_name }} Render time:</b> {{ item.render_time | round(3) }}<br/>
                 <b>{{ second_engine_name }} Render time:</b> {{ item.baseline_render_time | round(3) }}<br/>
                 <b>Difference render time:</b> {{ item.difference_time | round(3) }} %<br/>

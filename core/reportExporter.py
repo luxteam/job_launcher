@@ -15,6 +15,10 @@ import copy
 import sys
 import traceback
 import uuid
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+
+from common.scripts.ImageComparator.CompareMetrics_default import CompareMetrics
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)))
 
 try:
@@ -994,6 +998,18 @@ def generate_reports_for_perf_comparison(rpr_dir, northstar_dir, work_dir):
                                         main_logger.error(str(err))
                                 else:
                                     main_logger.warning("baseline report not found: {}".format(os.path.join(path, json_report).replace(rpr_dir, northstar_dir)))
+
+                            if jtem["test_status"] != "error":
+
+                                try:
+                                    first_image_path = os.path.abspath(os.path.join(path, jtem["render_color_path"]))
+                                    second_image_path = os.path.abspath(os.path.join(path, jtem["baseline_color_path"]))
+                                    metrics = CompareMetrics(first_image_path, second_image_path)
+                                    pix_difference_2 = metrics.getPrediction()
+                                    jtem.update({"difference_color_2": pix_difference_2})
+                                except (FileNotFoundError, OSError) as err:
+                                    core.config.main_logger.error(
+                                        "Error during metrics calculation: {}".format(str(err)))
 
                             render_duration += jtem['render_time']
                             synchronization_duration += jtem.get('sync_time', 0.0)

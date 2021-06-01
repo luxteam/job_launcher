@@ -11,6 +11,22 @@
         <thead>
             <tr>
                 <th>Job Name</th>
+
+                <th>Total</th>
+                <th>Passed</th>
+                <th>Failed
+                    <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
+                        title="[Failed] status means that pixel difference with baseline image is too large."></span>
+                </th>
+                <th>Error
+                    <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
+                        title="[Error] status means fatal error during render, terminating by timeout, or case wasn't launched at all."></span>
+                </th>
+                <th>Skipped
+                    <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
+                        title="[Skipped] status means case wasn't launched by QA team decision."></span>
+                </th>
+
                 <th data-formatter="timeFormatterFull">Render time {{ first_engine_name }}</th>
                 <th data-formatter="timeFormatterFull">Render time {{ second_engine_name }}</th>
                 {% if 'true' | env_override('SHOW_SYNC_TIME') != 'false' %}
@@ -30,6 +46,26 @@
                     "Job name"
                     {% endif %}
                 </td>
+
+                <td>{{ report[i].summary.total }}</td>
+                <td>{{ report[i].summary.passed }}</td>
+                <td
+                {%- if report[i].summary.failed != 0 %}
+                class="failedStatus"
+                {% endif -%}
+                >{{ report[i].summary.failed }}</td>
+
+                <td
+                {%- if report[i].summary.error != 0 %}
+                class="errorStatus"
+                {% endif -%}
+                >{{ report[i].summary.error }}</td>
+
+                <td
+                {%- if report[i].summary.skipped != 0 %}
+                class="skippedStatus"
+                {% endif -%}
+                >{{ report[i].summary.skipped }}</td>
 
                 <td
                 {%- if report[i].summary.render_duration == -0.0 and report[i].summary.total != report[i].summary.skipped %}
@@ -77,6 +113,20 @@
             <tr>
                 <th>Test package name</th>
                 <th>Local report</th>
+                <th>Total</th>
+                <th>Passed</th>
+                <th>Failed
+                    <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
+                        title="[Failed] status means that pixel difference with baseline image is too large."></span>
+                </th>
+                <th>Error
+                    <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
+                        title="[Error] status means fatal error during render, terminating by timeout, or case wasn't launched at all."></span>
+                </th>
+                <th>Skipped
+                    <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
+                        title="[Skipped] status means case wasn't launched by QA team decision."></span>
+                </th>
                 <th data-formatter="timeFormatterFull">Render time {{ first_engine_name }}</th>
                 <th data-formatter="timeFormatterFull">Render time {{ second_engine_name }}</th>
                 {% if 'true' | env_override('SHOW_SYNC_TIME') != 'false' %}
@@ -99,6 +149,27 @@
                 {% else %}
                 <td>Report</td>
                 {% endif %}
+
+                <td>{{ report[i].results[test_package][test_conf].total }}</td>
+                <td>{{ report[i].results[test_package][test_conf].passed }}</td>
+
+                <td
+                {% if report[i].results[test_package][test_conf].failed != 0 %}
+                class="failedStatus"
+                {% endif %}
+                >{{ report[i].results[test_package][test_conf].failed }}</td>
+
+                <td
+                {% if report[i].results[test_package][test_conf].error != 0 %}
+                class="errorStatus"
+                {% endif %}
+                >{{ report[i].results[test_package][test_conf].error }}</td>
+
+                <td
+                {% if report[i].results[test_package][test_conf].skipped != 0 %}
+                class="skippedStatus"
+                {% endif %}
+                >{{ report[i].results[test_package][test_conf].skipped }}</td>
 
                 <td
                 {% if report[i].results[test_package][test_conf].render_duration == -0.0 and report[i].results[test_package][test_conf].total != report[i].results[test_package][test_conf].skipped %}
@@ -124,7 +195,7 @@
         {% endfor %}
 
             <tr class="summary_tr">
-                <td colspan="2">Sum</td>
+                <td colspan="7">Sum</td>
 
                 <td
                 {% if report[i].summary.render_duration == -0.0 and report[i].summary.total != report[i].summary.skipped %}

@@ -15,8 +15,21 @@
             <table class="baseTable" id="imgsCompareTable">
                 <thead>
                     <tr>
-                        <th>Baseline Image</th>
-                        <th>Rendered Image</th>
+                        <th>
+                            {%- if 0 | env_override("JL_ENGINES_COMPARE") -%}
+                                {{ first_engine_name }}
+                            {%- else -%}
+                                Baseline Image
+                            {%- endif -%}
+                        </th>
+
+                        <th>
+                            {%- if 0 | env_override("JL_ENGINES_COMPARE") -%}
+                                {{ second_engine_name }}
+                            {%- else -%}
+                                Baseline Image
+                            {%- endif -%}
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
