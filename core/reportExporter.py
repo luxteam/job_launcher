@@ -1004,9 +1004,11 @@ def generate_reports_for_perf_comparison(rpr_dir, northstar_dir, work_dir):
                                 try:
                                     first_image_path = os.path.abspath(os.path.join(path, jtem["render_color_path"]))
                                     second_image_path = os.path.abspath(os.path.join(path, jtem["baseline_color_path"]))
-                                    metrics = CompareMetrics(first_image_path, second_image_path)
-                                    pix_difference_2 = metrics.getPrediction()
-                                    jtem.update({"difference_color_2": pix_difference_2})
+
+                                    if os.path.exists(first_image_path) and os.path.exists(second_image_path):
+                                        metrics = CompareMetrics(first_image_path, second_image_path)
+                                        pix_difference_2 = metrics.getPrediction()
+                                        jtem.update({"difference_color_2": pix_difference_2})
                                 except (FileNotFoundError, OSError) as err:
                                     core.config.main_logger.error(
                                         "Error during metrics calculation: {}".format(str(err)))
