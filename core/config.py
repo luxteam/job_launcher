@@ -204,3 +204,5 @@ UMS_POSSIBLE_INFO_FIELD = [
 
 SCREENS_PATH_KEY = "screens_path"
 SCREENS_COLLECTION_KEY = "screens_collection"
+
+VIDEO_KEY = "video_path"

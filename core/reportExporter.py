@@ -206,6 +206,11 @@ def build_session_report(report, session_dir):
                 synchronization_duration = 0.0
                 try:
                     for jtem in current_test_report:
+                        if VIDEO_KEY in jtem:
+                            video_path = os.path.abspath(os.path.join(session_dir, report['results'][result][item]['result_path'], jtem[VIDEO_KEY]))
+
+                            jtem.update({VIDEO_KEY: os.path.relpath(video_path, session_dir)})
+
                         if SCREENS_COLLECTION_KEY in jtem:
                             for screen_info in jtem[SCREENS_COLLECTION_KEY]:
                                 for screen_info_key in screen_info:
@@ -447,6 +452,9 @@ def build_summary_report(work_dir, node_retry_info, collect_tracked_metrics):
                                     for group_report_file in REPORT_FILES:
                                         if group_report_file in jtem.keys():
                                             jtem.update({group_report_file: os.path.relpath(os.path.join(work_dir, basepath, jtem[group_report_file]), work_dir)})
+
+                                    if VIDEO_KEY in jtem:
+                                        jtem.update({VIDEO_KEY: os.path.relpath(os.path.join(work_dir, basepath, jtem[VIDEO_KEY]), work_dir)})
 
                                     if SCREENS_COLLECTION_KEY in jtem:
                                         for screen_info in jtem[SCREENS_COLLECTION_KEY]:

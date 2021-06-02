@@ -205,6 +205,29 @@
     {%- endif -%}
 {%- endif -%}
 
+{#- ------------------------------ VIDEO ------------------------------ -#}
+{%- if column.name == 'video' -%}
+    {%- if is_head -%}
+        <th data-filed="video" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}">Video</th>
+    {%- else -%}
+        <td class="hatching">
+            {%- if item.video_path is defined -%}
+                {%- if template_name == 'local' -%}
+                    <video width="300" height="187">
+                        <source src="{{ item.video_path }}">
+                    </video>
+                {%- elif template_name == 'detailed' -%}
+                    <video width="64" height="40">
+                        <source src="{{ item.video_path }}">
+                    </video>
+                {%- endif -%}
+            {% else %}
+                No video available
+            {% endif %}
+        </td>
+    {%- endif -%}
+{%- endif -%}
+
 {#- ------------------------------ INFO ------------------------------ -#}
 {%- if column.name == 'info' -%}
     {%- if is_head -%}
