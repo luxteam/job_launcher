@@ -317,6 +317,10 @@
                 {%- for param in item.script_info -%}
                     {{ param }}<br/>
                 {%- endfor -%}
+
+                {%- if item.message -%}
+                    <b>Message:</b> {{ item.message | join('. ') }}<br/>
+                {%- endif -%}
             </td>
         {%- endif -%}
     {%- endif -%}
