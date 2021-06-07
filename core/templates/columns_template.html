@@ -320,11 +320,11 @@
                 {%- endif -%}
 
                 {%- if item.median_client_latency is defined -%}
-                    <b>Median client latency:</b> {{ item.median_client_latency }}<br/>
+                    <b>Median client latency:</b> {{ item.median_client_latency | round(2) }}<br/>
                 {%- endif -%}
 
                 {%- if item.median_server_latency is defined -%}
-                    <b>Median server latency:</b> {{ item.median_server_latency }}<br/>
+                    <b>Median server latency:</b> {{ item.median_server_latency | round(2) }}<br/>
                 {%- endif -%}
 
                 <b>Transport protocol:</b> {{ item.transport_protocol }}<br/>
