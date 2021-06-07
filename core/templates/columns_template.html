@@ -305,10 +305,26 @@
                 <b>Client configuration:</b> {{ item.client_configuration }}<br/>
 
                 {%- if item.min_server_latency is defined and item.max_server_latency is defined -%}
-                    <b>Server latency:</b> {{ item.min_server_latency }} - {{ item.max_server_latency }}<br/>
+                    {%- if item.test_status == "error" or item.test_status == "failed" -%}
+                        <b>Server latency: {{ item.min_server_latency }} - {{ item.max_server_latency }}</b><br/>
+                    {%- else -%}
+                        <b>Server latency:</b> {{ item.min_server_latency }} - {{ item.max_server_latency }}<br/>
+                    {%- endif -%}
                 {%- endif -%}
                 {%- if item.min_client_latency is defined and item.max_client_latency is defined -%}
-                    <b>Client latency:</b> {{ item.min_client_latency }} - {{ item.max_client_latency }}<br/>
+                    {%- if item.test_status == "error" or item.test_status == "failed" -%}
+                        <b>Client latency: {{ item.min_client_latency }} - {{ item.max_client_latency }}</b><br/>
+                    {%- else -%}
+                        <b>Client latency:</b> {{ item.min_client_latency }} - {{ item.max_client_latency }}<br/>
+                    {%- endif -%}
+                {%- endif -%}
+
+                {%- if item.median_client_latency is defined -%}
+                    <b>Median client latency:</b> {{ item.median_client_latency }}<br/>
+                {%- endif -%}
+
+                {%- if item.median_server_latency is defined -%}
+                    <b>Median server latency:</b> {{ item.median_server_latency }}<br/>
                 {%- endif -%}
 
                 <b>Transport protocol:</b> {{ item.transport_protocol }}<br/>
@@ -319,7 +335,7 @@
                 {%- endfor -%}
 
                 {%- if item.message -%}
-                    <b>Message:</b> {{ item.message | join('. ') }}<br/>
+                    <br/><b>Message:</b> {{ item.message | join('. ') }}<br/>
                 {%- endif -%}
             </td>
         {%- endif -%}
@@ -521,8 +537,8 @@
         <th data-field="test_status" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}">Test status
 
             {%- if report_type == 'streaming_sdk' %}
-                <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top" title="[Failed] status means that maximum value of latency on client or on server was more than or equals to 100 but less than 300.
-[Error] status means that maximum value of latency on client or on server was more than or equals to 300.
+                <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top" title="[Failed] status means that maximum value of latency on client or on server was more than or equals to 100.
+[Error] status means fatal error during execution, latency equals to 0, terminating by timeout, or case wasn't launched at all.
 [Skipped] status means case wasn't launched by QA team decision."></span>
             {%- else %}
                 <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top" title="[Failed] status means that pixel difference with baseline image is too large.
