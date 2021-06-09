@@ -8,6 +8,8 @@ TIMEOUT = 2400
 RENDER_REPORT_BASE = {
     "file_name": "",
     "date_time": "",
+    "render_start_time": "",
+    "render_end_time": "",
     "script_info": [],
     "render_color_path": "",
     "error_screen_path": "",
