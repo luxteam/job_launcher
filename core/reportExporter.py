@@ -798,7 +798,7 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
         main_logger.error("Failed to copy report resources: {}".format(str(err)))
 
     env = jinja2.Environment(
-        loader=jinja2.PackageLoader('core.reportExporter', 'templates'),
+        loader=jinja2.PackageLoader('core', 'templates'),
         autoescape=True
     )
     # check that original_render variable exists
@@ -1017,7 +1017,7 @@ def build_performance_reports(work_dir, major_title, commit_sha='undefined', bra
         main_logger.error("Failed to copy report resources: {}".format(str(err)))
 
     env = jinja2.Environment(
-        loader=jinja2.PackageLoader('core.reportExporter', 'templates'),
+        loader=jinja2.PackageLoader('core', 'templates'),
         autoescape=True
     )
 
