@@ -716,9 +716,6 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
     if "show_compare_tab" not in globals():
         global show_compare_tab
         show_compare_tab = True
-    if "compare_tab_type" not in globals():
-        global compare_tab_type
-        compare_tab_type = "default"
 
     try:
         for execution in summary_report:
@@ -845,6 +842,9 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
         if "show_compare_tab" not in globals():
             global show_compare_tab
             show_compare_tab = True
+        if "compare_tab_type" not in globals():
+            global compare_tab_type
+            compare_tab_type = "default"
 
 
         common_info.update({'commit_sha': commit_sha})
