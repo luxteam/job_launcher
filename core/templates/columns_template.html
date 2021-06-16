@@ -213,11 +213,11 @@
         <td class="hatching">
             {%- if item.video_path is defined -%}
                 {%- if template_name == 'local' -%}
-                    <video width="300" preload="metadata" onclick="clickOnVideo(this)">
+                    <video width="300" preload="metadata" onclick="clickOnVideo(this)" poster="{{ pre_path }}/report_resources/img/video-placeholder.png">
                         <source src="{{ item.video_path }}">
                     </video>
                 {%- elif template_name == 'detailed' -%}
-                    <video width="64" preload="metadata" onclick="clickOnVideo(this)">
+                    <video width="64" preload="metadata" onclick="clickOnVideo(this)" poster="{{ pre_path }}/report_resources/img/video-placeholder.png">
                         <source src="{{ item.video_path }}">
                     </video>
                 {%- endif -%}
