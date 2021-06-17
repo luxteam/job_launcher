@@ -827,6 +827,22 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
 
     main_logger.info("Saving summary report...")
 
+    if "show_render_time" not in globals():
+        global show_render_time
+        show_render_time = True
+    if "show_render_log" not in globals():
+        global show_render_log
+        show_render_log = True
+    if "show_performance_tab" not in globals():
+        global show_performance_tab
+        show_performance_tab = True
+    if "show_compare_tab" not in globals():
+        global show_compare_tab
+        show_compare_tab = True
+    if "compare_tab_type" not in globals():
+        global compare_tab_type
+        compare_tab_type = "default"
+
     try:
         summary_template = env.get_template('summary_template.html')
         detailed_summary_template = env.get_template('detailed_summary_template.html')
@@ -834,23 +850,6 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
         summary_report, common_info, rc = build_summary_report(work_dir, node_retry_info, bool(build_number))
 
         add_retry_info(summary_report, node_retry_info, work_dir)
-
-        if "show_render_time" not in globals():
-            global show_render_time
-            show_render_time = True
-        if "show_render_log" not in globals():
-            global show_render_log
-            show_render_log = True
-        if "show_performance_tab" not in globals():
-            global show_performance_tab
-            show_performance_tab = True
-        if "show_compare_tab" not in globals():
-            global show_compare_tab
-            show_compare_tab = True
-        if "compare_tab_type" not in globals():
-            global compare_tab_type
-            compare_tab_type = "default"
-
 
         common_info.update({'commit_sha': commit_sha})
         common_info.update({'branch_name': branch_name})
