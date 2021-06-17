@@ -725,8 +725,8 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
 
                     render_report = []
 
-                    if 'driver_version' in summary_report[execution]['machine_info']:
-                        common_info['driver_version'] = summary_report[execution]['machine_info']['driver_version']
+                    if 'driver_version' in summary_report[execution]['results'][test][config]['machine_info']:
+                        common_info['driver_version'] = summary_report[execution]['results'][test][config]['machine_info']['driver_version']
                     else:
                         common_info['driver_version'] = ''
 
@@ -893,10 +893,6 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
         save_html_report(summary_html, work_dir, SUMMARY_REPORT_HTML, replace_pathsep=True)
 
         for execution in summary_report.keys():
-            if 'driver_version' in summary_report[execution]['machine_info']:
-                common_info['driver_version'] = summary_report[execution]['machine_info']['driver_version']
-            else:
-                common_info['driver_version'] = ''
 
             detailed_summary_html = detailed_summary_template.render(title=major_title + " " + execution,
                                                                      report=summary_report,

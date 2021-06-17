@@ -272,6 +272,7 @@
                                     <th>CPU</th>
                                     <th>CPU count</th>
                                     <th>GPU</th>
+                                    <th>Driver version</th>
                                 </tr>
                                 <tr>
                                     {% if report[i].results[test_package][test_conf].machine_info %}
@@ -280,12 +281,14 @@
                                     <td>{{ report[i].results[test_package][test_conf].machine_info.cpu }}</td>
                                     <td>{{ report[i].results[test_package][test_conf].machine_info.cpu_count }}</td>
                                     <td>{{ report[i].results[test_package][test_conf].machine_info.render_device }}</td>
+                                    <td>{{ report[i].results[test_package][test_conf].machine_info.driver_version }}</td>
                                     {% else %}
                                     <td>{{ report[i].results[test_package][test_conf].recovered_info.os }}</td>
                                     <td>0</td>
                                     <td>Unknown</td>
                                     <td>0</td>
                                     <td>{{ report[i].results[test_package][test_conf].recovered_info.render_device }}</td>
+                                    <td>{{ - }}</td>
                                     {% endif %}
                                 </tr>
                             </table>
