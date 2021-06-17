@@ -69,6 +69,7 @@ def get_machine_info():
                 return '{} {}({})'.format(distro.linux_distribution()[0], distro.linux_distribution()[1], platform.architecture()[0])
 
 
+    # TODO update driver version catching
     def get_driver_ver():
         if os.name == "nt":
             proc = subprocess.Popen(
@@ -99,6 +100,8 @@ def get_machine_info():
         info['ram'] = psutil.virtual_memory().total / 1024 ** 3
         # info['cpu'] = platform.processor()
         info['cpu'] = cpuinfo.get_cpu_info()['brand_raw']
+        # TODO catch driver version
+        info['driver_version'] = ''
         return info
     except Exception as err:
         print("Exception: {0}".format(err))
