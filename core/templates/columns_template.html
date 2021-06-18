@@ -763,3 +763,34 @@
         {%- endif -%}
     {%- endif -%}
 {%- endif -%}
+
+
+
+
+
+{#- ****************************** ARTIFACTS ****************************** -#}
+{#- ------------------------------ GPUVIEW TRACES ------------------------------ -#}
+{%- if column.name == 'gpuview_traces' and 'false' | env_override('SHOW_GPUVIEW_TRACES') == 'true' -%}
+    {%- if is_head -%}
+        <th data-field="gpuview_traces" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}">GPUView traces</th>
+    {%- else -%}
+        <td>
+            {%- if 'server_trace_archive' in item -%}
+                {%- if template_name == 'local' -%}
+                    <a href="{{ item.server_trace_archive }}">Server traces</a><br/>
+                {%- elif template_name == 'detailed' -%}
+                    <a href="{{ report[i].results[test_package][test_conf].result_path }}/{{ item.server_trace_archive }}">Server traces</a><br/>
+                {%- endif -%}
+            {%- endif -%}
+
+            {%- if 'client_trace_archive' in item -%}
+                
+                {%- if template_name == 'local' -%}
+                    <a href="{{ item.client_trace_archive }}">Client traces</a><br/>
+                {%- elif template_name == 'detailed' -%}
+                    <a href="{{ report[i].results[test_package][test_conf].result_path }}/{{ item.client_trace_archive }}">Client traces</a><br/>
+                {%- endif -%}
+            {%- endif -%}
+        </td>
+    {%- endif -%}
+{%- endif -%}
