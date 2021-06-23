@@ -686,15 +686,19 @@ def build_compare_report_screens(summary_report):
                             if hw not in hardware:
                                 hardware.append(hw)
 
+                            # if group is precessing first time
+                            if item['test_group'] not in compare_report:
+                                compare_report[item['test_group']] = {}
+
                             # if test is processing first time
-                            if not compare_report[item['test_case']]:
-                                compare_report[item['test_case']] = {}
+                            if item['test_case'] not in compare_report[item['test_group']]:
+                                compare_report[item['test_group']][item['test_case']] = {}
 
                             screen_info = item[SCREENS_COLLECTION_KEY][screen_number]
 
                             try:
                                 if IMAGE_KEY in screen_info:
-                                    compare_report[item['test_case']].update({hw: screen_info[IMAGE_KEY]})
+                                    compare_report[item['test_group']][item['test_case']].update({hw: screen_info[IMAGE_KEY]})
                             except KeyError as err:
                                 print("Missed testcase detected: platform - {}, test_package - {}, test_config - {}, item - {}".format(platform, test_package, test_config, item))
                                 main_logger.error("Missed testcase detected {}".format(str(err)))
