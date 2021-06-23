@@ -112,9 +112,16 @@ function getQueryVariable(variable) {
 }
 
 jQuery(document).ready( function() {
-    var searchText = getQueryVariable('searchText');
+    let tableNumber = getQueryVariable('tableNumber');
+    let tableWrapperId = ".jsTableWrapper [id]"
+    if (tableNumber) {
+        tableWrapperId = "#jsTableWrapper-" + tableNumber + " [id]"
+        $("#spoiler-" + tableNumber).collapse()
+    }
+
+    let searchText = getQueryVariable('searchText');
     if (searchText) {
-        $('.jsTableWrapper [id]').bootstrapTable('resetSearch', searchText);
+        $(tableWrapperId).bootstrapTable('resetSearch', searchText);
     }
 });
 

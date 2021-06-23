@@ -112,6 +112,17 @@ window.copyTestCaseName = {
             }
             url_parser.searchParams.set("searchText", row.test_case);
 
+            if (url_parser.searchParams.get("tableNumber")) {
+                url_parser.searchParams.delete("tableNumber");
+            }
+
+            let tableNumber = e.target.getAttribute("data-table-number")
+
+            if (tableNumber) {
+                url_parser.searchParams.set("tableNumber", tableNumber);
+                url_parser.hash = "table-" + tableNumber
+            }
+
             // duct tape for clipboard correct work
             node.setAttribute('value', url_parser.toString());
             document.body.appendChild(node);

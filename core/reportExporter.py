@@ -640,17 +640,21 @@ def build_compare_report(summary_report):
 
                 # collect images links
                 for item in temp_report['render_results']:
+                    # if group is precessing first time
+                    if item['test_group'] not in compare_report:
+                        compare_report[item['test_group']] = {}
+
                     # if test is processing first time
-                    if not compare_report[item['test_case']]:
-                        compare_report[item['test_case']] = {}
+                    if item['test_case'] not in compare_report[item['test_group']]:
+                        compare_report[item['test_group']][item['test_case']] = {}
 
                     try:
                         for img_key in POSSIBLE_JSON_IMG_RENDERED_KEYS + POSSIBLE_JSON_IMG_RENDERED_KEYS_THUMBNAIL:
                             if img_key in item.keys():
-                                compare_report[item['test_case']].update({hw: item[img_key]})
+                                compare_report[item['test_group']][item['test_case']].update({hw: item[img_key]})
                         for img_key in POSSIBLE_JSON_IMG_BASELINE_KEYS + POSSIBLE_JSON_IMG_BASELINE_KEYS_THUMBNAIL:
                             if img_key in item.keys():
-                                compare_report[item['test_case']].update({hw_bsln: item[img_key]})
+                                compare_report[item['test_group']][item['test_case']].update({hw_bsln: item[img_key]})
                     except KeyError as err:
                         print("Missed testcase detected: platform - {}, test_package - {}, test_config - {}, item - {}".format(platform, test_package, test_config, item))
                         main_logger.error("Missed testcase detected {}".format(str(err)))
