@@ -6,8 +6,8 @@
 
 <h2>all test results</h2>
 
-<div class="jsTableWrapper">
-    <table id="compareTable"
+<div class="jsTableWrapper" id="jsTableWrapper-0">
+    <table id="compareTable-0"
            class="baseTable"
            data-toggle="table"
            data-search="true"
@@ -42,7 +42,7 @@
             {%- for case in compare_report[group] %}
             <tr>
                 <td>{{ case }}</td>
-                <td><button class="commonButton" type="button" name="copyDirectLinkButton">{{ case }}</button></td>
+                <td><button class="commonButton" type="button" name="copyDirectLinkButton" data-table-number="0">{{ case }}</button></td>
                 {%- for hw in hardware %}
                 <td class="hatching">
                     <img data-src="{{ compare_report[group][case][hw] }}"/><br/>
