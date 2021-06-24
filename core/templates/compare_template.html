@@ -4,10 +4,62 @@
 
 <h1>compare table</h1>
 
+<h2>all test results</h2>
+
+<div class="jsTableWrapper">
+    <table id="compareTable"
+           class="baseTable"
+           data-toggle="table"
+           data-search="true"
+           data-show-refresh="true"
+           data-show-toggle="true"
+           data-show-columns="true"
+           data-sort-order="asc"
+           data-sort-name="test_case"
+           data-show-pagination-switch="true"
+           data-pagination="true"
+           data-page-size="5"
+           data-page-list="[1, 5, 10, 20, 45, ALL]">
+
+        <thead>
+            <tr>
+                <th data-field="test_case" data-halign="center" data-valign="middle" data-sortable="true" data-visible="false">Test case</th>
+                <th data-field="test_case_copy" data-halign="center" data-valign="middle" data-sortable="true" data-events="copyTestCaseName">
+                    Test case
+                    <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top" title="Button click copy direct test case link to clipboard"></span>
+                </th>
+                {%- for hw in hardware %}
+                    {%- if "Baseline" in hw %}
+                <th data-halign="center" data-formatter="metaAJAX" data-visible="false">{{ hw }}</th>
+                    {% else %}
+                <th data-halign="center" data-formatter="metaAJAX">{{ hw }}</th>
+                    {% endif -%}
+                {% endfor -%}
+            </tr>
+        </thead>
+
+        {%- for group, value in compare_report | dictsort %}
+            {%- for case in compare_report[group] %}
+            <tr>
+                <td>{{ case }}</td>
+                <td><button class="commonButton" type="button" name="copyDirectLinkButton">{{ case }}</button></td>
+                {%- for hw in hardware %}
+                <td class="hatching">
+                    <img data-src="{{ compare_report[group][case][hw] }}"/><br/>
+                </td>
+                {% endfor -%}
+            </tr>
+            {% endfor -%}
+        {% endfor -%}
+    </table>
+</div>
+
+<h2>test results by groups</h2>
+
 {%- for group, value in compare_report | dictsort %}
     {% set groupsLoop = loop %}
 
-    <h2 id="table-{{ groupsLoop.index }}" href="#spoiler-{{ groupsLoop.index }}" data-toggle="collapse" class="well">{{ group | lower }}</h2>
+    <h2 id="table-{{ groupsLoop.index }}" href="#spoiler-{{ groupsLoop.index }}" data-toggle="collapse" class="well" onclick="updateSpoiler(this)">&#x25BC   {{ group | lower }}</h2>
 
     <div class="collapse" id="spoiler-{{ groupsLoop.index }}">
         <div class="well">
