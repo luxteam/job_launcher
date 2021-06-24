@@ -6,8 +6,8 @@
 
 <h2>all test results</h2>
 
-<div class="jsTableWrapper">
-    <table id="compareTable"
+<div class="jsTableWrapper" id="jsTableWrapper-0">
+    <table id="compareTable-0"
            class="baseTable"
            data-toggle="table"
            data-search="true"
@@ -42,7 +42,7 @@
             {%- for case in compare_report[group] %}
                 <tr>
                     <td>{{ case }}</td>
-                    <td><button class="commonButton" type="button" name="copyDirectLinkButton">{{ case }}</button></td>
+                    <td><button class="commonButton" type="button" name="copyDirectLinkButton" data-table-number="0">{{ case }}</button></td>
                     {%- for hw in hardware %}
                     <td class="hatching">
                         <img data-src="{{ compare_report[group][case][hw] }}"/><br/>
@@ -64,7 +64,7 @@
     <div class="collapse" id="spoiler-{{ groupsLoop.index }}">
         <div class="well">
             <div class="jsTableWrapper" id="jsTableWrapper-{{ groupsLoop.index }}">
-                <table id="compareTable"
+                <table id="compareTable-{{ groupsLoop.index }}"
                        class="baseTable"
                        data-toggle="table"
                        data-search="true"
@@ -87,9 +87,9 @@
                             </th>
                             {%- for hw in hardware %}
                                 {%- if "Baseline" in hw %}
-                            <th data-halign="center" data-formatter="metaAJAX" data-visible="false">{{ hw }}</th>
+                                    <th data-halign="center" data-formatter="metaAJAX" data-visible="false">{{ hw }}</th>
                                 {% else %}
-                            <th data-halign="center" data-formatter="metaAJAX">{{ hw }}</th>
+                                    <th data-halign="center" data-formatter="metaAJAX">{{ hw }}</th>
                                 {% endif -%}
                             {% endfor -%}
                         </tr>
@@ -97,8 +97,8 @@
 
                     {%- for case in compare_report[group] %}
                     <tr>
-                        <td>{{ file }}</td>
-                        <td><button class="commonButton" type="button" name="copyDirectLinkButton">{{ case }}</button></td>
+                        <td>{{ case }}</td>
+                        <td><button class="commonButton" type="button" name="copyDirectLinkButton" data-table-number="{{ groupsLoop.index }}">{{ case }}</button></td>
                         {%- for hw in hardware %}
                         <td class="hatching">
                             <img data-src="{{ compare_report[group][case][hw] }}"/><br/>
