@@ -2,6 +2,8 @@
 
 {% block report_body %}
 
+{% include "screen_block.html" %}
+
 <h1>compare table</h1>
 
 <div class="jsTableWrapper">
@@ -27,11 +29,7 @@
                     <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top" title="Button click copy direct test case link to clipboard"></span>
                 </th>
                 {%- for hw in hardware %}
-                    {%- if "Baseline" in hw %}
-                <th data-halign="center" data-formatter="metaAJAX" data-visible="false">{{ hw }}</th>
-                    {% else %}
-                <th data-halign="center" data-formatter="metaAJAX">{{ hw }}</th>
-                    {% endif -%}
+                    <th data-halign="center" data-formatter="metaAJAX" data-events="openFullScreen">{{ hw }}</th>
                 {% endfor -%}
             </tr>
         </thead>
