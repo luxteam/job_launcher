@@ -14,7 +14,7 @@
             id="summary_table">
         <thead>
             <tr>
-                <th>Job Name</th>
+                <th>System configuration</th>
                 {% if tracked_metrics_history %}
                     <th>Performance</th>
                 {% endif %}
@@ -71,7 +71,7 @@
                 <td>{% if i != "_cur_" %}
                     <a href="#{{ i }}">{{ i }}</a>
                     {% else %}
-                    "Job name"
+                    "System configuration"
                     {% endif %}
                 </td>
                 {% if groupped_tracked_metrics and tracked_metrics_history %}
