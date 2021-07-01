@@ -22,6 +22,8 @@
             {% if common_info.engine %}
                 {% if tool_name == 'blender_usd_hydra' %}
                     <th>Delegate</th>
+                {% elif tool_name == 'streaming_sdk' %}
+                    <th>Game / Benchmark name</th>
                 {% else %}
                     <th>Engine</th>
                 {% endif %}
