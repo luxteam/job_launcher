@@ -787,7 +787,7 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
 def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_name='undefined', commit_message='undefined', engine='', build_number=''):
     rc = 0
 
-    if '' in engine:
+    if engine == '':
         engine = None
 
     if os.path.exists(os.path.join(work_dir, 'report_resources')):
