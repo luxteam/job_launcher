@@ -183,7 +183,7 @@ def generate_thumbnails(session_dir):
 
 
 def build_session_report(report, session_dir):
-    total = {'total': 0, 'passed': 0, 'failed': 0, 'error': 0, 'skipped': 0, 'duration': 0, 'render_duration': 0, 'synchronization_duration': 0}
+    total = {'total': 0, 'passed': 0, 'failed': 0, 'error': 0, 'skipped': 0, 'duration': 0, 'render_duration': 0, 'synchronization_duration': 0, 'execution_duration': 0}
 
     generate_thumbnails(session_dir)
 
@@ -201,9 +201,12 @@ def build_session_report(report, session_dir):
                 main_logger.error("Expected 'report_compare.json' not found: {}".format(str(err)))
                 report['results'][result][item].update({'render_results': {}})
                 report['results'][result][item].update({'render_duration': -0.0})
+                report['results'][result][item].update({'execution_duration': -0.0})
             else:
                 render_duration = 0.0
                 synchronization_duration = 0.0
+                execution_duration = 0.0
+
                 try:
                     for jtem in current_test_report:
                         if VIDEO_KEY in jtem:
@@ -242,6 +245,10 @@ def build_session_report(report, session_dir):
 
                         render_duration += jtem['render_time']
                         synchronization_duration += jtem.get('sync_time', 0.0)
+
+                        if 'execution_duration' in jtem:
+                            execution_duration += jtem['execution_duration']
+
                         if jtem['test_status'] == 'undefined':
                             report['results'][result][item]['total'] += 1
                         else:
@@ -269,12 +276,14 @@ def build_session_report(report, session_dir):
                     traceback.print_exc()
                     main_logger.error('Exception while update render report {}'.format(str(err)))
                     render_duration = -0.0
+                    execution_duration = -0.0
 
                 if current_test_report:
                     report['results'][result][item].update({'render_results': current_test_report})
 
                 report['results'][result][item].update({'render_duration': render_duration})
                 report['results'][result][item].update({'synchronization_duration': synchronization_duration})
+                report['results'][result][item].update({'execution_duration': execution_duration})
 
     # get summary results
     for result in report['results']:
@@ -377,6 +386,7 @@ def generate_empty_render_result(summary_report, lost_test_package, gpu_os_case,
     summary_report[gpu_os_case]['results'][lost_test_package][""]['machine_info'] = ""
     summary_report[gpu_os_case]['results'][lost_test_package][""]['passed'] = 0
     summary_report[gpu_os_case]['results'][lost_test_package][""]['render_duration'] = -0.0
+    summary_report[gpu_os_case]['results'][lost_test_package][""]['execution_duration'] = -0.0
     summary_report[gpu_os_case]['results'][lost_test_package][""]['render_results'] = []
     summary_report[gpu_os_case]['results'][lost_test_package][""]['result_path'] = ""
     summary_report[gpu_os_case]['results'][lost_test_package][""]['skipped'] = 0
@@ -539,6 +549,7 @@ def build_summary_report(work_dir, node_retry_info, collect_tracked_metrics):
                     summary_report[gpu_os_case]['summary']['failed'] = 0
                     summary_report[gpu_os_case]['summary']['passed'] = 0
                     summary_report[gpu_os_case]['summary']['render_duration'] = -0.0
+                    summary_report[gpu_os_case]['summary']['execution_duration'] = -0.0
                     summary_report[gpu_os_case]['summary']['skipped'] = 0
                     summary_report[gpu_os_case]['summary']['total'] = 0
                     for lost_test_package in lost_tests_count[lost_test_result]:
@@ -827,6 +838,9 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
 
     main_logger.info("Saving summary report...")
 
+    if "show_execution_time" not in globals():
+        global show_execution_time
+        show_execution_time = False
     if "show_render_time" not in globals():
         global show_render_time
         show_render_time = True
@@ -885,6 +899,7 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
                                                groupped_tracked_metrics=groupped_tracked_metrics,
                                                tracked_metrics_history=tracked_metrics_history,
                                                general_info_history=general_info_history,
+                                               show_execution_time=show_execution_time,
                                                show_render_time=show_render_time,
                                                show_render_log=show_render_log,
                                                show_performance_tab=show_performance_tab,
@@ -899,6 +914,7 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
                                                                      PIX_DIFF_MAX=PIX_DIFF_MAX,
                                                                      common_info=common_info,
                                                                      i=execution,
+                                                                     show_execution_time=show_execution_time,
                                                                      show_render_time=show_render_time,
                                                                      show_render_log=show_render_log,
                                                                      show_performance_tab=show_performance_tab,
