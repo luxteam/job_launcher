@@ -305,12 +305,12 @@
             </td>
         {%- elif report_type == 'streaming_sdk' -%}
             <td class="infoColumn">
-                <b>Server configuration:</b> {{ item.server_configuration }}<br/>
-                <b>Client configuration:</b> {{ item.client_configuration }}<br/>
-
                 {% if show_execution_time %}
                     <b>Execution time:</b> {{ item.execution_time | round(3) }}<br/>
                 {% endif %}
+                
+                <b>Server configuration:</b> {{ item.server_configuration }}<br/>
+                <b>Client configuration:</b> {{ item.client_configuration }}<br/>
 
                 {%- if item.min_server_latency is defined and item.max_server_latency is defined -%}
                     {%- if item.test_status == "error" or item.test_status == "failed" -%}

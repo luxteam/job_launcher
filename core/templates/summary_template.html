@@ -47,7 +47,7 @@
                 </th>
 
                 {% if show_execution_time %}
-                    <th data-formatter="timeFormatterFull" data-switchable="false" data-visible="false" data-field="executionTime">
+                    <th data-formatter="timeFormatterFull" data-switchable="true" data-visible="true" data-field="executionTime">
                         Execution time
                         <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
                             title="Time which was spent on execution of test cases"></span>
@@ -194,7 +194,7 @@
                 </th>
 
                 {% if show_execution_time %}
-                    <th data-formatter="timeFormatterFull" data-switchable="false" data-visible="false" data-field="executionTime">
+                    <th data-formatter="timeFormatterFull" data-switchable="true" data-visible="true" data-field="executionTime">
                         Execution time
                         <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
                             title="Time which was spent on execution of test cases"></span>
@@ -419,9 +419,6 @@
                     {% set colspan = colspan + 1 %}
                 {% endif %}
                 {% if tracked_metrics_history %}
-                    {% set colspan = colspan + 1 %}
-                {% endif %}
-                {% if show_execution_time %}
                     {% set colspan = colspan + 1 %}
                 {% endif %}
                 <td
