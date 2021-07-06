@@ -27,6 +27,10 @@ def close_untitled_windows():
             windows_list = CGWindowListCopyWindowInfo(ws_options, kCGNullWindowID)
 
             for window in windows_list:
+                main_logger.info('Found window (Title: "{title}"; Owner name: "{owner_name}")'.format(
+                    title=window.get('kCGWindowName', 'Untitled'),
+                    owner_name=window.get('kCGWindowOwnerName', 'Unknown owner')
+                ))
                 if not 'kCGWindowName' in window or window['kCGWindowName'] == '':
                     pid = window['kCGWindowOwnerPID']
                     p = psutil.Process(pid)
