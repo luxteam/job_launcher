@@ -78,21 +78,27 @@ window.openFullImgSize = {
     }
 }
 
-window.openFullErrorScreen = {
+window.openFullScreen = {
     'click img': function(e, value, row, index) {
-        var errorScreen = document.getElementById('errorScreenPopup');
+        var screen = document.getElementById('screenPopup');
 
-        errorScreen.src = "";
+        screen.src = "";
 
         var src_prefixes = ["thumb64_", "thumb256_"];
-        errorScreen.src = row.error_screen.split('"')[1];
+
+        if (row.error_screen) {
+            screen.src = row.error_screen.split('"')[1];
+        } else {
+            screen.src = this.src;
+        }
+        
         for (var i in src_prefixes) {
-            errorScreen.src = errorScreen.src.replace(src_prefixes[i], "");
+            screen.src = screen.src.replace(src_prefixes[i], "");
         }
 
-        document.getElementById("errorScreenTable").style.display = "";
+        document.getElementById("screenTable").style.display = "";
 
-        openModalWindow('errorScreenModal');
+        openModalWindow('screenModal');
     }
 }
 

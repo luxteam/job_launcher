@@ -7,7 +7,7 @@
 {% endif %}
 
 {% include "images_compare_block.html" %}
-{% include "error_screen_block.html" %}
+{% include "screen_block.html" %}
 
 {% if tracked_metrics_history %}
     {% set show_tracked_metrics_column = 'true' %}
@@ -86,6 +86,19 @@
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'true', 'name': 'test_status'},
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'false', 'data_visible': show_tracked_metrics_column,  'name': 'performance_history'},
         {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'false', 'data_visible': 'true', 'name': 'render_log'}
+    ] 
+    %}
+{% elif report_type == 'streaming_sdk' %}
+    {%
+    set template_columns = [
+        {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'false', 'name': 'test_case'},
+        {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'true',  'name': 'test_case_copy'},
+        {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'true',  'name': 'info'},
+        {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'false', 'data_visible': 'true',  'name': 'screens_carousel'},
+        {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'false', 'data_visible': 'true',  'name': 'video'},
+        {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'true',  'data_visible': 'true',  'name': 'test_status'},
+        {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'false', 'data_visible': 'true',  'name': 'render_log'},
+        {'data_halign': 'center', 'data_valign': 'middle', 'data_sortable': 'false', 'data_visible': 'true',  'name': 'gpuview_traces'}
     ] 
     %}
 {% endif %}

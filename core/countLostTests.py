@@ -110,7 +110,7 @@ LABELS_CONVERTATIONS = {
 def get_lost_tests(data, tool_name, test_package_name):
 	# list of lost tests = tests in test suite taken from configuration
 	lost_tests = []
-	if tool_name in ['blender', 'maya', 'rprviewer', 'USD', 'usdviewer', 'ml', 'blender_usd_hydra', 'max', 'inventor']:
+	if tool_name in ['blender', 'maya', 'rprviewer', 'USD', 'usdviewer', 'ml', 'blender_usd_hydra', 'max', 'inventor', 'streaming_sdk']:
 		for test in data:
 			lost_tests.append(test['case'])
 	elif tool_name == 'core':

@@ -183,7 +183,7 @@ def generate_thumbnails(session_dir):
 
 
 def build_session_report(report, session_dir):
-    total = {'total': 0, 'passed': 0, 'failed': 0, 'error': 0, 'skipped': 0, 'duration': 0, 'render_duration': 0, 'synchronization_duration': 0}
+    total = {'total': 0, 'passed': 0, 'failed': 0, 'error': 0, 'skipped': 0, 'duration': 0, 'render_duration': 0, 'synchronization_duration': 0, 'execution_time': 0}
 
     generate_thumbnails(session_dir)
 
@@ -201,11 +201,27 @@ def build_session_report(report, session_dir):
                 main_logger.error("Expected 'report_compare.json' not found: {}".format(str(err)))
                 report['results'][result][item].update({'render_results': {}})
                 report['results'][result][item].update({'render_duration': -0.0})
+                report['results'][result][item].update({'execution_time': -0.0})
             else:
                 render_duration = 0.0
                 synchronization_duration = 0.0
+                execution_time = 0.0
+
                 try:
                     for jtem in current_test_report:
+                        if VIDEO_KEY in jtem:
+                            video_path = os.path.abspath(os.path.join(session_dir, report['results'][result][item]['result_path'], jtem[VIDEO_KEY]))
+
+                            jtem.update({VIDEO_KEY: os.path.relpath(video_path, session_dir)})
+
+                        if SCREENS_COLLECTION_KEY in jtem:
+                            for screen_info in jtem[SCREENS_COLLECTION_KEY]:
+                                for screen_info_key in screen_info:
+                                    if screen_info_key == 'path' or 'thumb' in screen_info_key:
+                                        cur_img_path = os.path.abspath(os.path.join(session_dir, report['results'][result][item]['result_path'], screen_info[screen_info_key]))
+
+                                        screen_info.update({screen_info_key: os.path.relpath(cur_img_path, session_dir)})
+
                         for group_report_file in REPORT_FILES:
                             if group_report_file in jtem.keys():
                                 # update paths
@@ -229,6 +245,10 @@ def build_session_report(report, session_dir):
 
                         render_duration += jtem['render_time']
                         synchronization_duration += jtem.get('sync_time', 0.0)
+
+                        if 'execution_time' in jtem:
+                            execution_time += jtem['execution_time']
+
                         if jtem['test_status'] == 'undefined':
                             report['results'][result][item]['total'] += 1
                         else:
@@ -256,12 +276,14 @@ def build_session_report(report, session_dir):
                     traceback.print_exc()
                     main_logger.error('Exception while update render report {}'.format(str(err)))
                     render_duration = -0.0
+                    execution_time = -0.0
 
                 if current_test_report:
                     report['results'][result][item].update({'render_results': current_test_report})
 
                 report['results'][result][item].update({'render_duration': render_duration})
                 report['results'][result][item].update({'synchronization_duration': synchronization_duration})
+                report['results'][result][item].update({'execution_time': execution_time})
 
     # get summary results
     for result in report['results']:
@@ -364,6 +386,7 @@ def generate_empty_render_result(summary_report, lost_test_package, gpu_os_case,
     summary_report[gpu_os_case]['results'][lost_test_package][""]['machine_info'] = ""
     summary_report[gpu_os_case]['results'][lost_test_package][""]['passed'] = 0
     summary_report[gpu_os_case]['results'][lost_test_package][""]['render_duration'] = -0.0
+    summary_report[gpu_os_case]['results'][lost_test_package][""]['execution_time'] = -0.0
     summary_report[gpu_os_case]['results'][lost_test_package][""]['render_results'] = []
     summary_report[gpu_os_case]['results'][lost_test_package][""]['result_path'] = ""
     summary_report[gpu_os_case]['results'][lost_test_package][""]['skipped'] = 0
@@ -425,9 +448,9 @@ def build_summary_report(work_dir, node_retry_info, collect_tracked_metrics):
                                 else:
                                     common_info.update({'reporting_date': [temp_report['machine_info']['reporting_date']]})
 
-                                    if report_type != 'perf':
+                                    if report_type != 'perf' and report_type != 'streaming_sdk':
                                         if report_type != 'ec':
-                                            if temp_report['machine_info']['render_version']:
+                                            if 'render_version' in temp_report['machine_info'] and temp_report['machine_info']['render_version']:
                                                 common_info.update({'render_version': [temp_report['machine_info']['render_version']]})
                                             else:
                                                 common_info.update({'render_version': []})
@@ -439,6 +462,15 @@ def build_summary_report(work_dir, node_retry_info, collect_tracked_metrics):
                                     for group_report_file in REPORT_FILES:
                                         if group_report_file in jtem.keys():
                                             jtem.update({group_report_file: os.path.relpath(os.path.join(work_dir, basepath, jtem[group_report_file]), work_dir)})
+
+                                    if VIDEO_KEY in jtem:
+                                        jtem.update({VIDEO_KEY: os.path.relpath(os.path.join(work_dir, basepath, jtem[VIDEO_KEY]), work_dir)})
+
+                                    if SCREENS_COLLECTION_KEY in jtem:
+                                        for screen_info in jtem[SCREENS_COLLECTION_KEY]:
+                                            for screen_info_key in screen_info:
+                                                if screen_info_key == 'path' or 'thumb' in screen_info_key:
+                                                    screen_info.update({screen_info_key: os.path.relpath(os.path.join(work_dir, basepath, screen_info[screen_info_key]), work_dir)})
 
                                     # collect tracked metrics for test cases
                                     if metrics_collector:
@@ -517,6 +549,7 @@ def build_summary_report(work_dir, node_retry_info, collect_tracked_metrics):
                     summary_report[gpu_os_case]['summary']['failed'] = 0
                     summary_report[gpu_os_case]['summary']['passed'] = 0
                     summary_report[gpu_os_case]['summary']['render_duration'] = -0.0
+                    summary_report[gpu_os_case]['summary']['execution_time'] = -0.0
                     summary_report[gpu_os_case]['summary']['skipped'] = 0
                     summary_report[gpu_os_case]['summary']['total'] = 0
                     for lost_test_package in lost_tests_count[lost_test_result]:
@@ -636,18 +669,67 @@ def build_compare_report(summary_report):
     return compare_report, hardware
 
 
+def build_compare_report_screens(summary_report):
+    IMAGE_KEY = "thumb256"
+
+    compare_report = AutoDict()
+    hardware = []
+    for platform in summary_report.keys():
+        for test_package in summary_report[platform]['results']:
+            for test_config in summary_report[platform]['results'][test_package]:
+                temp_report = summary_report[platform]['results'][test_package][test_config]
+
+                if temp_report['machine_info'] == "":
+                    # if machine info is empty it's blank data for lost test cases
+                    continue
+
+                # collect images links
+                for item in temp_report['render_results']:
+                    if SCREENS_COLLECTION_KEY in item:
+                        # generate column names
+                        for screen_number in range(len(item[SCREENS_COLLECTION_KEY])):
+                            hw = temp_report['machine_info']['render_device'] + ' ' + temp_report['machine_info']['os'] + ' #{}'.format(screen_number)
+
+                            if hw not in hardware:
+                                hardware.append(hw)
+
+                            # if test is processing first time
+                            if not compare_report[item['test_case']]:
+                                compare_report[item['test_case']] = {}
+
+                            screen_info = item[SCREENS_COLLECTION_KEY][screen_number]
+
+                            try:
+                                if IMAGE_KEY in screen_info:
+                                    compare_report[item['test_case']].update({hw: screen_info[IMAGE_KEY]})
+                            except KeyError as err:
+                                print("Missed testcase detected: platform - {}, test_package - {}, test_config - {}, item - {}".format(platform, test_package, test_config, item))
+                                main_logger.error("Missed testcase detected {}".format(str(err)))
+
+    return compare_report, hardware
+
+
 def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupped_tracked_metrics, tracked_metrics_history, general_info_history):
     work_dir = os.path.abspath(work_dir)
 
     template = jinja_env.get_template('local_template.html')
     report_dir = ""
 
+    if "show_execution_time" not in globals():
+        global show_execution_time
+        show_execution_time = False
     if "show_render_time" not in globals():
         global show_render_time
         show_render_time = True
     if "show_render_log" not in globals():
         global show_render_log
         show_render_log = True
+    if "show_performance_tab" not in globals():
+        global show_performance_tab
+        show_performance_tab = True
+    if "show_compare_tab" not in globals():
+        global show_compare_tab
+        show_compare_tab = True
 
     try:
         for execution in summary_report:
@@ -656,6 +738,11 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
                     report_dir = summary_report[execution]['results'][test][config]['result_path']
 
                     render_report = []
+
+                    if 'driver_version' in summary_report[execution]['results'][test][config]['machine_info']:
+                        common_info['driver_version'] = summary_report[execution]['results'][test][config]['machine_info']['driver_version']
+                    else:
+                        common_info['driver_version'] = ''
 
                     if os.path.exists(os.path.join(work_dir, report_dir, TEST_REPORT_NAME_COMPARED)):
                         with open(os.path.join(work_dir, report_dir, TEST_REPORT_NAME_COMPARED), 'r') as file:
@@ -679,7 +766,7 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
                         continue
 
                     # choose right plugin version based on building report type
-                    if report_type != 'perf':
+                    if report_type != 'perf' and report_type != 'streaming_sdk':
                         if report_type != 'ec':
                             version_in_title = common_info['render_version']
                         else:
@@ -695,8 +782,11 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
                                            groupped_tracked_metrics=groupped_tracked_metrics,
                                            tracked_metrics_history=tracked_metrics_history,
                                            general_info_history=general_info_history,
+                                           show_execution_time=show_execution_time,
                                            show_render_time=show_render_time,
-                                           show_render_log=show_render_log)
+                                           show_render_log=show_render_log,
+                                           show_performance_tab=show_performance_tab,
+                                           show_compare_tab=show_compare_tab)
                     save_html_report(html, os.path.join(work_dir, report_dir), 'report.html', replace_pathsep=True)
     except Exception as err:
         traceback.print_exc()
@@ -712,7 +802,7 @@ def build_local_reports(work_dir, summary_report, common_info, jinja_env, groupp
 def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_name='undefined', commit_message='undefined', engine='', build_number=''):
     rc = 0
 
-    if '' in engine:
+    if engine == '':
         engine = None
 
     if os.path.exists(os.path.join(work_dir, 'report_resources')):
@@ -725,7 +815,7 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
         main_logger.error("Failed to copy report resources: {}".format(str(err)))
 
     env = jinja2.Environment(
-        loader=jinja2.PackageLoader('core.reportExporter', 'templates'),
+        loader=jinja2.PackageLoader('core', 'templates'),
         autoescape=True
     )
     # check that original_render variable exists
@@ -752,6 +842,25 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
 
     main_logger.info("Saving summary report...")
 
+    if "show_execution_time" not in globals():
+        global show_execution_time
+        show_execution_time = False
+    if "show_render_time" not in globals():
+        global show_render_time
+        show_render_time = True
+    if "show_render_log" not in globals():
+        global show_render_log
+        show_render_log = True
+    if "show_performance_tab" not in globals():
+        global show_performance_tab
+        show_performance_tab = True
+    if "show_compare_tab" not in globals():
+        global show_compare_tab
+        show_compare_tab = True
+    if "compare_tab_type" not in globals():
+        global compare_tab_type
+        compare_tab_type = "default"
+
     try:
         summary_template = env.get_template('summary_template.html')
         detailed_summary_template = env.get_template('detailed_summary_template.html')
@@ -759,13 +868,6 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
         summary_report, common_info, rc = build_summary_report(work_dir, node_retry_info, bool(build_number))
 
         add_retry_info(summary_report, node_retry_info, work_dir)
-
-        if "show_render_time" not in globals():
-            global show_render_time
-            show_render_time = True
-        if "show_render_log" not in globals():
-            global show_render_log
-            show_render_log = True
 
         common_info.update({'commit_sha': commit_sha})
         common_info.update({'branch_name': branch_name})
@@ -801,19 +903,26 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
                                                groupped_tracked_metrics=groupped_tracked_metrics,
                                                tracked_metrics_history=tracked_metrics_history,
                                                general_info_history=general_info_history,
+                                               show_execution_time=show_execution_time,
                                                show_render_time=show_render_time,
-                                               show_render_log=show_render_log)
+                                               show_render_log=show_render_log,
+                                               show_performance_tab=show_performance_tab,
+                                               show_compare_tab=show_compare_tab)
         save_html_report(summary_html, work_dir, SUMMARY_REPORT_HTML, replace_pathsep=True)
 
         for execution in summary_report.keys():
+
             detailed_summary_html = detailed_summary_template.render(title=major_title + " " + execution,
                                                                      report=summary_report,
                                                                      pageID="summaryA",
                                                                      PIX_DIFF_MAX=PIX_DIFF_MAX,
                                                                      common_info=common_info,
                                                                      i=execution,
+                                                                     show_execution_time=show_execution_time,
                                                                      show_render_time=show_render_time,
-                                                                     show_render_log=show_render_log)
+                                                                     show_render_log=show_render_log,
+                                                                     show_performance_tab=show_performance_tab,
+                                                                     show_compare_tab=show_compare_tab)
             save_html_report(detailed_summary_html, work_dir, execution + "_detailed.html", replace_pathsep=True)
     except Exception as err:
         traceback.print_exc()
@@ -827,65 +936,88 @@ def build_summary_reports(work_dir, major_title, commit_sha='undefined', branch_
             main_logger.error(repr(e))
         rc = -1
 
-    main_logger.info("Saving performance report...")
-    try:
-        setup_time_count(work_dir)
-        copy_summary_report = copy.deepcopy(summary_report)
-        performance_template = env.get_template('performance_template.html')
-
-        performance_report, hardware, performance_report_detail, summary_info_for_report = build_performance_report(copy_summary_report, major_title)
-
-        setup_sum, setup_details = setup_time_report(work_dir, performance_report_detail)
-
-        save_json_report(performance_report, work_dir, PERFORMANCE_REPORT)
-        save_json_report(performance_report_detail, work_dir, 'performance_report_detailed.json')
-        performance_html = performance_template.render(title=major_title + " Performance",
-                                                       performance_report=performance_report,
-                                                       hardware=hardware,
-                                                       performance_report_detail=performance_report_detail,
-                                                       pageID="performanceA",
-                                                       common_info=common_info,
-                                                       test_info=summary_info_for_report,
-                                                       setupTimeSum=setup_sum,
-                                                       setupTimeDetails=setup_details,
-                                                       synchronization_time=sync_time(summary_report))
-        save_html_report(performance_html, work_dir, PERFORMANCE_REPORT_HTML, replace_pathsep=True)
-    except Exception as err:
-        traceback.print_exc()
-        main_logger.error(repr(err))
+    if show_performance_tab:
+        main_logger.info("Saving performance report...")
         try:
-            main_logger.error(performance_html)
+            setup_time_count(work_dir)
+            copy_summary_report = copy.deepcopy(summary_report)
+            performance_template = env.get_template('performance_template.html')
+
+            performance_report, hardware, performance_report_detail, summary_info_for_report = build_performance_report(copy_summary_report, major_title)
+
+            setup_sum, setup_details = setup_time_report(work_dir, performance_report_detail)
+
+            save_json_report(performance_report, work_dir, PERFORMANCE_REPORT)
+            save_json_report(performance_report_detail, work_dir, 'performance_report_detailed.json')
+            performance_html = performance_template.render(title=major_title + " Performance",
+                                                           performance_report=performance_report,
+                                                           hardware=hardware,
+                                                           performance_report_detail=performance_report_detail,
+                                                           pageID="performanceA",
+                                                           common_info=common_info,
+                                                           test_info=summary_info_for_report,
+                                                           setupTimeSum=setup_sum,
+                                                           setupTimeDetails=setup_details,
+                                                           synchronization_time=sync_time(summary_report),
+                                                           show_performance_tab=show_performance_tab,
+                                                           show_compare_tab=show_compare_tab)
             save_html_report(performance_html, work_dir, PERFORMANCE_REPORT_HTML, replace_pathsep=True)
-        except Exception as e:
+        except Exception as err:
             traceback.print_exc()
-            main_logger.error(repr(e))
-        # TODO: make building of performance tab more stable
-        # rc = -2
+            main_logger.error(repr(err))
+            try:
+                main_logger.error(performance_html)
+                save_html_report(performance_html, work_dir, PERFORMANCE_REPORT_HTML, replace_pathsep=True)
+            except Exception as e:
+                traceback.print_exc()
+                main_logger.error(repr(e))
+            # TODO: make building of performance tab more stable
+            # rc = -2
 
-    main_logger.info("Saving compare report...")
-    try:
-        compare_template = env.get_template('compare_template.html')
-        copy_summary_report = copy.deepcopy(summary_report)
-
-        compare_report, hardware = build_compare_report(copy_summary_report)
-
-        save_json_report(compare_report, work_dir, COMPARE_REPORT)
-        compare_html = compare_template.render(title=major_title + " Compare",
-                                               hardware=hardware,
-                                               compare_report=compare_report,
-                                               pageID="compareA",
-                                               common_info=common_info)
-        save_html_report(compare_html, work_dir, COMPARE_REPORT_HTML, replace_pathsep=True)
-    except Exception as err:
-        traceback.print_exc()
-        main_logger.error(repr(err))
+    if show_compare_tab:
+        main_logger.info("Saving compare report...")
         try:
-            main_logger.error(compare_html)
-            save_html_report(compare_html, work_dir, "compare_report.html", replace_pathsep=True)
-        except Exception as e:
+            if compare_tab_type == "default":
+                compare_template = env.get_template('compare_template.html')
+                copy_summary_report = copy.deepcopy(summary_report)
+
+                compare_report, hardware = build_compare_report(copy_summary_report)
+
+                save_json_report(compare_report, work_dir, COMPARE_REPORT)
+                compare_html = compare_template.render(title=major_title + " Compare",
+                                                       hardware=hardware,
+                                                       compare_report=compare_report,
+                                                       pageID="compareA",
+                                                       common_info=common_info,
+                                                       show_performance_tab=show_performance_tab,
+                                                       show_compare_tab=show_compare_tab)
+
+            else:
+                compare_template = env.get_template('compare_template_screens.html')
+                copy_summary_report = copy.deepcopy(summary_report)
+
+                compare_report, hardware = build_compare_report_screens(copy_summary_report)
+
+                save_json_report(compare_report, work_dir, COMPARE_REPORT)
+                compare_html = compare_template.render(title=major_title + " Compare",
+                                                       hardware=hardware,
+                                                       compare_report=compare_report,
+                                                       pageID="compareA",
+                                                       common_info=common_info,
+                                                       show_performance_tab=show_performance_tab,
+                                                       show_compare_tab=show_compare_tab)
+
+            save_html_report(compare_html, work_dir, COMPARE_REPORT_HTML, replace_pathsep=True)
+        except Exception as err:
             traceback.print_exc()
-            main_logger.error(repr(e))
-        rc = -3
+            main_logger.error(repr(err))
+            try:
+                main_logger.error(compare_html)
+                save_html_report(compare_html, work_dir, "compare_report.html", replace_pathsep=True)
+            except Exception as e:
+                traceback.print_exc()
+                main_logger.error(repr(e))
+            rc = -3
 
     try:
         build_local_reports(work_dir, summary_report, common_info, env, groupped_tracked_metrics, tracked_metrics_history, general_info_history)
@@ -910,7 +1042,7 @@ def build_performance_reports(work_dir, major_title, commit_sha='undefined', bra
         main_logger.error("Failed to copy report resources: {}".format(str(err)))
 
     env = jinja2.Environment(
-        loader=jinja2.PackageLoader('core.reportExporter', 'templates'),
+        loader=jinja2.PackageLoader('core', 'templates'),
         autoescape=True
     )
 

@@ -66,7 +66,7 @@ function closeModalWindow(id) {
 
 function increaseImgSize() {
     var step = 3.5;
-    var imagesSelectorList = [['#imgsDifferenceCanvas', step * 4], ['#renderedImgPopup', step], ['#baselineImgPopup', step], ['#errorScreenPopup', step]];
+    var imagesSelectorList = [['#imgsDifferenceCanvas', step * 4], ['#renderedImgPopup', step], ['#baselineImgPopup', step], ['#screenPopup', step]];
 
     imagesSelectorList.forEach(function(item) {
         $(item[0]).css("width", function( index, value ) {
@@ -77,7 +77,7 @@ function increaseImgSize() {
 
 function reduceImgSize() {
     var step = 3.5;
-    var imagesSelectorList = [['#imgsDifferenceCanvas', step * 4], ['#renderedImgPopup', step], ['#baselineImgPopup', step], ['#errorScreenPopup', step]];
+    var imagesSelectorList = [['#imgsDifferenceCanvas', step * 4], ['#renderedImgPopup', step], ['#baselineImgPopup', step], ['#screenPopup', step]];
 
     imagesSelectorList.forEach(function(item) {
         $(item[0]).css("width", function( index, value ) {

@@ -117,7 +117,7 @@
 {#- ------------------------------ ERROR SCREEN ------------------------------ -#}
 {%- if column.name == 'error_screen' -%}
     {%- if is_head -%}
-        <th data-field="error_screen" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-events="openFullErrorScreen" data-formatter="metaAJAX">Error screen
+        <th data-field="error_screen" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-events="openFullScreen" data-formatter="metaAJAX">Error screen
         </th>
     {%- else -%}
         <td class="hatching">
@@ -147,12 +147,17 @@
 {#- ------------------------------ SCREENS CAROUSEL ------------------------------ -#}
 {%- if column.name == 'screens_carousel' -%}
     {%- if is_head -%}
-        <th data-field="screens_carousel" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-formatter="metaAJAX">Screens
+        <th data-field="screens_carousel" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}" data-formatter="metaAJAX">Screens (click to open all screens)
         </th>
     {%- else -%}
         <td class="hatching">
             {%- if item.screens_collection is defined and item.screens_collection | length > 0 -%}
-                <img data-src="{{ item.screens_collection[0].thumb256 }}" onclick="openCarousel('{{ item.test_case }}')"/>
+
+                {%- if template_name == 'local' -%}
+                    <img data-src="{{ item.screens_collection[0].thumb256 }}" onclick="openCarousel('{{ item.test_case }}')"/>
+                {%- elif template_name == 'detailed' -%}
+                    <img data-src="{{ item.screens_collection[0].thumb64 }}" onclick="openCarousel('{{ item.test_case }}')"/>
+                {%- endif -%}
 
                 <div class="popup" id="carouselPopup_{{ item.test_case }}">
                     <div class="popupContent imgModalContent">
@@ -200,6 +205,29 @@
     {%- endif -%}
 {%- endif -%}
 
+{#- ------------------------------ VIDEO ------------------------------ -#}
+{%- if column.name == 'video' -%}
+    {%- if is_head -%}
+        <th data-filed="video" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}">Video</th>
+    {%- else -%}
+        <td class="hatching">
+            {%- if item.video_path is defined -%}
+                {%- if template_name == 'local' -%}
+                    <video width="300" preload="metadata" onclick="clickOnVideo(this)" poster="{{ pre_path }}/report_resources/img/video-placeholder.png">
+                        <source src="{{ item.video_path }}">
+                    </video>
+                {%- elif template_name == 'detailed' -%}
+                    <video width="64" preload="metadata" onclick="clickOnVideo(this)" poster="{{ pre_path }}/report_resources/img/video-placeholder.png">
+                        <source src="{{ item.video_path }}">
+                    </video>
+                {%- endif -%}
+            {% else %}
+                No video available
+            {% endif %}
+        </td>
+    {%- endif -%}
+{%- endif -%}
+
 {#- ------------------------------ INFO ------------------------------ -#}
 {%- if column.name == 'info' -%}
     {%- if is_head -%}
@@ -219,6 +247,10 @@
                         No data
                     {%- endif -%}
                     <br/>
+                {% endif %}
+
+                {% if show_execution_time %}
+                    <b>Execution time:</b> {{ item.execution_time | round(3) }}<br/>
                 {% endif %}
 
                 <b>Test info:</b><br/>
@@ -271,6 +303,26 @@
                 <b>Height:</b> {{ item.height }}<br/>
                 <b>Iterations:</b> {{ item.iterations }}
             </td>
+        {%- elif report_type == 'streaming_sdk' -%}
+            <td class="infoColumn">
+                {% if show_execution_time %}
+                    <b>Execution time:</b> {{ item.execution_time | round(3) }}<br/>
+                {% endif %}
+                
+                <b>Server configuration:</b> {{ item.server_configuration }}<br/>
+                <b>Client configuration:</b> {{ item.client_configuration }}<br/>
+
+                <b>Test info:</b><br/>
+                {%- for param in item.script_info -%}
+                    {{ param }}<br/>
+                {%- endfor -%}
+
+                {%- if item.message -%}
+                    {% autoescape false %}
+                        <br/><b>Message:</b><br/> <ul class="messageList"><li>{{ item.message | join('.</li><li>') }}</li></ul> <br/>
+                    {% endautoescape %}
+                {%- endif -%}
+            </td>
         {%- endif -%}
     {%- endif -%}
 {%- endif -%}
@@ -321,6 +373,22 @@
             {%- for param in item.script_info -%}
             {{ param }}<br>
             {%- endfor -%}
+        </td>
+    {%- endif -%}
+{%- endif -%}
+
+{#- ------------------------------ LATENCY ------------------------------ -#}
+{%- if column.name == 'latency' -%}
+    {%- if is_head -%}
+        <th data-field="latency" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}">Latency</th>
+    {%- else -%}
+        <td>
+            {%- if item.min_server_latency is defined and item.max_server_latency is defined -%}
+                <b>Server latency:</b> {{ item.min_server_latency }} - {{ item.max_server_latency }}<br/>
+            {%- endif -%}
+            {%- if item.min_client_latency is defined and item.max_client_latency is defined -%}
+                <b>Client latency:</b> {{ item.min_client_latency }} - {{ item.max_client_latency }}<br/>
+            {%- endif -%}
         </td>
     {%- endif -%}
 {%- endif -%}
@@ -452,13 +520,23 @@
 {%- if column.name == 'test_status' -%}
     {%- if is_head -%}
         <th data-field="test_status" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}">Test status
-            <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top" title="[Failed] status means that pixel difference with baseline image is too large.
+
+            {%- if report_type == 'streaming_sdk' %}
+                <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top" title="[Failed] status means that some metrics in server log are abnormal.
+[Error] status means fatal error during execution, latency equals to 0, terminating by timeout, or case wasn't launched at all.
+[Skipped] status means case wasn't launched by QA team decision."></span>
+            {%- else %}
+                <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top" title="[Failed] status means that pixel difference with baseline image is too large.
 [Error] status means fatal error during render, terminating by timeout, or case wasn't launched at all.
 [Skipped] status means case wasn't launched by QA team decision."></span>
+            {%- endif -%}
+
         </th>
     {%- else -%}
         {#- Colorize passed status for ML Performance reports -#}
         {%- if report_type == 'perf' and tool_name == 'ml' and item.test_status == 'passed' -%}
+            {%- set status_postfix = 'Colored' -%}
+        {%- elif report_type == 'streaming_sdk' and item.test_status == 'passed' -%}
             {%- set status_postfix = 'Colored' -%}
         {%- else -%}
             {%- set status_postfix = '' -%}
@@ -644,6 +722,60 @@
                 {%- endif -%}
 
             </td>
+        {%- elif report_type == 'streaming_sdk' -%}
+            <td>
+                {%- if show_render_log -%}
+
+                    {%- if 'server_log' in item -%}
+                        {%- if template_name == 'local' -%}
+                            <a href="{{ item.server_log }}">Server log</a><br/>
+                        {%- elif template_name == 'detailed' -%}
+                            <a href="{{ report[i].results[test_package][test_conf].result_path }}/{{ item.server_log }}">Server log</a><br/>
+                        {%- endif -%}
+                    {%- endif -%}
+
+                    {%- if 'client_log' in item -%}
+                        
+                        {%- if template_name == 'local' -%}
+                            <a href="{{ item.client_log }}">Client log</a><br/>
+                        {%- elif template_name == 'detailed' -%}
+                            <a href="{{ report[i].results[test_package][test_conf].result_path }}/{{ item.client_log }}">Client log</a><br/>
+                        {%- endif -%}
+                    {%- endif -%}
+
+                {%- endif -%}
+            </td>
         {%- endif -%}
+    {%- endif -%}
+{%- endif -%}
+
+
+
+
+
+{#- ****************************** ARTIFACTS ****************************** -#}
+{#- ------------------------------ GPUVIEW TRACES ------------------------------ -#}
+{%- if column.name == 'gpuview_traces' and 'false' | env_override('SHOW_GPUVIEW_TRACES') == 'true' -%}
+    {%- if is_head -%}
+        <th data-field="gpuview_traces" data-halign="{{ column.data_halign }}" data-valign="{{ column.data_valign }}" data-sortable="{{ column.data_sortable }}" data-visible="{{ column.data_visible }}">GPUView traces</th>
+    {%- else -%}
+        <td>
+            {%- if 'server_trace_archive' in item -%}
+                {%- if template_name == 'local' -%}
+                    <a href="{{ item.server_trace_archive }}">Server traces</a><br/>
+                {%- elif template_name == 'detailed' -%}
+                    <a href="{{ report[i].results[test_package][test_conf].result_path }}/{{ item.server_trace_archive }}">Server traces</a><br/>
+                {%- endif -%}
+            {%- endif -%}
+
+            {%- if 'client_trace_archive' in item -%}
+                
+                {%- if template_name == 'local' -%}
+                    <a href="{{ item.client_trace_archive }}">Client traces</a><br/>
+                {%- elif template_name == 'detailed' -%}
+                    <a href="{{ report[i].results[test_package][test_conf].result_path }}/{{ item.client_trace_archive }}">Client traces</a><br/>
+                {%- endif -%}
+            {%- endif -%}
+        </td>
     {%- endif -%}
 {%- endif -%}

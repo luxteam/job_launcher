@@ -14,24 +14,46 @@
             id="summary_table">
         <thead>
             <tr>
-                <th>Job Name</th>
+                <th>System configuration</th>
                 {% if tracked_metrics_history %}
                     <th>Performance</th>
                 {% endif %}
                 <th>Total</th>
                 <th>Passed</th>
-                <th>Failed
-                    <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
-                        title="[Failed] status means that pixel difference with baseline image is too large."></span>
-                </th>
-                <th>Error
-                    <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
-                        title="[Error] status means fatal error during render, terminating by timeout, or case wasn't launched at all."></span>
-                </th>
+
+                {%- if report_type == 'streaming_sdk' -%}
+                    <th>Failed
+                        <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
+                            title="[Failed] status means that some metrics in server log are abnormal."></span>
+                    </th>
+                    <th>Error
+                        <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
+                            title="[Error] status means fatal error during execution, latency equals to 0, terminating by timeout, or case wasn't launched at all."></span>
+                    </th>
+                {%- else -%}
+                    <th>Failed
+                        <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
+                            title="[Failed] status means that pixel difference with baseline image is too large."></span>
+                    </th>
+                    <th>Error
+                        <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
+                            title="[Error] status means fatal error during render, terminating by timeout, or case wasn't launched at all."></span>
+                    </th>
+                {%- endif -%}
+
                 <th>Skipped
                     <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
                         title="[Skipped] status means case wasn't launched by QA team decision."></span>
                 </th>
+
+                {% if show_execution_time %}
+                    <th data-formatter="timeFormatterFull" data-switchable="true" data-visible="true" data-field="executionTime">
+                        Execution time
+                        <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
+                            title="Time which was spent on execution of test cases"></span>
+                    </th>
+                {% endif %}
+
                 {% if show_render_time %}
                     <th data-formatter="timeFormatterFull" data-switchable="false" data-visible="false" data-field="fullTimeTaken">
                         Time taken
@@ -57,7 +79,7 @@
                 <td>{% if i != "_cur_" %}
                     <a href="#{{ i }}">{{ i }}</a>
                     {% else %}
-                    "Job name"
+                    "System configuration"
                     {% endif %}
                 </td>
                 {% if groupped_tracked_metrics and tracked_metrics_history %}
@@ -89,6 +111,10 @@
                 class="skippedStatus"
                 {% endif -%}
                 >{{ report[i].summary.skipped }}</td>
+
+                {% if show_execution_time %}
+                    <td>{{ report[i].summary.execution_time }}</td>
+                {% endif %}
 
                 {% if show_render_time %}
                     <td>{{ report[i].summary.duration }}</td>
@@ -132,7 +158,7 @@
                 <th>Test package name</th>
                 <th>Host</th>
                 <th>Local report</th>
-                {% if report_type != 'ct' %}
+                {% if report_type == 'default' or report_type == 'perf' or report_type == 'ec' %}
                     <th>Tool's log</th>
                 {% endif %}
                 <th>Engine log</th>
@@ -141,18 +167,40 @@
                 {% endif %}
                 <th>Total</th>
                 <th>Passed</th>
-                <th>Failed
-                    <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
-                        title="[Failed] status means that pixel difference with baseline image is too large."></span>
-                </th>
-                <th>Error
-                    <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
-                        title="[Error] status means fatal error during render, terminating by timeout, or case wasn't launched at all."></span>
-                </th>
+
+                {%- if report_type == 'streaming_sdk' -%}
+                    <th>Failed
+                        <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
+                            title="[Failed] status means that some metrics in server log are abnormal."></span>
+                    </th>
+                    <th>Error
+                        <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
+                            title="[Error] status means fatal error during execution, latency equals to 0, terminating by timeout, or case wasn't launched at all."></span>
+                    </th>
+                {%- else -%}
+                    <th>Failed
+                        <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
+                            title="[Failed] status means that pixel difference with baseline image is too large."></span>
+                    </th>
+                    <th>Error
+                        <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
+                            title="[Error] status means fatal error during render, terminating by timeout, or case wasn't launched at all."></span>
+                    </th>
+                {%- endif -%}
+
                 <th>Skipped
                     <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
                         title="[Skipped] status means case wasn't launched by QA team decision."></span>
                 </th>
+
+                {% if show_execution_time %}
+                    <th data-formatter="timeFormatterFull" data-switchable="true" data-visible="true" data-field="executionTime">
+                        Execution time
+                        <span class="glyphicon glyphicon-question-sign" aria-haspopup="true" aria-hidden="true"data-toggle="tooltip" data-placement="top"
+                            title="Time which was spent on execution of test cases"></span>
+                    </th>
+                {% endif %}
+
                 {% if show_render_time %}
                     <th data-formatter="timeFormatterFull" data-switchable="false" data-visible="false" data-field="fullTimeTaken">
                         Time taken
@@ -245,6 +293,7 @@
                                     <th>CPU</th>
                                     <th>CPU count</th>
                                     <th>GPU</th>
+                                    <th>Driver version</th>
                                 </tr>
                                 <tr>
                                     {% if report[i].results[test_package][test_conf].machine_info %}
@@ -253,12 +302,14 @@
                                     <td>{{ report[i].results[test_package][test_conf].machine_info.cpu }}</td>
                                     <td>{{ report[i].results[test_package][test_conf].machine_info.cpu_count }}</td>
                                     <td>{{ report[i].results[test_package][test_conf].machine_info.render_device }}</td>
+                                    <td>{{ report[i].results[test_package][test_conf].machine_info.driver_version }}</td>
                                     {% else %}
                                     <td>{{ report[i].results[test_package][test_conf].recovered_info.os }}</td>
                                     <td>0</td>
                                     <td>Unknown</td>
                                     <td>0</td>
                                     <td>{{ report[i].results[test_package][test_conf].recovered_info.render_device }}</td>
+                                    <td> - </td>
                                     {% endif %}
                                 </tr>
                             </table>
@@ -267,20 +318,27 @@
                 </td>
 
                 {% if report[i].results[test_package][test_conf].result_path %}
-                <td><a href="{{ report[i].results[test_package][test_conf].result_path }}/report.html">Report</a></td>
+                    <td><a href="{{ report[i].results[test_package][test_conf].result_path }}/report.html">Report</a></td>
 
-                {% if report_type == 'default' or report_type == 'perf' %}
-                    <td><a href="{{ report[i].results[test_package][test_conf].result_path }}/renderTool.log">Render Log</a></td>
-                {% elif report_type == 'ec' %}
-                    <td><a href="{{ report[i].results[test_package][test_conf].result_path }}/render_log.txt">Render Log</a></td>
-                {% endif %}
+                    {% if report_type == 'default' or report_type == 'perf' %}
+                        <td><a href="{{ report[i].results[test_package][test_conf].result_path }}/renderTool.log">Render Log</a></td>
+                    {% elif report_type == 'ec' %}
+                        <td><a href="{{ report[i].results[test_package][test_conf].result_path }}/render_log.txt">Render Log</a></td>
+                    {% endif %}
 
-                <td><a href="{{ report[i].results[test_package][test_conf].result_path }}/../launcher.engine.log">Engine log</a></td>
+                    <td><a href="{{ report[i].results[test_package][test_conf].result_path }}/../launcher.engine.log">Engine log</a></td>
                 {% else %}
-                <td>Report</td>
-                <td>Render Log</td>
-                <td>Engine log</td>
+
+                    <td>Report</td>
+
+                    {% if report_type == 'default' or report_type == 'perf' or report_type == 'ec' %}
+                        <td>Render Log</td>
+                    {% endif %}
+
+                    <td>Engine log</td>
+
                 {% endif %}
+
                 {% if groupped_tracked_metrics and tracked_metrics_history %}
                     <td>
                         {%- set performance_window_name = "performanceWindow-" + i + "-" + test_package -%}
@@ -311,6 +369,10 @@
                 class="skippedStatus"
                 {% endif %}
                 >{{ report[i].results[test_package][test_conf].skipped }}</td>
+
+                {% if show_execution_time %}
+                    <td>{{ report[i].results[test_package][test_conf].execution_time }}</td>
+                {% endif %}
 
                 {% if show_render_time %}
 
@@ -353,7 +415,7 @@
 
             <tr class="summary_tr">
                 {% set colspan = 4 %}
-                {% if report_type != 'ct' %}
+                {% if report_type == 'default' or report_type == 'perf' or report_type == 'ec' %}
                     {% set colspan = colspan + 1 %}
                 {% endif %}
                 {% if tracked_metrics_history %}
@@ -379,6 +441,10 @@
                 class="skippedStatus"
                 {% endif %}
                 >{{ report[i].summary.skipped }}</td>
+
+                {% if show_execution_time %}
+                    <td>{{ report[i].summary.execution_time }}</td>
+                {% endif %}
 
                 {% if show_render_time %}
 

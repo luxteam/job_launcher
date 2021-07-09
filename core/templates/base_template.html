@@ -25,6 +25,7 @@
     <script src="{{ pre_path }}/report_resources/js/images-substr.js"></script>
     <script src="{{ pre_path }}/report_resources/js/bootstrap-table-custom.js"></script>
     <script src="{{ pre_path }}/report_resources/js/carousel.js"></script>
+    <script src="{{ pre_path }}/report_resources/js/video.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function init(){
@@ -56,8 +57,14 @@
 
             <ul>
                 <li><a id="summaryA" href='{{ pre_path }}/summary_report.html'>summary</a></li>
-                <li><a id="performanceA" href='{{ pre_path }}/performance_report.html'>performance</a></li>
-                <li><a id="compareA" href='{{ pre_path }}/compare_report.html'>compare</a></li>
+
+                {% if show_performance_tab %}
+                    <li><a id="performanceA" href='{{ pre_path }}/performance_report.html'>performance</a></li>
+                {% endif %}
+
+                {% if show_compare_tab %}
+                    <li><a id="compareA" href='{{ pre_path }}/compare_report.html'>compare</a></li>
+                {% endif %}
             </ul>
         {% endif %}
     </div>

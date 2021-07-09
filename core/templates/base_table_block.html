@@ -22,6 +22,8 @@
             {% if common_info.engine %}
                 {% if tool_name == 'blender_usd_hydra' %}
                     <th>Delegate</th>
+                {% elif tool_name == 'streaming_sdk' %}
+                    <th>Game / Benchmark name</th>
                 {% else %}
                     <th>Engine</th>
                 {% endif %}
@@ -85,6 +87,9 @@
                     <th>Engine</th>
                 {% endif %}
             {% endif %}
+            {% if common_info.driver_version %}
+                <th>Driver version</th>
+            {% endif %}
         </tr>
         <tr>
             <td>{{ common_info.tool }}</td>
@@ -109,6 +114,9 @@
             <td>{{ common_info.commit_message }}</td>
             {% if common_info.engine %}
                 <td>{{ common_info.engine }}</td>
+            {% endif %}
+            {% if common_info.driver_version %}
+                <td>{{ common_info.driver_version }}</td>
             {% endif %}
         </tr>
     </table>
