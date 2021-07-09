@@ -490,3 +490,7 @@ a.highlightedLink {
   font-family: "Open Sans";
   font-weight: bold;
 }
+
+.messageList {
+  padding-left: 15px;
+}

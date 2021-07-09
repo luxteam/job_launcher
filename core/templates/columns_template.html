@@ -318,7 +318,9 @@
                 {%- endfor -%}
 
                 {%- if item.message -%}
-                    <br/><b>Message:</b> {{ item.message | join('. ') }}<br/>
+                    {% autoescape false %}
+                        <br/><b>Message:</b><br/> <ul class="messageList"><li>{{ item.message | join('.</li><li>') }}</li></ul> <br/>
+                    {% endautoescape %}
                 {%- endif -%}
             </td>
         {%- endif -%}
