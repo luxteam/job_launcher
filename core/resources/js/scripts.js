@@ -112,9 +112,16 @@ function getQueryVariable(variable) {
 }
 
 jQuery(document).ready( function() {
-    var searchText = getQueryVariable('searchText');
+    let tableNumber = getQueryVariable('tableNumber');
+    let tableWrapperId = ".jsTableWrapper [id]"
+    if (tableNumber) {
+        tableWrapperId = "#jsTableWrapper-" + tableNumber + " [id]"
+        $("#spoiler-" + tableNumber).collapse()
+    }
+
+    let searchText = getQueryVariable('searchText');
     if (searchText) {
-        $('.jsTableWrapper [id]').bootstrapTable('resetSearch', searchText);
+        $(tableWrapperId).bootstrapTable('resetSearch', searchText);
     }
 });
 
@@ -178,4 +185,16 @@ function showCarousel(baselineId, renderId) {
 
 function makeRedirect(link) {
     window.parent.location.href = link
+}
+
+function updateSpoiler(element) {
+    let text = element.textContent
+
+    if (text.charAt(0) == "\u25BC") {
+        text = "\u25B2" + text.slice(1)
+    } else if (text.charAt(0) == "\u25B2") {
+        text = "\u25BC" + text.slice(1)
+    }
+
+    element.textContent = text
 }
