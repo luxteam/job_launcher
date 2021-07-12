@@ -53,12 +53,14 @@ PLATFORM_CONVERTATIONS = {
 		"os_name": {
 			"AMD_RXVEGA": "Darwin 10.15.7(64bit)",
 			"RadeonPro560": "Darwin 10.15.7(64bit)",
-			"AMD_RX5700XT": "Darwin 10.16(64bit)"
+			"AMD_RX5700XT": "Darwin 10.16(64bit)",
+			"AppleM1": "Darwin 10.16(64bit)"
 		},
 		"cards": {
 			"AMD_RXVEGA": "AMD Radeon RX Vega 56 (Metal)",
 			"RadeonPro560": "Radeon Pro 560",
-			"AMD_RX5700XT": "AMD Radeon RX 5700XT (Metal)"
+			"AMD_RX5700XT": "AMD Radeon RX 5700XT (Metal)",
+			"AppleM1": "Apple M1"
 		}
 	}
 }
@@ -102,7 +104,8 @@ LABELS_CONVERTATIONS = {
 		"cards": {
 			"AMD Radeon RX Vega 56 (Metal)": "AMD_RXVEGA",
 			"Radeon Pro 560": "RadeonPro560",
-			"AMD Radeon RX 5700XT (Metal)": "AMD_RX5700XT"
+			"AMD Radeon RX 5700XT (Metal)": "AMD_RX5700XT",
+			"Apple M1": "AppleM1"
 		}
 	}
 }
