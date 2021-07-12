@@ -3,6 +3,8 @@ import json
 import time
 import argparse
 import hashlib
+import numpy as np
+import cv2
 
 from image_service_client import ISClient
 from ums_client import create_ums_client
@@ -49,8 +51,11 @@ def get_cases_existence_info_by_hashes(session_dir, suite_name, test_cases):
                 with open(os.path.join(session_dir, suite_name, case + '_RPR.json')) as case_file:
                     case_file_data = json.load(case_file)[0]
                     with open(render_color_full_path(session_dir, suite_name, case_file_data['render_color_path']), 'rb') as img:
-                        bytes_data = img.read()
-                        cases_hashes[case] = hashlib.md5(bytes_data).hexdigest()
+                        cases_hashes[case] = hashlib.md5(
+                            np.array(
+                                cv2.imdecode(np.frombuffer(img.read(), dtype=np.uint8), cv2.IMREAD_COLOR)
+                            )
+                        ).hexdigest()
             except Exception as e1:
                 main_logger.error("Failed to process case {} while hash check. Excetpion: {}".format(case, e1))
                 main_logger.error("Traceback: {}".format(traceback.format_exc()))
