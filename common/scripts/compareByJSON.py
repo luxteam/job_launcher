@@ -123,7 +123,13 @@ def get_pixel_difference(work_dir, base_dir, img, tolerance, pix_diff_max):
                 else:
                     # if 'Black image expected' in script_info - allow black img
                     mark_failed_if_black = core.config.CASE_EXPECTS_BLACK not in img.get('script_info', '')
-                    pix_difference_2 = metrics.getPrediction(mark_failed_if_black=mark_failed_if_black)
+
+                    if tool_name == "inventor":
+                        max_size = 100
+                    else:
+                        max_size = 1000
+
+                    pix_difference_2 = metrics.getPrediction(mark_failed_if_black=mark_failed_if_black, max_size=max_size)
                     img.update({'difference_color_2': pix_difference_2})
                     # if type(pix_difference) is str or pix_difference > float(pix_diff_max):
                     if pix_difference_2 != 0 and img['test_status'] != core.config.TEST_CRASH_STATUS:
