@@ -54,7 +54,7 @@ PLATFORM_CONVERTATIONS = {
 			"AMD_RXVEGA": "Darwin 10.15.7(64bit)",
 			"RadeonPro560": "Darwin 10.15.7(64bit)",
 			"AMD_RX5700XT": "Darwin 10.16(64bit)",
-			"AppleM1": "Darwin 10.16(64bit)"
+			"AppleM1": "Darwin 11.4(64bit)"
 		},
 		"cards": {
 			"AMD_RXVEGA": "AMD Radeon RX Vega 56 (Metal)",
